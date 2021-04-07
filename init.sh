@@ -14,7 +14,7 @@ cp organizations/fabric-ca/ca.regulator.mynetwork.com.yaml organizations/fabric-
 cp organizations/fabric-ca/ca.orderer.mynetwork.com.yaml organizations/fabric-ca/ordererOrg/fabric-ca-server-config.yaml
 echo
 
-# 启动了三个 ca 服务，分别是 Orderer_CA, Org1_CA, Org2_CA
+# 启动了四个 ca 服务，分别是 Orderer_CA, Provider_CA, Subscriber_CA, Regulator_CA
 echo "1.Startup CA Services in Network"
 CA_IMAGE_TAG=${CA_VERSION} docker-compose -f docker/docker-compose-ca.yaml up -d
 echo
@@ -47,9 +47,9 @@ echo
 
 sleep 5
 
-echo "5.Create & Join Channel"
-. scripts/setup_channel.sh
-echo
+# echo "5.Create & Join Channel"
+# . scripts/setup_channel.sh
+# echo
 
 # echo "6.Generate Connection Profiles"
 # ./organizations/ccp-generate.sh
@@ -79,6 +79,6 @@ echo
 # cp ./organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem app/example02_java/profiles/Org1/tls/
 # cp ./organizations/peerOrganizations/org2.example.com/ca/ca.org2.example.com-cert.pem app/example02_java/profiles/Org2/tls/
 
-echo
+# echo
 
-echo "Done."
+# echo "Done."

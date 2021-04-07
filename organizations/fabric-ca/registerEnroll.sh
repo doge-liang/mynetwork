@@ -144,6 +144,13 @@ function createSubscriberOrg {
   set +x
 
   echo
+	echo "Register peer1"
+  echo
+  set -x
+	fabric-ca-client register --caname ca-subscriber --id.name peer1 --id.secret peer1pw --id.type peer --tls.certfiles ${PWD}/organizations/fabric-ca/subscriberOrg/tls-cert.pem
+  set +x
+
+  echo
   echo "Register user"
   echo
   set -x
@@ -159,6 +166,7 @@ function createSubscriberOrg {
 
 	mkdir -p organizations/peerOrganizations/subscriber.mynetwork.com/peers
   mkdir -p organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com
+  mkdir -p organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer1.subscriber.mynetwork.com
 
   echo
   echo "## Generate the peer0 msp"
@@ -166,8 +174,16 @@ function createSubscriberOrg {
   set -x
 	fabric-ca-client enroll -u https://peer0:peer0pw@localhost:8054 --caname ca-subscriber -M ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/msp --csr.hosts peer0.subscriber.mynetwork.com --tls.certfiles ${PWD}/organizations/fabric-ca/subscriberOrg/tls-cert.pem
   set +x
+ 
+  echo
+  echo "## Generate the peer1 msp"
+  echo
+  set -x
+	fabric-ca-client enroll -u https://peer1:peer1pw@localhost:8054 --caname ca-subscriber -M ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer1.subscriber.mynetwork.com/msp --csr.hosts peer1.subscriber.mynetwork.com --tls.certfiles ${PWD}/organizations/fabric-ca/subscriberOrg/tls-cert.pem
+  set +x
 
   cp ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/msp/config.yaml ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/msp/config.yaml
+  cp ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/msp/config.yaml ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer1.subscriber.mynetwork.com/msp/config.yaml
 
   echo
   echo "## Generate the peer0-tls certificates"
@@ -176,19 +192,33 @@ function createSubscriberOrg {
   fabric-ca-client enroll -u https://peer0:peer0pw@localhost:8054 --caname ca-subscriber -M ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/tls --enrollment.profile tls --csr.hosts peer0.subscriber.mynetwork.com --csr.hosts localhost --tls.certfiles ${PWD}/organizations/fabric-ca/subscriberOrg/tls-cert.pem
   set +x
 
+  echo
+  echo "## Generate the peer1-tls certificates"
+  echo
+  set -x
+  fabric-ca-client enroll -u https://peer1:peer1pw@localhost:8054 --caname ca-subscriber -M ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer1.subscriber.mynetwork.com/tls --enrollment.profile tls --csr.hosts peer1.subscriber.mynetwork.com --csr.hosts localhost --tls.certfiles ${PWD}/organizations/fabric-ca/subscriberOrg/tls-cert.pem
+  set +x
+
 
   cp ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/tls/tlscacerts/* ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/tls/ca.crt
   cp ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/tls/signcerts/* ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/tls/server.crt
   cp ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/tls/keystore/* ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/tls/server.key
 
+  cp ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer1.subscriber.mynetwork.com/tls/tlscacerts/* ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer1.subscriber.mynetwork.com/tls/ca.crt
+  cp ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer1.subscriber.mynetwork.com/tls/signcerts/* ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer1.subscriber.mynetwork.com/tls/server.crt
+  cp ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer1.subscriber.mynetwork.com/tls/keystore/* ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer1.subscriber.mynetwork.com/tls/server.key
+
   mkdir ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/msp/tlscacerts
   cp ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/tls/tlscacerts/* ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/msp/tlscacerts/ca.crt
+  cp ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer1.subscriber.mynetwork.com/tls/tlscacerts/* ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/msp/tlscacerts/ca.crt
 
   mkdir ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/tlsca
   cp ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/tls/tlscacerts/* ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/tlsca/tlsca.subscriber.mynetwork.com-cert.pem
+  cp ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer1.subscriber.mynetwork.com/tls/tlscacerts/* ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/tlsca/tlsca.subscriber.mynetwork.com-cert.pem
 
   mkdir ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/ca
   cp ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/msp/cacerts/* ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/ca/ca.subscriber.mynetwork.com-cert.pem
+  cp ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer1.subscriber.mynetwork.com/msp/cacerts/* ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/ca/ca.subscriber.mynetwork.com-cert.pem
 
   mkdir -p organizations/peerOrganizations/subscriber.mynetwork.com/users
   mkdir -p organizations/peerOrganizations/subscriber.mynetwork.com/users/User1@subscriber.mynetwork.com
@@ -327,7 +357,7 @@ function createOrderer {
   echo
 	echo "Enroll the CA admin"
   echo
-	mkdir -p organizations/ordererOrganizations/orderer.com
+	mkdir -p organizations/ordererOrganizations/mynetwork.com
 
 	export FABRIC_CA_CLIENT_HOME=${PWD}/organizations/ordererOrganizations/mynetwork.com
 #  rm -rf $FABRIC_CA_CLIENT_HOME/fabric-ca-client-config.yaml
@@ -390,7 +420,7 @@ function createOrderer {
   cp ${PWD}/organizations/ordererOrganizations/mynetwork.com/orderers/orderer.mynetwork.com/tls/keystore/* ${PWD}/organizations/ordererOrganizations/mynetwork.com/orderers/orderer.mynetwork.com/tls/server.key
 
   mkdir ${PWD}/organizations/ordererOrganizations/mynetwork.com/orderers/orderer.mynetwork.com/msp/tlscacerts
-  cp ${PWD}/organizations/ordererOrganizations/mynetwork.com/orderers/orderer.mynetwork.com/tls/tlscacerts/* ${PWD}/organizations/ordererOrganizations/mynetwork.com/orderers/orderer.mynetwork.com/msp/tlscacerts/tlsca.mynetwork.com-cert.pem
+  cp ${PWD}/organizations/ordererOrganizations/mynetwork.com/orderers/orderer.mynetwork.com/tls/tlscacerts/* ${PWD}/organizations/ordererOrganizations/mynetwork.com/orderers/orderer.mynetwork.com/msp/tlscacerts/tlsca.orderer.mynetwork.com-cert.pem
 
   mkdir ${PWD}/organizations/ordererOrganizations/mynetwork.com/msp/tlscacerts
   cp ${PWD}/organizations/ordererOrganizations/mynetwork.com/orderers/orderer.mynetwork.com/tls/tlscacerts/* ${PWD}/organizations/ordererOrganizations/mynetwork.com/msp/tlscacerts/tlsca.mynetwork.com-cert.pem

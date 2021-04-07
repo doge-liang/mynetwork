@@ -21,6 +21,9 @@ if [[ "$1" == "docker" ]]; then
 
   # Other images
   docker pull couchdb:${DB_VERSION}
+
+  # check images
+  docker images
 else
   echo "ignored."
 fi

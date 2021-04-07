@@ -16,7 +16,7 @@ function setupCommonENV() {
     export PEER1_SUBSCRIBER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer1.subscriber.mynetwork.com/tls/ca.crt
     export PEER0_REGULATOR_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/regulator.mynetwork.com/peers/peer0.regulator.mynetwork.com/tls/ca.crt
     
-    export ORDERER_CA=${PWD}/organizations/ordererOrganizations/mynetwork.com/orderers/orderer.mynetwork.com/msp/tlscacerts/tlsca.orderer.com-cert.pem
+    export ORDERER_CA=${PWD}/organizations/ordererOrganizations/mynetwork.com/orderers/orderer.mynetwork.com/msp/tlscacerts/tlsca.orderer.mynetwork.com-cert.pem
     export CHANNEL_NAME=mychannel
 }
 
