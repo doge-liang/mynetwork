@@ -21,7 +21,7 @@ echo
 
 sleep 5
 
-# 注册 Peer 和 Orderer 节点
+# 注册 Peers 和 Orderer 节点
 echo "2.Register Peers and Orderer with users"
 . organizations/fabric-ca/registerEnroll.sh 
 createProviderOrg
@@ -37,8 +37,9 @@ setupCommonENV
 export FABRIC_CFG_PATH=${PWD}/configtx
 configtxgen -profile ThreeOrgsOrdererGenesis -channelID system-channel -outputBlock ./system-genesis-block/genesis.block
 configtxgen -profile ThreeOrgsChannel -outputCreateChannelTx ./channel-artifacts/$CHANNEL_NAME.tx -channelID $CHANNEL_NAME
-configtxgen -profile ThreeOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/ProviderOrgMSPanchors.tx -channelID $CHANNEL_NAME -asOrg ProviderOrgMSP
-configtxgen -profile ThreeOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/SubscriberOrgMSPanchors.tx -channelID $CHANNEL_NAME -asOrg SubscriberOrgMSP
+configtxgen -profile ThreeOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/ProviderMSPanchors.tx -channelID $CHANNEL_NAME -asOrg ProviderMSP
+configtxgen -profile ThreeOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/SubscriberMSPanchors.tx -channelID $CHANNEL_NAME -asOrg SubscriberMSP
+configtxgen -profile ThreeOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/RegulatorMSPanchors.tx -channelID $CHANNEL_NAME -asOrg RegulatorMSP
 echo
 
 echo "4.Startup Peers and Orderer"
@@ -47,9 +48,9 @@ echo
 
 sleep 5
 
-# echo "5.Create & Join Channel"
-# . scripts/setup_channel.sh
-# echo
+echo "5.Create & Join Channel"
+. scripts/setup_channel.sh
+echo
 
 # echo "6.Generate Connection Profiles"
 # ./organizations/ccp-generate.sh

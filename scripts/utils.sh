@@ -1,6 +1,11 @@
 function setGoCC() {
     export CC_LANG=golang
-    export CC_PATH=${PWD}/chaincode/chaincode_example01/go
+    export CC_PATH=${PWD}/chaincode/go
+}
+
+function setupVersionENV() {
+    export GO_VERSION=1.16
+    export DOCKER_VERSION=1.25.3
 }
 
 function setupCommonENV() {
