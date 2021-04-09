@@ -1,5 +1,8 @@
 package com.graduationProject.controller;
 
+import com.graduationProject.entity.Message;
+import com.graduationProject.utils.RestMock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,9 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HelloController {
 
+    @Autowired
+    RestMock restApi;
+
     @RequestMapping("/hello")
     public String handle01() {
         return "Hello, Springboot 2!";
+    }
+
+    @RequestMapping("/hello/flask")
+    public Message handle02() {
+        return restApi.helloFlask();
     }
 
 

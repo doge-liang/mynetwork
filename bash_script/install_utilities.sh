@@ -3,13 +3,13 @@
 lsb_release=$(lsb_release -cs)
 
 # 安装工具包
-apt install -y apt-transport-https ca-certificates software-properties-common 
-apt install -y unzip git  curl wget vim tree jq
+sudo apt install -y apt-transport-https ca-certificates software-properties-common 
+sudo apt install -y unzip git  curl wget vim tree jq
 # 安装 gradle 项目构建工具
 cd /tmp
-wget https://services.gradle.org/distributions/gradle-6.4-bin.zip
+sudo wget https://services.gradle.org/distributions/gradle-6.4-bin.zip
 unzip gradle-6.4-bin.zip -d ./gradle-6.4
-mv gradle-6.4 /usr/local/gradle
+sudo mv gradle-6.4 /usr/local/gradle
 cat >> ~/.bashrc <<EOF
 # setup gradle environments   配置gradle环境
 # =====================

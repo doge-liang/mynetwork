@@ -1,99 +1,40 @@
 {
-    "policy": {
-        "system": {
-            "statsInboundUplink": true,
-            "statsInboundDownlink": true
-        }
-    },
-    "log": {
-        "access": "",
-        "error": "",
-        "loglevel": "warning"
-    },
     "inbounds": [{
-            "tag": "proxy",
-            "port": 10808,
-            "listen": "0.0.0.0",
-            "protocol": "socks",
-            "sniffing": {
-                "enabled": true,
-                "destOverride": [
-                    "http",
-                    "tls"
-                ]
-            },
-            "settings": {
-                "auth": "noauth",
-                "udp": true
-            }
+        "port": 10808,
+        "protocol": "socks",
+        "sniffing": {
+            "enabled": true,
+            "destOverride": ["http", "tls"]
         },
-        {
-            "tag": "api",
-            "port": 62806,
-            "listen": "127.0.0.1",
-            "protocol": "dokodemo-door",
-            "settings": {
-                "udp": false,
-                "address": "127.0.0.1"
-            }
+        "settings": {
+            "auth": "noauth"
         }
-    ],
+    }],
     "outbounds": [{
-            "tag": "proxy",
-            "protocol": "vmess",
-            "settings": {
-                "vnext": [{
-                    "address": "blog.liangs-doge-space.ml",
-                    "port": 443,
-                    "users": [{
-                        "id": "c693817d-c286-4f52-990e-267f9001aa37",
-                        "alterId": 233,
-                        "email": "t@t.tt",
-                        "security": "auto"
-                    }]
+        "protocol": "vmess",
+        "settings": {
+            "vnext": [{
+                "address": "107.174.61.102",
+                "port": 36823,
+                "users": [{
+                    "id": "9eddcf21-e486-4843-9a9e-2df4584d84e0",
+                    "alterId": 64
                 }]
-            },
-            "streamSettings": {
-                "network": "ws",
-                "security": "tls",
-                "tlsSettings": {
-                    "allowInsecure": false,
-                    "serverName": "blog.liangs-doge-space.ml"
-                },
-                "wsSettings": {
-                    "path": "/233blog",
-                    "headers": {
-                        "Host": "blog.liangs-doge-space.ml"
-                    }
-                }
-            },
-            "mux": {
-                "enabled": true,
-                "concurrency": 8
-            }
+            }]
         },
-        {
-            "tag": "direct",
-            "protocol": "freedom",
-            "settings": {}
-        },
-        {
-            "tag": "block",
-            "protocol": "blackhole",
-            "settings": {
-                "response": {
-                    "type": "http"
+        "streamSettings": {
+            "network": "mkcp",
+            "kcpSettings": {
+                "uplinkCapacity": 5,
+                "downlinkCapacity": 100,
+                "congestion": true,
+                "header": {
+                    "type": "none"
                 }
             }
-        }
-    ],
-    "stats": {},
-    "api": {
-        "tag": "api",
-        "services": [
-            "StatsService"
-        ]
-    },
+        },
+        "mux": { "enabled": true }
+    }],
     "routing": {
         "domainStrategy": "IPIfNonMatch",
         "domainMatcher": "mph",
