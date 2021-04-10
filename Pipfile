@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple/"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask="*"
+pandas="*"
+numpy="*"
+tqdm="*"
+matplotlib="*"
+pyfolio="*"
+tushare="*"
+flask-script="*"
+ta-lib = {path = "./TA_Lib-0.4.19-cp37-cp37m-win_amd64.whl"}
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
