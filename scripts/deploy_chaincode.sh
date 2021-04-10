@@ -1,11 +1,15 @@
-. scripts/utils.sh
+. utils.sh
 
 echo '######## - (COMMON) setup variables - ########'
 setupCommonENV
 export CC_NAME=mycc
 export CC_VERSION=v1.0
 export CC_SEQ=1
-export CC_POLICY="OR('ProviderMSP.peer', 'SubscriberMSP.peer')"
+export CC_POLICY="OR('ProviderMSP.peer', 'SubscriberMSP.peer', 'RegulatorMSP.peer')"
+
+if [[ $# -ge 1 ]]; then
+    export CC_NAME=$1
+fi
 
 setGoCC
 
@@ -35,6 +39,26 @@ if [[ "$CC_LANG" == "java" ]]; then
     export CC_PATH=$CC_PATH/build/libs
 fi
 
+
+echo '######## - (Subscriber) install chaincode - ########'
+echo '######## - (Peer0.Subscriber) - #########'
+setupSubscriberPeerENV0
+set -x
+if [[ ! -f tmp/${CC_LABEL}.tar.gz ]]; then
+    peer lifecycle chaincode package tmp/${CC_LABEL}.tar.gz --path ${CC_PATH} --lang $CC_LANG --label ${CC_LABEL}
+fi
+peer lifecycle chaincode install tmp/${CC_LABEL}.tar.gz
+set +x
+
+echo '######## - (Peer1.Subscriber) - #########'
+setupSubscriberPeerENV1
+set -x
+if [[ ! -f tmp/${CC_LABEL}.tar.gz ]]; then
+    peer lifecycle chaincode package tmp/${CC_LABEL}.tar.gz --path ${CC_PATH} --lang $CC_LANG --label ${CC_LABEL}
+fi
+peer lifecycle chaincode install tmp/${CC_LABEL}.tar.gz
+set +x
+
 echo '######## - (Provider) install chaincode - ########'
 setupProviderPeerENV
 set -x
@@ -44,11 +68,49 @@ fi
 peer lifecycle chaincode install tmp/${CC_LABEL}.tar.gz
 set +x
 
-echo '######## - (Subscriber) install chaincode - ########'
-setupSubscriberPeerENV1
+echo '######## - (Regulator) install chaincode - ########'
+setupRegulatorPeerENV
 set -x
-peer lifecycle chaincode package tmp/${CC_LABEL}.tar.gz --path ${CC_PATH} --lang $CC_LANG --label ${CC_LABEL}
+if [[ ! -f tmp/${CC_LABEL}.tar.gz ]]; then
+    peer lifecycle chaincode package tmp/${CC_LABEL}.tar.gz --path ${CC_PATH} --lang $CC_LANG --label ${CC_LABEL}
+fi
 peer lifecycle chaincode install tmp/${CC_LABEL}.tar.gz
+set +x
+
+
+echo '######## - (Subscriber) approve chaincode - ########'
+setupSubscriberPeerENV0
+set -x
+PACKAGE_ID=$(peer lifecycle chaincode queryinstalled --output json | jq -r '.installed_chaincodes[] | select(.label == env.CC_LABEL) | .package_id')
+echo "PACKAGE_ID(Subscriber):" ${PACKAGE_ID}
+if [[ "$CORE_PEER_TLS_ENABLED" == "true" ]]; then
+    peer lifecycle chaincode approveformyorg \
+    -o ${ORDERER_ADDRESS} \
+    --ordererTLSHostnameOverride orderer.mynetwork.com \
+    --tls $CORE_PEER_TLS_ENABLED \
+    --cafile $ORDERER_CA \
+    --channelID $CHANNEL_NAME \
+    --name ${CC_NAME} \
+    --version ${CC_VERSION} \
+    --init-required \
+    --package-id ${PACKAGE_ID} \
+    --sequence $CC_SEQ \
+    --waitForEvent \
+    --signature-policy "$CC_POLICY" \
+    $PRIVATE_COLLECTION_DEF
+else
+    peer lifecycle chaincode approveformyorg \
+    -o ${ORDERER_ADDRESS} \
+    --channelID $CHANNEL_NAME \
+    --name ${CC_NAME} \
+    --version ${CC_VERSION} \
+    --init-required \
+    --package-id ${PACKAGE_ID} \
+    --sequence $CC_SEQ \
+    --waitForEvent \
+    --signature-policy "$CC_POLICY" \
+    $PRIVATE_COLLECTION_DEF
+fi
 set +x
 
 echo '######## - (Provider) approve chaincode - ########'
@@ -85,11 +147,11 @@ else
 fi
 set +x
 
-echo '######## - (Subscriber) approve chaincode - ########'
-setupSubscriberPeerENV1
+echo '######## - (Regulator)) approve chaincode - ########'
+setupRegulatorPeerENV
 set -x
 PACKAGE_ID=$(peer lifecycle chaincode queryinstalled --output json | jq -r '.installed_chaincodes[] | select(.label == env.CC_LABEL) | .package_id')
-echo "PACKAGE_ID(Subscriber):" ${PACKAGE_ID}
+echo "PACKAGE_ID(Regulator):" ${PACKAGE_ID}
 if [[ "$CORE_PEER_TLS_ENABLED" == "true" ]]; then
     peer lifecycle chaincode approveformyorg \
     -o ${ORDERER_ADDRESS} \
@@ -99,8 +161,7 @@ if [[ "$CORE_PEER_TLS_ENABLED" == "true" ]]; then
     --channelID $CHANNEL_NAME \
     --name ${CC_NAME} \
     --version ${CC_VERSION} \
-    --init-required \
-    --package-id ${PACKAGE_ID} \
+    --init-required --package-id ${PACKAGE_ID} \
     --sequence $CC_SEQ \
     --waitForEvent \
     --signature-policy "$CC_POLICY" \
@@ -111,8 +172,8 @@ else
     --channelID $CHANNEL_NAME \
     --name ${CC_NAME} \
     --version ${CC_VERSION} \
-    --init-required \
-    --package-id ${PACKAGE_ID} \
+    $PRIVATE_COLLECTION_DEF \
+    --init-required --package-id ${PACKAGE_ID} \
     --sequence $CC_SEQ \
     --waitForEvent \
     --signature-policy "$CC_POLICY" \

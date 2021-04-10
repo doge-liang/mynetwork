@@ -1,6 +1,6 @@
 function setGoCC() {
     export CC_LANG=golang
-    export CC_PATH=${PWD}/chaincode/go
+    export CC_PATH=${PWD}/chaincode/${CC_NAME}/go
 }
 
 function setupVersionENV() {
@@ -25,7 +25,7 @@ function setupCommonENV() {
     export CHANNEL_NAME=mychannel
 }
 
-function setupSubscriberPeerENV1() {
+function setupSubscriberPeerENV0() {
     export CORE_PEER_LOCALMSPID=SubscriberMSP
     export CORE_PEER_ADDRESS=$PEER0_SUBSCRIBER_ADDRESS
     export CORE_PEER_TLS_ENABLED=true
@@ -35,7 +35,7 @@ function setupSubscriberPeerENV1() {
     export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/users/Admin@subscriber.mynetwork.com/msp
 }
 
-function setupSubscriberPeerENV2() {
+function setupSubscriberPeerENV1() {
     export CORE_PEER_LOCALMSPID=SubscriberMSP
     export CORE_PEER_ADDRESS=$PEER1_SUBSCRIBER_ADDRESS
     export CORE_PEER_TLS_ENABLED=true
