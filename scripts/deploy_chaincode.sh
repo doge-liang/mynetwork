@@ -1,4 +1,4 @@
-. utils.sh
+. scripts/utils.sh
 
 echo '######## - (COMMON) setup variables - ########'
 setupCommonENV

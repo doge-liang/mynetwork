@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 	"github.com/hyperledger/fabric-contract-api-go/metadata"
 )
@@ -24,11 +25,11 @@ func main() {
 	assetContract := new(MyContract)
 	assetContract.Name = "example01.MyContract"
 	assetContract.Info = metadata.InfoMetadata{
-		Title: "MyContract",
+		Title:       "MyContract",
 		Description: "SmartContract Example 01 - Blockchain Workshop",
-		Version: "1.0.0",
+		Version:     "1.0.0",
 		Contact: &metadata.ContactMetadata{
-			Name: "Bing",
+			Name:  "Bing",
 			Email: "23227732@qq.com",
 		},
 	}
@@ -40,7 +41,7 @@ func main() {
 		return
 	}
 	contractEngine.Info = metadata.InfoMetadata{
-		Title: "SmartContract Set Example 01",
+		Title:   "SmartContract Set Example 01",
 		Version: "1.0.0",
 	}
 
