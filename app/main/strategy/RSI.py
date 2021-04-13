@@ -37,7 +37,7 @@ class TestStrategy(bt.Strategy):
         # 跟踪挂单
         self.orderlist = []
         self.buyprice = None
-        self.buycomm = None
+        self.comms = []
 
     def notify_order(self, order):
         # print(order.created)
@@ -53,15 +53,21 @@ class TestStrategy(bt.Strategy):
                     self.log('BUY EXECUTED, %.2f, Cost: %.2f, Comm: %.2f' %
                              (order.executed.price,
                               order.executed.value,
-                              order.executed.comm))
+                              order.executed.comm),
+                             # doprint=True
+                             )
 
                     self.buyprice = order.executed.price
-                    self.buycomm = order.executed.comm
+                    self.comms.append(round(order.executed.comm, 2))
                 elif order.issell():
                     self.log('SELL EXECUTED, %.2f, Cost: %.2f, Comm: %.2f' %
                              (order.executed.price,
                               order.executed.value,
-                              order.executed.comm))
+                              order.executed.comm),
+                             # doprint=True
+                             )
+
+                    self.comms.append(round(order.executed.comm, 2))
 
                 self.bar_executed = len(self)
 
@@ -70,7 +76,7 @@ class TestStrategy(bt.Strategy):
                 # 5 7 8
                 self.log('Order %s' % str(order.status))
 
-            # 写下：没有挂单
+            # 订单终止
             self.orderlist.remove(order)
 
     def notify_trade(self, trade):
@@ -150,6 +156,9 @@ def run_strategy():
     strats = cerebro.run()
     strat = strats[0]
 
+    print(len(strat.comms))
+    print(strat.comms)
+
     pyfolio = strat.analyzers.getbyname('pyfolio')
     returns, positions, transactions, gross_lev = pyfolio.get_pf_items()
 
@@ -157,14 +166,16 @@ def run_strategy():
     sharpe_ratio = strat.analyzers.SharpeRatio.get_analysis()['sharperatio']
     max_drawdown = strat.analyzers.DrawDown.get_analysis()['max']['drawdown']
     annual_reaturn = strat.analyzers.AannualReturn.get_analysis()
+    transactions['commision'] = strat.comms
+
     print('================== Performance ==================')
     print('Sharpe Ratio:', sharpe_ratio)
     print('Max DrawDown:', max_drawdown, '%')
     for k, v in annual_reaturn.items():
+        v = round(v, 2)
         print(k, 'Aannual Return:', v)
+        annual_reaturn[k] = v
     print('=================================================')
-
-
 
     # print("================== returns ==================")
     # print(returns)
@@ -174,4 +185,4 @@ def run_strategy():
     # print(transactions)
     # print("================== gross_lev ==================")
 
-    return sharpe_ratio, max_drawdown, annual_reaturn, transactions
+    return round(sharpe_ratio, 2), round(max_drawdown, 2), annual_reaturn, transactions

@@ -5,7 +5,7 @@ from flask import abort
 from flask import make_response
 from flask import jsonify
 
-from app.main.strategy import MovingAverage
+from app.main.strategy import RSI
 import json
 
 app = Flask(__name__)
@@ -55,7 +55,7 @@ def responseTest():
 
 @app.route('/springboot')
 def response_hello():
-    sharpe_ratio, max_drawdown, annual_return, transactions = MovingAverage.run_strategy()
+    sharpe_ratio, max_drawdown, annual_return, transactions = RSI.run_strategy()
     transactions.reset_index(inplace=True)
     transactions_j = json.loads(transactions.to_json(orient="index", force_ascii=False))
     response = jsonify({
