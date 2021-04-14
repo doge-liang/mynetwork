@@ -4,13 +4,13 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 import backtrader as bt
 
 # 导入其他包
-import datetime
-import os.path
-import sys  # 找出脚本名称 (in argv[0])
+from datetime import datetime
+# import os.path
+# import sys  # 找出脚本名称 (in argv[0])
 from app.data_source.api.tushare_api import Stock
 from tqdm import tqdm
-import matplotlib.pylab as plt
-import pandas as pd
+# import matplotlib.pylab as plt
+# import pandas as pd
 
 
 # 创建策策略
@@ -132,7 +132,7 @@ def run_strategy():
     #     TestStrategy,
     #     maperiod=range(10, 31))
 
-    data_api = Stock("20210412", 365, 0)
+    data_api = Stock(datetime.now(), 365, 0)
     stock_pool = data_api.selectStockPoolByRSI()
     for code in tqdm(stock_pool):
         # print(code)
@@ -152,6 +152,7 @@ def run_strategy():
     cerebro.addanalyzer(bt.analyzers.SharpeRatio, _name="SharpeRatio")
     cerebro.addanalyzer(bt.analyzers.AnnualReturn, _name="AannualReturn")
     cerebro.addanalyzer(bt.analyzers.DrawDown, _name="DrawDown")
+    cerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name="Trade")
     cerebro.addanalyzer(bt.analyzers.PyFolio)
     strats = cerebro.run()
     strat = strats[0]
@@ -166,6 +167,7 @@ def run_strategy():
     sharpe_ratio = strat.analyzers.SharpeRatio.get_analysis()['sharperatio']
     max_drawdown = strat.analyzers.DrawDown.get_analysis()['max']['drawdown']
     annual_reaturn = strat.analyzers.AannualReturn.get_analysis()
+    trade = strat.analyzers.Trade.get_analysis()
     transactions['commision'] = strat.comms
 
     print('================== Performance ==================')
@@ -175,6 +177,7 @@ def run_strategy():
         v = round(v, 2)
         print(k, 'Aannual Return:', v)
         annual_reaturn[k] = v
+    print('Trade:', trade)
     print('=================================================')
 
     # print("================== returns ==================")

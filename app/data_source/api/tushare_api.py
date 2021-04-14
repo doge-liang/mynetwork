@@ -26,7 +26,7 @@ class Stock():
                 print(e)
 
         elif type(now) == datetime:
-            self.now = now
+            self.now = now.date()
         else:
             raise Exception("now 格式不对")
         self.before = timedelta(days=before)
@@ -40,12 +40,23 @@ class Stock():
         # print(list(codes))
         return list(codes)
 
+    def updateLocal(self):
+        for code in tqdm(self.getHS300()):
+            stock_data = ts.pro_bar(ts_code=code,
+                                    api=self.pro,
+                                    adj='qfq',
+                                    start_date=(self.now - self.before).strftime(self.TIME_STR),
+                                    end_date=self.now.strftime(self.TIME_STR))
+            self.stock_datas_cache[code] = stock_data
+            time.sleep(1)
+            self.save_csv(stock_data, code)
+
     def getDailyKV(self, code, from_date, to_date):
         # 如果缓存了就不用下载
         # print(self.local_data_list)
         # print(self.stock_datas_cache.keys())
         if code in self.stock_datas_cache.keys():
-            print("找到缓存")
+            # print("找到缓存")
             return self.stock_datas_cache[code]
         elif code in self.local_data_list:
             # print("找到本地文件")
@@ -54,25 +65,21 @@ class Stock():
                                      parse_dates=True,
                                      index_col=0,
                                      )
-            # print(stock_data)
             # stock_data.index.name = 'datetime'
             # stock_data.fillna(0)
             # self.save_csv(stock_data, code)
         else:
-            stock_data = ts.pro_bar(ts_code=code,
-                                    api=self.pro,
-                                    adj='qfq',
-                                    start_date=from_date,
-                                    end_date=to_date)
-            stock_data.index = pd.to_datetime(stock_data['trade_date'])
-            stock_data.index.name = 'datetime'
-            stock_data = stock_data[['open', 'high', 'low', 'close', 'vol']]
-            stock_data['openinterest'] = 0
-            stock_data.fillna(0)
-            time.sleep(1)
-            self.stock_datas_cache['code'] = stock_data
+            raise Exception("文件未找到")
 
-            self.save_csv(stock_data, code)
+        stock_data.index = pd.to_datetime(stock_data['trade_date'])
+        stock_data.index.name = 'datetime'
+        stock_data = stock_data[['open', 'high', 'low', 'close', 'vol']]
+        stock_data['openinterest'] = 0
+        stock_data.fillna(0)
+        stock_data = stock_data.iloc[from_date:to_date]
+        self.stock_datas_cache['code'] = stock_data
+        print(stock_data)
+
         return stock_data
 
     def getStockPoolDailyKV(self, codes, from_date, to_date):
