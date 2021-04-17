@@ -52,34 +52,27 @@ echo "5.Create & Join Channel"
 . scripts/setup_channel.sh
 echo
 
-# echo "6.Generate Connection Profiles"
-# ./organizations/ccp-generate.sh
-# if [ ! -d "${PWD}/app/example01_java/profiles/Org1/tls" ]; then 
-#     mkdir -p app/example01_java/profiles/Org1/tls
-# fi
+echo "6.Generate Connection Profiles"
+./organizations/ccp-generate.sh
+if [ ! -d "${PWD}/app/profiles/Provider/tls" ]; then 
+    mkdir -p app/profiles/Provider/tls
+fi
 
-# if [ ! -d "${PWD}/app/example01_java/profiles/Org2/tls" ]; then 
-#     mkdir -p app/example01_java/profiles/Org2/tls
-# fi
+if [ ! -d "${PWD}/app/profiles/Subscriber/tls" ]; then 
+    mkdir -p app/profiles/Subscriber/tls
+fi
 
-# if [ ! -d "${PWD}/app/example02/profiles/Org1/tls" ]; then 
-#     mkdir -p app/example02_java/profiles/Org1/tls
-# fi
+if [ ! -d "${PWD}/app/profiles/Regulator/tls" ]; then 
+    mkdir -p app/profiles/Regulator/tls
+fi
 
-# if [ ! -d "${PWD}/app/example02/profiles/Org2/tls" ]; then 
-#     mkdir -p app/example02_java/profiles/Org2/tls
-# fi
+cp ./organizations/peerOrganizations/provider.mynetwork.com/connection-provider.json app/profiles/Provider/connection.json
+cp ./organizations/peerOrganizations/subscriber.mynetwork.com/connection-subscriber.json app/profiles/Subscriber/connection.json
+cp ./organizations/peerOrganizations/regulator.mynetwork.com/connection-regulator.json app/profiles/Regulator/connection.json
+cp ./organizations/peerOrganizations/provider.mynetwork.com/ca/ca.provider.mynetwork.com-cert.pem app/profiles/Provider/tls/
+cp ./organizations/peerOrganizations/subscriber.mynetwork.com/ca/ca.subscriber.mynetwork.com-cert.pem app/profiles/Subscriber/tls/
+cp ./organizations/peerOrganizations/regulator.mynetwork.com/ca/ca.regulator.mynetwork.com-cert.pem app/profiles/Regulator/tls/
 
-# cp ./organizations/peerOrganizations/org1.example.com/connection-org1.json app/example01_java/profiles/Org1/connection.json
-# cp ./organizations/peerOrganizations/org2.example.com/connection-org2.json app/example01_java/profiles/Org2/connection.json
-# cp ./organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem app/example01_java/profiles/Org1/tls/
-# cp ./organizations/peerOrganizations/org2.example.com/ca/ca.org2.example.com-cert.pem app/example01_java/profiles/Org2/tls/
+echo
 
-# cp ./organizations/peerOrganizations/org1.example.com/connection-org1.json app/example02_java/profiles/Org1/connection.json
-# cp ./organizations/peerOrganizations/org2.example.com/connection-org2.json app/example02_java/profiles/Org2/connection.json
-# cp ./organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem app/example02_java/profiles/Org1/tls/
-# cp ./organizations/peerOrganizations/org2.example.com/ca/ca.org2.example.com-cert.pem app/example02_java/profiles/Org2/tls/
-
-# echo
-
-# echo "Done."
+echo "Done."

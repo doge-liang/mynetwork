@@ -44,11 +44,35 @@ set +x
 setGoCC
 
 if [[ ${#INVOKE_FUNC} != 0 ]]; then
-    echo '######## - ('$INVOKE_PEER') query chaincode - ########'
-    set -x
-    peer chaincode ${OPERATE} \
-	    -C $CHANNEL_NAME \
-    -n $CC_NAME \
-    -c '{"Function":"'${INVOKE_FUNC}'", "Args":["'$INVOKE_FUNC_ARGS'"]}' | jq
-    set +x
+    if [[ $OPERATE == 'query' ]]; then
+        echo '######## - ('$INVOKE_PEER') query chaincode - ########'
+        set -x
+        peer chaincode query \
+            -C $CHANNEL_NAME \
+        -n $CC_NAME \
+        -c '{"Function":"'${INVOKE_FUNC}'", "Args":["'$INVOKE_FUNC_ARGS'"]}' | jq
+        set +x
+    fi
+
+    if [[ $OPERATE == 'invoke' ]]; then
+        echo '######## - ('$INVOKE_PEER') init chaincode - ########'
+        set -x
+        if [[ "$CORE_PEER_TLS_ENABLED" == "true" ]]; then
+            peer chaincode invoke \
+            -o ${ORDERER_ADDRESS} \
+            --ordererTLSHostnameOverride orderer.mynetwork.com \
+            --tls $CORE_PEER_TLS_ENABLED \
+            --cafile $ORDERER_CA \
+            -C $CHANNEL_NAME \
+            -n ${CC_NAME}  \
+            -c '{"Function":"'$INVOKE_FUNC'","Args":["'$INVOKE_FUNC_ARGS'"]}'
+        else
+            peer chaincode invoke \
+            -o ${ORDERER_ADDRESS} \
+            -C $CHANNEL_NAME \
+            -n ${CC_NAME}  \
+            -c '{"Function":"'$INVOKE_FUNC'","Args":["'$INVOKE_FUNC_ARGS'"]}'
+        fi
+        set +x
+    fi
 fi

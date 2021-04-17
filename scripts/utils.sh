@@ -1,6 +1,7 @@
 function setGoCC() {
     export CC_LANG=golang
-    # export CC_PATH=${PWD}/chaincode/${ORGANIZATION_NAME}/${CC_NAME}/go
+    # export CC_PATH=${PWD}/chaincode/subscriber/${CC_NAME}
+    # export CC_PATH=${PWD}/chaincode/${ORGANIZATION_NAME}/${CC_NAME}
     export CC_PATH=${PWD}/chaincode/${CC_NAME}/go
 }
 
@@ -31,7 +32,7 @@ function setupCommonENV() {
 
 function setupSubscriberPeerENV0() {
     export CORE_PEER_LOCALMSPID=SubscriberMSP
-    export ORGANIZATION_NAME=subscriberOrg
+    export ORGANIZATION_NAME=subscriber
     export CORE_PEER_ADDRESS=$PEER0_SUBSCRIBER_ADDRESS
     export CORE_PEER_TLS_ENABLED=true
     export CORE_PEER_TLS_CERT_FILE=${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/tls/server.crt
@@ -42,7 +43,7 @@ function setupSubscriberPeerENV0() {
 
 function setupSubscriberPeerENV1() {
     export CORE_PEER_LOCALMSPID=SubscriberMSP
-    export ORGANIZATION_NAME=subscriberOrg
+    export ORGANIZATION_NAME=subscriber
     export CORE_PEER_ADDRESS=$PEER1_SUBSCRIBER_ADDRESS
     export CORE_PEER_TLS_ENABLED=true
     export CORE_PEER_TLS_CERT_FILE=${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer1.subscriber.mynetwork.com/tls/server.crt
@@ -53,7 +54,7 @@ function setupSubscriberPeerENV1() {
 
 function setupProviderPeerENV() {
     export CORE_PEER_LOCALMSPID=ProviderMSP
-    export ORGANIZATION_NAME=providerOrg
+    export ORGANIZATION_NAME=provider
     export CORE_PEER_ADDRESS=$PEER0_PROVIDER_ADDRESS
     export CORE_PEER_TLS_ENABLED=true
     export CORE_PEER_TLS_CERT_FILE=${PWD}/organizations/peerOrganizations/provider.mynetwork.com/peers/peer0.provider.mynetwork.com/tls/server.crt
@@ -64,7 +65,7 @@ function setupProviderPeerENV() {
 
 function setupRegulatorPeerENV() {
     export CORE_PEER_LOCALMSPID=RegulatorMSP
-    export ORGANIZATION_NAME=regulatorOrg
+    export ORGANIZATION_NAME=regulator
     export CORE_PEER_ADDRESS=$PEER0_REGULATOR_ADDRESS
     export CORE_PEER_TLS_ENABLED=true
     export CORE_PEER_TLS_CERT_FILE=${PWD}/organizations/peerOrganizations/regulator.mynetwork.com/peers/peer0.regulator.mynetwork.com/tls/server.crt

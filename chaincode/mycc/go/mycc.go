@@ -13,23 +13,52 @@ type SmartContract struct {
 	contractapi.Contract
 }
 
+type Person struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+}
+
 type Asset struct {
 	ID             string `json:"ID"`
 	Color          string `json:"color"`
 	Size           int    `json:"size"`
-	Owner          string `json:"Owner"`
+	Owner          Person `json:"owner"`
 	AppraisedValue int    `json:"appraisedValue"`
 }
 
 // InitLedger adds a base set of assets to the ledger
 func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) error {
 	assets := []Asset{
-		{ID: "asset1", Color: "blue", Size: 5, Owner: "Tomoko", AppraisedValue: 300},
-		{ID: "asset2", Color: "red", Size: 5, Owner: "Brad", AppraisedValue: 400},
-		{ID: "asset3", Color: "green", Size: 10, Owner: "Jin Soo", AppraisedValue: 500},
-		{ID: "asset4", Color: "yellow", Size: 10, Owner: "Max", AppraisedValue: 600},
-		{ID: "asset5", Color: "black", Size: 15, Owner: "Adriana", AppraisedValue: 700},
-		{ID: "asset6", Color: "white", Size: 15, Owner: "Michel", AppraisedValue: 800},
+		{ID: "asset1", Color: "blue", Size: 5,
+			Owner: Person{
+				Name: "Tomoko",
+				Age:  999,
+			}, AppraisedValue: 300},
+		{ID: "asset2", Color: "red", Size: 5,
+			Owner: Person{
+				Name: "Brad",
+				Age:  999,
+			}, AppraisedValue: 400},
+		{ID: "asset3", Color: "green", Size: 10,
+			Owner: Person{
+				Name: "Jin Soo",
+				Age:  999,
+			}, AppraisedValue: 500},
+		{ID: "asset4", Color: "yellow", Size: 10,
+			Owner: Person{
+				Name: "Max",
+				Age:  999,
+			}, AppraisedValue: 600},
+		{ID: "asset5", Color: "black", Size: 15,
+			Owner: Person{
+				Name: "Adriana",
+				Age:  999,
+			}, AppraisedValue: 700},
+		{ID: "asset6", Color: "white", Size: 15,
+			Owner: Person{
+				Name: "Michel",
+				Age:  999,
+			}, AppraisedValue: 800},
 	}
 	for _, asset := range assets {
 		assetJSON, err := json.Marshal(asset)
@@ -46,27 +75,21 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 }
 
 // CreateAsset issues a new asset to the world state with given details.
-func (s *SmartContract) CreateAsset(ctx contractapi.TransactionContextInterface, id string, color string, size int, owner string, appraisedValue int) error {
-	exists, err := s.AssetExists(ctx, id)
+func (s *SmartContract) CreateAsset(ctx contractapi.TransactionContextInterface, a Asset) error {
+	exists, err := s.AssetExists(ctx, a.ID)
 	if err != nil {
 		return err
 	}
 	if exists {
-		return fmt.Errorf("the asset %s already exists", id)
+		return fmt.Errorf("the asset %s already exists", a.ID)
 	}
-	asset := Asset{
-		ID:             id,
-		Color:          color,
-		Size:           size,
-		Owner:          owner,
-		AppraisedValue: appraisedValue,
-	}
+	asset := a
 
 	assetJSON, err := json.Marshal(asset)
 	if err != nil {
 		return err
 	}
-	return ctx.GetStub().PutState(id, assetJSON)
+	return ctx.GetStub().PutState(asset.ID, assetJSON)
 }
 
 // ReadAsset returns the asset stored in the world state with given id.
@@ -89,7 +112,7 @@ func (s *SmartContract) ReadAsset(ctx contractapi.TransactionContextInterface, i
 }
 
 // UpdateAsset updates an existing asset in the world state with provided parameters.
-func (s *SmartContract) UpdateAsset(ctx contractapi.TransactionContextInterface, id string, color string, size int, owner string, appraisedValue int) error {
+func (s *SmartContract) UpdateAsset(ctx contractapi.TransactionContextInterface, id string, color string, size int, name string, age int, appraisedValue int) error {
 	exists, err := s.AssetExists(ctx, id)
 	if err != nil {
 		return err
@@ -103,7 +126,7 @@ func (s *SmartContract) UpdateAsset(ctx contractapi.TransactionContextInterface,
 		ID:             id,
 		Color:          color,
 		Size:           size,
-		Owner:          owner,
+		Owner:          Person{Name: name, Age: age},
 		AppraisedValue: appraisedValue,
 	}
 	assetJSON, err := json.Marshal(asset)
@@ -138,13 +161,13 @@ func (s *SmartContract) AssetExists(ctx contractapi.TransactionContextInterface,
 }
 
 // TransferAsset updates the owner field of asset with given id in world state.
-func (s *SmartContract) TransferAsset(ctx contractapi.TransactionContextInterface, id string, newOwner string) error {
+func (s *SmartContract) TransferAsset(ctx contractapi.TransactionContextInterface, id string, name string, age int) error {
 	asset, err := s.ReadAsset(ctx, id)
 	if err != nil {
 		return err
 	}
 
-	asset.Owner = newOwner
+	asset.Owner = Person{Name: name, Age: age}
 	assetJSON, err := json.Marshal(asset)
 	if err != nil {
 		return err

@@ -1,8 +1,9 @@
-package strategy
+package main
 
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
@@ -32,6 +33,7 @@ type Strategy struct {
 	ID           string     `json:"ID"`           // 策略 ID
 	Name         string     `json:"name"`         // 策略名
 	Provider     string     `json:"provider"`     // 发布者
+	Subscribers  []string   `json:"subscribers"`  // 订阅者列表
 	MaxDrawdown  float64    `json:"maxDrawdown"`  // 最大回撤
 	AnnualReturn float64    `json:"annualReturn"` // 年化收益率
 	Trades       []Trade    `json:"trades"`       // 交易记录
@@ -87,7 +89,7 @@ func (s *SmartContract) CreateStrategy(
 	provider string,
 	maxdrawdown float64,
 	annualreturn float64,
-	trades []Trade) error {
+) error {
 
 	exists, err := s.StrategyExists(ctx, id)
 	if err != nil {
@@ -102,7 +104,6 @@ func (s *SmartContract) CreateStrategy(
 		Provider:     provider,
 		MaxDrawdown:  maxdrawdown,
 		AnnualReturn: annualreturn,
-		Trades:       trades,
 	}
 
 	strategyJSON, err := json.Marshal(strategy)
@@ -140,9 +141,9 @@ func (s *SmartContract) GetAllStrategies(ctx contractapi.TransactionContextInter
 	return strategies, nil
 }
 
-func (s *SmartContract) subscribe(
-	
-)
+func (s *SmartContract) subscribe(ctx contractapi.TransactionContextInterface, id string) {
+
+}
 
 // UpdateStrategy updates an existing strategy in the world state with provided parameters.
 func (s *SmartContract) UpdateStrategy(
@@ -191,7 +192,7 @@ func (s *SmartContract) DeleteStrategy(ctx contractapi.TransactionContextInterfa
 	return ctx.GetStub().DelState(id)
 }
 
-// StrategyExists returns true when strategy with given ID exists in world state
+// 用 ID 检查策略是否存在
 func (s *SmartContract) StrategyExists(ctx contractapi.TransactionContextInterface, id string) (bool, error) {
 	strategyJSON, err := ctx.GetStub().GetState(id)
 	if err != nil {
@@ -218,4 +219,15 @@ func (s *SmartContract) ReadStrategy(ctx contractapi.TransactionContextInterface
 	}
 
 	return &strategy, nil
+}
+
+func main() {
+	strategyChaincode, err := contractapi.NewChaincode(&SmartContract{})
+	if err != nil {
+		log.Panicf("Error creating strategy-subscribe chaincode: %v", err)
+	}
+
+	if err := strategyChaincode.Start(); err != nil {
+		log.Panicf("Error starting strategy-subscribe chaincode: %v", err)
+	}
 }

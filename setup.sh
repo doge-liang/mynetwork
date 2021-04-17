@@ -1,6 +1,6 @@
 #!/bin/bash
-. ./scripts/utils.sh
-
+. scripts/utils.sh
+setupVersionENV
 WORK_PATH=$PWD
 
 DOCKER_NS=hyperledger

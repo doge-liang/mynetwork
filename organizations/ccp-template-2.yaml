@@ -1,41 +1,41 @@
 ---
-name: test-network-og${ORG}
+name: test-network-og${ORG_L}
 version: 1.0.0
 client:
-  organization: ${ORG}
+  organization: ${ORG_U}
   connection:
     timeout:
       peer:
         endorser: '300'
 organizations:
-  ${ORG}:
-    mspid: ${ORG}MSP
+  ${ORG_U}:
+    mspid: ${ORG_U}MSP
     peers:
-    - peer0.${ORG}.mynetwork.com
-    - peer1.${ORG}.mynetwork.com
+    - peer0.${ORG_L}.mynetwork.com
+    - peer1.${ORG_L}.mynetwork.com
     certificateAuthorities:
-    - ca.${ORG}.mynetwork.com
+    - ca.${ORG_L}.mynetwork.com
 peers:
-  peer0.${ORG}.mynetwork.com:
+  peer0.${ORG_L}.mynetwork.com:
     url: grpcs://localhost:${P0PORT}
     tlsCACerts:
       pem: |
           ${PEERPEM}
     grpcOptions:
-      ssl-target-name-override: peer0.${ORG}.mynetwork.com
-      hostnameOverride: peer0.${ORG}.mynetwork.com
-  peer1.${ORG}.mynetwork.com:
+      ssl-target-name-override: peer0.${ORG_L}.mynetwork.com
+      hostnameOverride: peer0.${ORG_L}.mynetwork.com
+  peer1.${ORG_L}.mynetwork.com:
     url: grpcs://localhost:${P1PORT}
     tlsCACerts:
       pem: |
           ${PEERPEM}
     grpcOptions:
-      ssl-target-name-override: peer1.${ORG}.mynetwork.com
-      hostnameOverride: peer1.${ORG}.mynetwork.com
+      ssl-target-name-override: peer1.${ORG_L}.mynetwork.com
+      hostnameOverride: peer1.${ORG_L}.mynetwork.com
 certificateAuthorities:
-  ca.${ORG}.mynetwork.com:
+  ca.${ORG_L}.mynetwork.com:
     url: https://localhost:${CAPORT}
-    caName: ca-${ORG}
+    caName: ca-${ORG_U}
     tlsCACerts:
       pem: 
         - |
