@@ -1,6 +1,5 @@
 package com.graduationProject.utils;
 
-import com.graduationProject.entity.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -119,11 +118,11 @@ public class RestMock {
         return apiResponse.getBody();
     }
 
-    public Message helloFlask() {
+    public Object helloFlask() {
         Map<String, String> uriMap = new HashMap<>(6);
-        ResponseEntity<Message> responseEntity = restTemplate.getForEntity(
+        ResponseEntity<Object> responseEntity = restTemplate.getForEntity(
                 generateRequestParameters("http", "127.0.0.1:5000/springboot", uriMap),
-                Message.class
+                Object.class
         );
         return responseEntity.getBody();
     }
