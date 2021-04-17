@@ -1,8 +1,6 @@
-#!/bin/bash
-. ./scripts/utils.sh
+. scripts/utils.sh
 
 echo '######## - (COMMON) setup variables - ########'
-setupVersionENV
 setupCommonENV
 export CC_NAME=mycc
 export CC_VERSION=v1.0
@@ -10,9 +8,21 @@ export CC_SEQ=1
 export CC_POLICY="OR('ProviderMSP.peer', 'SubscriberMSP.peer', 'RegulatorMSP.peer')"
 export CC_LIFECYCLE="DEPLOY"
 
-export CC_LIFECYCLE=$1
-export CC_VERSION=$2
-export CC_NAME=$3
+while getopts ":u:c:" opt
+do
+    case $opt in
+        u)
+        export CC_LIFECYCLE="UPGRADE"
+        export CC_VERSION=$OPTARG
+        ;;
+        n)
+        export CC_NAME=$OPTARG
+        ;;
+        ?)
+        echo "未知参数"
+        exit 1;;
+    esac
+done
 
 setGoCC
 
@@ -43,7 +53,6 @@ fi
 if [[ "$CC_LANG" == "java" ]]; then
     export CC_PATH=$CC_PATH/build/libs
 fi
-
 
 echo '######## - (Subscriber) install chaincode - ########'
 echo '######## - (Peer0.Subscriber) - #########'

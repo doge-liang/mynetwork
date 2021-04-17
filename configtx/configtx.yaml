@@ -111,7 +111,7 @@ Organizations:
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
             - Host: peer1.subscriber.mynetwork.com
-              Port: 9052
+              Port: 9151
 
     - &RegulatorOrg
         # DefaultOrg defines the organization which is used in the sampleconfig
@@ -258,7 +258,7 @@ Orderer: &OrdererDefaults
     # as TLS validation.  The preferred way to specify orderer addresses is now
     # to include the OrdererEndpoints item in your org definition
     Addresses:
-        - orderer1.mynetwork.com:6050
+        - orderer.mynetwork.com:7050
 
     EtcdRaft:
         Consenters:

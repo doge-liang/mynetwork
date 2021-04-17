@@ -1,10 +1,8 @@
 #!/bin/bash
+. ./scripts/utils.sh
 
 WORK_PATH=$PWD
 
-export FABRIC_VERSION=2.3.0
-export CA_VERSION=1.4.9
-export DB_VERSION=3.1.1
 DOCKER_NS=hyperledger
 if [[ "$1" == "docker" ]]; then
   echo "Pulling Docker Images"
