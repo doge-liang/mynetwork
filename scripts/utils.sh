@@ -1,8 +1,8 @@
 function setGoCC() {
     export CC_LANG=golang
     # export CC_PATH=${PWD}/chaincode/subscriber/${CC_NAME}
-    # export CC_PATH=${PWD}/chaincode/${ORGANIZATION_NAME}/${CC_NAME}
-    export CC_PATH=${PWD}/chaincode/${CC_NAME}/go
+    export CC_PATH=${PWD}/chaincode/${ORGANIZATION_NAME}/${CC_NAME}
+    # export CC_PATH=${PWD}/chaincode/${CC_NAME}/go
 }
 
 function setupVersionENV() {

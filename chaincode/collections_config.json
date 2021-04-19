@@ -1,0 +1,22 @@
+[{
+        "name": "strategyPublicCollection",
+        "policy": "OR('ProviderMSP.member', 'SubscriberMSP.member', 'RegulatorMSP.member')",
+        "requiredPeerCount": 1,
+        "maxPeerCount": 1,
+        "blockToLive": 1000000,
+        "memberOnlyRead": true,
+        "memberOnlyWrite": true
+    },
+    {
+        "name": "ProviderMSPPrivateCollection",
+        "policy": "OR('ProviderMSP.member')",
+        "requiredPeerCount": 0,
+        "maxPeerCount": 1,
+        "blockToLive": 1000000,
+        "memberOnlyRead": true,
+        "memberOnlyWrite": false,
+        "endorsementPolicy": {
+            "signaturePolicy": "OR('ProviderMSP.member')"
+        }
+    }
+]
