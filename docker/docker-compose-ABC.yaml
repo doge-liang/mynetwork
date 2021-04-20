@@ -31,7 +31,7 @@ services:
     environment:
       - FABRIC_LOGGING_SPEC=INFO
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
-      - ORDERER_GENERAL_LISTENPORT=7050
+      - ORDERER_GENERAL_LISTENPORT=6009
       - ORDERER_GENERAL_GENESISMETHOD=file
       - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
       - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
@@ -54,7 +54,7 @@ services:
         - ../organizations/ordererOrganizations/mynetwork.com/orderers/orderer.mynetwork.com/tls/:/var/hyperledger/orderer/tls
         - orderer.mynetwork.com:/var/hyperledger/production/orderer
     ports:
-      - 7050:7050
+      - 6009:6009
     networks:
       - ABC
       - ORDERER
@@ -80,12 +80,12 @@ services:
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       # Peer specific variabes
       - CORE_PEER_ID=peer0.subscriber.mynetwork.com
-      - CORE_PEER_ADDRESS=peer0.subscriber.mynetwork.com:9051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
-      - CORE_PEER_CHAINCODEADDRESS=peer0.subscriber.mynetwork.com:9052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.subscriber.mynetwork.com:9051
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.subscriber.mynetwork.com:9051
+      - CORE_PEER_ADDRESS=peer0.subscriber.mynetwork.com:6003
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:6003
+      - CORE_PEER_CHAINCODEADDRESS=peer0.subscriber.mynetwork.com:6004
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6004
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.subscriber.mynetwork.com:6003
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.subscriber.mynetwork.com:6003
       - CORE_PEER_LOCALMSPID=SubscriberMSP
       - CORE_CHAINCODE_GOLANG_RUNTIME=hyperledger/fabric-baseos:$BASE_TAG
       - CORE_CHAINCODE_JAVA_RUNTIME=hyperledger/fabric-javaenv:$IMAGE_TAG
@@ -98,7 +98,7 @@ services:
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
     ports:
-      - 9051:9051
+      - 6003:6003
     networks:
       - ABC
       - SUBSCRIBER
@@ -125,12 +125,12 @@ services:
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       # Peer specific variabes
       - CORE_PEER_ID=peer1.subscriber.mynetwork.com
-      - CORE_PEER_ADDRESS=peer1.subscriber.mynetwork.com:9151
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:9151
-      - CORE_PEER_CHAINCODEADDRESS=peer1.subscriber.mynetwork.com:9152
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9152
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.subscriber.mynetwork.com:9151
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.subscriber.mynetwork.com:9151
+      - CORE_PEER_ADDRESS=peer1.subscriber.mynetwork.com:6005
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:6005
+      - CORE_PEER_CHAINCODEADDRESS=peer1.subscriber.mynetwork.com:6006
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6006
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.subscriber.mynetwork.com:6005
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.subscriber.mynetwork.com:6005
       - CORE_PEER_LOCALMSPID=SubscriberMSP
       - CORE_CHAINCODE_GOLANG_RUNTIME=hyperledger/fabric-baseos:$BASE_TAG
       - CORE_CHAINCODE_JAVA_RUNTIME=hyperledger/fabric-javaenv:$IMAGE_TAG
@@ -143,7 +143,7 @@ services:
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
     ports:
-      - 9151:9151
+      - 6005:6005
     networks:
       - ABC
       - SUBSCRIBER
@@ -170,12 +170,12 @@ services:
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       # Peer specific variabes
       - CORE_PEER_ID=peer0.provider.mynetwork.com
-      - CORE_PEER_ADDRESS=peer0.provider.mynetwork.com:7051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
-      - CORE_PEER_CHAINCODEADDRESS=peer0.provider.mynetwork.com:7052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.provider.mynetwork.com:7051
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.provider.mynetwork.com:7051
+      - CORE_PEER_ADDRESS=peer0.provider.mynetwork.com:6001
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:6001
+      - CORE_PEER_CHAINCODEADDRESS=peer0.provider.mynetwork.com:6002
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6002
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.provider.mynetwork.com:6001
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.provider.mynetwork.com:6001
       - CORE_PEER_LOCALMSPID=ProviderMSP
       - CORE_CHAINCODE_GOLANG_RUNTIME=hyperledger/fabric-baseos:$BASE_TAG
       - CORE_CHAINCODE_JAVA_RUNTIME=hyperledger/fabric-javaenv:$IMAGE_TAG
@@ -188,7 +188,7 @@ services:
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
     ports:
-      - 7051:7051
+      - 6001:6001
     networks:
       - ABC
       - PROVIDER
@@ -215,12 +215,12 @@ services:
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       # Peer specific variabes
       - CORE_PEER_ID=peer0.regulator.mynetwork.com
-      - CORE_PEER_ADDRESS=peer0.regulator.mynetwork.com:10051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:10051
-      - CORE_PEER_CHAINCODEADDRESS=peer0.regulator.mynetwork.com:10052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:10052
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.regulator.mynetwork.com:10051
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.regulator.mynetwork.com:10051
+      - CORE_PEER_ADDRESS=peer0.regulator.mynetwork.com:6007
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:6007
+      - CORE_PEER_CHAINCODEADDRESS=peer0.regulator.mynetwork.com:6008
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6008
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.regulator.mynetwork.com:6007
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.regulator.mynetwork.com:6007
       - CORE_PEER_LOCALMSPID=RegulatorMSP
       - CORE_CHAINCODE_GOLANG_RUNTIME=hyperledger/fabric-baseos:$BASE_TAG
       - CORE_CHAINCODE_JAVA_RUNTIME=hyperledger/fabric-javaenv:$IMAGE_TAG
@@ -233,7 +233,7 @@ services:
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
     ports:
-      - 10051:10051
+      - 6007:6007
     networks:
       - ABC
       - REGULATOR

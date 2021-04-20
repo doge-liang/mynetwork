@@ -42,7 +42,7 @@ Organizations:
                 Rule: "OR('OrdererMSP.admin')"
 
         OrdererEndpoints:
-            - orderer.mynetwork.com:7050
+            - orderer.mynetwork.com:6009
 
     - &ProviderOrg
         # DefaultOrg defines the organization which is used in the sampleconfig
@@ -77,7 +77,7 @@ Organizations:
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
             - Host: peer0.provider.mynetwork.com
-              Port: 7051
+              Port: 6001
 
     - &SubscriberOrg
         # DefaultOrg defines the organization which is used in the sampleconfig
@@ -111,7 +111,7 @@ Organizations:
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
             - Host: peer1.subscriber.mynetwork.com
-              Port: 9151
+              Port: 6005
 
     - &RegulatorOrg
         # DefaultOrg defines the organization which is used in the sampleconfig
@@ -145,7 +145,7 @@ Organizations:
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
             - Host: peer0.regulator.mynetwork.com
-              Port: 10051
+              Port: 6007
 
 ################################################################################
 #
@@ -258,12 +258,12 @@ Orderer: &OrdererDefaults
     # as TLS validation.  The preferred way to specify orderer addresses is now
     # to include the OrdererEndpoints item in your org definition
     Addresses:
-        - orderer.mynetwork.com:7050
+        - orderer.mynetwork.com:6009
 
     EtcdRaft:
         Consenters:
         - Host: orderer.mynetwork.com
-          Port: 7050
+          Port: 6009
           ClientTLSCert: ../organizations/ordererOrganizations/mynetwork.com/orderers/orderer.mynetwork.com/tls/server.crt
           ServerTLSCert: ../organizations/ordererOrganizations/mynetwork.com/orderers/orderer.mynetwork.com/tls/server.crt
 

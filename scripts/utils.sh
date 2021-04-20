@@ -15,11 +15,11 @@ function setupVersionENV() {
 
 function setupCommonENV() {
     export FABRIC_CFG_PATH=${PWD}/fabric-bin/${FABRIC_VERSION}/config
-    export ORDERER_ADDRESS=localhost:7050
-    export PEER0_PROVIDER_ADDRESS=localhost:7051
-    export PEER0_SUBSCRIBER_ADDRESS=localhost:9051
-    export PEER1_SUBSCRIBER_ADDRESS=localhost:9151
-    export PEER0_REGULATOR_ADDRESS=localhost:10051
+    export ORDERER_ADDRESS=localhost:6009
+    export PEER0_PROVIDER_ADDRESS=localhost:6001
+    export PEER0_SUBSCRIBER_ADDRESS=localhost:6003
+    export PEER1_SUBSCRIBER_ADDRESS=localhost:6005
+    export PEER0_REGULATOR_ADDRESS=localhost:6007
     
     export PEER0_PROVIDER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/provider.mynetwork.com/peers/peer0.provider.mynetwork.com/tls/ca.crt
     export PEER0_SUBSCRIBER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/tls/ca.crt

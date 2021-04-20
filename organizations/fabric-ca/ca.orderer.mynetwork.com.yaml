@@ -1,5 +1,5 @@
 version: 1.2.0
-port: 8054
+port: 9204
 debug: false
 crlsizelimit: 512000
 tls:

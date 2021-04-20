@@ -3,7 +3,7 @@ package chaincode
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
+	"strings"
 	"time"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
@@ -62,22 +62,24 @@ type Subscription struct {
 	Subscribers []string `json:"subscribers"` // 订阅者列表
 }
 
-const TRADES_SUFFIX = "_trades"
-const POSITIONS_SUFFIX = "_positions"
+const TRADES = "trades"
+const POSITIONS = "positions"
+const STRATEGY = "strategy"
 const PRIVATE_COLLECTION = "ProviderMSPPrivateCollection"
-const STRATEGY_COUNT = "STRATEG_COUNT"
-const STRATEGY_PERFIX = "startegy"
+
+// const STRATEGY_COUNT = "STRATEG_COUNT"
 
 // InitLedger adds a base set of strategies to the ledger
 func (s *SmartContract) Init(ctx contractapi.TransactionContextInterface) error {
-	ctx.GetStub().PutState(STRATEGY_COUNT, []byte(strconv.Itoa(0)))
+	// ctx.GetStub().PutState(STRATEGY_COUNT, []byte(strconv.Itoa(0)))
 	clientID, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
 		return err
 	}
 	strategies := []Strategy{
 		{
-			// ID:           "strategy1",
+			// ID: MakeKey(STRATEGY, "1"),
+			ID:           "1",
 			Name:         "测试策略名",
 			Provider:     clientID,
 			MaxDrawdown:  0.1,
@@ -102,7 +104,8 @@ func (s *SmartContract) Init(ctx contractapi.TransactionContextInterface) error 
 			},
 		},
 		{
-			// ID:           "strategy2",
+			// ID: MakeKey(STRATEGY, "2"),
+			ID:           "2",
 			Name:         "测试策略名",
 			Provider:     clientID,
 			MaxDrawdown:  0.1,
@@ -129,7 +132,8 @@ func (s *SmartContract) Init(ctx contractapi.TransactionContextInterface) error 
 			},
 		},
 		{
-			// ID:           "strategy3",
+			// ID: MakeKey(STRATEGY, "3"),
+			ID:           "3",
 			Name:         "测试策略名",
 			Provider:     clientID,
 			MaxDrawdown:  0.1,
@@ -156,7 +160,8 @@ func (s *SmartContract) Init(ctx contractapi.TransactionContextInterface) error 
 			},
 		},
 		{
-			// ID:           "strategy4",
+			// ID: MakeKey(STRATEGY, "4"),
+			ID:           "4",
 			Name:         "测试策略名",
 			Provider:     clientID,
 			MaxDrawdown:  0.1,
@@ -168,16 +173,17 @@ func (s *SmartContract) Init(ctx contractapi.TransactionContextInterface) error 
 		},
 	}
 
-	for _, strategy := range strategies {
-
+	for i, strategy := range strategies {
+		i++
+		strategy.ID = MakeKey(STRATEGY, strategy.ID)
 		if strategy.State == "private" {
 			err = s.SaveStrategyPrivate(ctx, &strategy)
 			if err != nil {
 				return err
 			}
 		}
-		err = s.SaveStrategy(ctx, &strategy)
 
+		err = s.SaveStrategy(ctx, &strategy)
 		if err != nil {
 			return err
 		}
@@ -188,15 +194,20 @@ func (s *SmartContract) Init(ctx contractapi.TransactionContextInterface) error 
 
 // 保存公有策略
 func (s *SmartContract) SaveStrategy(ctx contractapi.TransactionContextInterface, strategy *Strategy) error {
-	strategyCountBytes, _ := ctx.GetStub().GetState(STRATEGY_COUNT)
-	strategyCount, _ := strconv.Atoi(string(strategyCountBytes))
-	strategy.ID = STRATEGY_PERFIX + string(strategyCountBytes)
+	// strategyCountBytes, _ := ctx.GetStub().GetState(STRATEGY_COUNT)
+	// strategyCount, _ := strconv.Atoi(string(strategyCountBytes))
+	// strategy.ID = STRATEGY + strconv.Itoa(strategyCount+1)
+	clientID, err := ctx.GetClientIdentity().GetID()
+	if err != nil {
+		return err
+	}
+	strategy.Provider = clientID
 	strategyJSON, err := json.Marshal(strategy)
 	if err != nil {
 		return err
 	}
 	err = ctx.GetStub().PutState(strategy.ID, strategyJSON)
-	err = ctx.GetStub().PutState(STRATEGY_COUNT, []byte(strconv.Itoa(strategyCount+1)))
+	// err = ctx.GetStub().PutState(STRATEGY_COUNT, []byte(strconv.Itoa(strategyCount+1)))
 
 	if err != nil {
 		return fmt.Errorf("failed to put to world state. %v", err)
@@ -206,9 +217,9 @@ func (s *SmartContract) SaveStrategy(ctx contractapi.TransactionContextInterface
 
 // 保存私有策略
 func (s *SmartContract) SaveStrategyPrivate(ctx contractapi.TransactionContextInterface, strategy *Strategy) error {
-	strategyCountBytes, _ := ctx.GetStub().GetState(STRATEGY_COUNT)
-	strategyCount, _ := strconv.Atoi(string(strategyCountBytes))
-	strategy.ID = STRATEGY_PERFIX + string(strategyCountBytes)
+	// strategyCountBytes, _ := ctx.GetStub().GetState(STRATEGY_COUNT)
+	// strategyCount, _ := strconv.Atoi(string(strategyCountBytes))
+	// strategy.ID = STRATEGY + strconv.Itoa(strategyCount+1)
 	positions := Positions{
 		StrategyID: strategy.ID,
 		Positions:  strategy.Positions,
@@ -226,12 +237,15 @@ func (s *SmartContract) SaveStrategyPrivate(ctx contractapi.TransactionContextIn
 	if err != nil {
 		return err
 	}
-
-	err = ctx.GetStub().PutPrivateData(PRIVATE_COLLECTION, strategy.ID+POSITIONS_SUFFIX, positionsJSON)
+	keyParts := SplitKey(strategy.ID)
+	positionsKey := MakeKey(STRATEGY, POSITIONS, keyParts[len(keyParts)-1])
+	err = ctx.GetStub().PutPrivateData(PRIVATE_COLLECTION, positionsKey, positionsJSON)
 	if err != nil {
 		return err
 	}
-	err = ctx.GetStub().PutPrivateData(PRIVATE_COLLECTION, strategy.ID+TRADES_SUFFIX, tradesJSON)
+	keyParts = SplitKey(strategy.ID)
+	tradesKey := MakeKey(STRATEGY, TRADES, keyParts[len(keyParts)-1])
+	err = ctx.GetStub().PutPrivateData(PRIVATE_COLLECTION, tradesKey, tradesJSON)
 	if err != nil {
 		return err
 	}
@@ -241,7 +255,7 @@ func (s *SmartContract) SaveStrategyPrivate(ctx contractapi.TransactionContextIn
 	strategy.Positions = []Position{}
 
 	err = s.SaveStrategy(ctx, strategy)
-	err = ctx.GetStub().PutState(STRATEGY_COUNT, []byte(strconv.Itoa(strategyCount+1)))
+	// err = ctx.GetStub().PutState(STRATEGY_COUNT, []byte(strconv.Itoa(strategyCount+1)))
 
 	if err != nil {
 		return fmt.Errorf("failed to put to world state. %v", err)
@@ -252,7 +266,8 @@ func (s *SmartContract) SaveStrategyPrivate(ctx contractapi.TransactionContextIn
 
 // 更新策略
 func (s *SmartContract) UpdateStrategy(ctx contractapi.TransactionContextInterface, strategy *Strategy) error {
-	exist, err := s.StrategyExists(ctx, strategy.ID)
+	key := GetStrategyKey(strategy.ID)
+	exist, err := s.StrategyExists(ctx, key)
 	if err != nil {
 		return err
 	}
@@ -260,9 +275,11 @@ func (s *SmartContract) UpdateStrategy(ctx contractapi.TransactionContextInterfa
 		return fmt.Errorf("the strategy %s does not exist", strategy.ID)
 	}
 
-	strategyJSON, err := json.Marshal(strategy)
+	if strategy.State == "private" {
+		return s.SaveStrategyPrivate(ctx, strategy)
+	}
 
-	return ctx.GetStub().PutState(strategy.ID, strategyJSON)
+	return s.SaveStrategy(ctx, strategy)
 }
 
 // 将策略状态改为公共
@@ -277,14 +294,13 @@ func (s *SmartContract) SetStrategyPublic(ctx contractapi.TransactionContextInte
 	}
 
 	// 移除私有数据
-
 	strategy, err := s.ReadStrategy(ctx, id)
 	if err != nil {
 		return err
 	}
 	// 添加私有数据并修改状态
-	strategy.Trades = trades.Trades
-	strategy.Positions = positions.Positions
+	strategy.Trades = trades
+	strategy.Positions = positions
 	strategy.State = "public"
 	return s.SaveStrategy(ctx, strategy)
 }
@@ -300,5 +316,57 @@ func (s *SmartContract) SetStrategyPrivate(ctx contractapi.TransactionContextInt
 }
 
 func (s *SmartContract) DeleteTrades(ctx contractapi.TransactionContextInterface, id string) error {
-	return ctx.GetStub().DelPrivateData(PRIVATE_COLLECTION, id)
+	key := GetTradesKey(id)
+	return ctx.GetStub().DelPrivateData(PRIVATE_COLLECTION, key)
+}
+
+func (s *SmartContract) DeletePositions(ctx contractapi.TransactionContextInterface, id string) error {
+	key := GetPositionsKey(id)
+	return ctx.GetStub().DelPrivateData(PRIVATE_COLLECTION, key)
+}
+
+func (s *SmartContract) DeleteStrategy(ctx contractapi.TransactionContextInterface, id string) error {
+	key := GetStrategyKey(id)
+	strategy, err := s.ReadStrategy(ctx, id)
+	if err != nil {
+		return err
+	}
+	if strategy == nil {
+		return fmt.Errorf("the strategy %s does not exist", key)
+	}
+	// 从公共的 state 中删除
+	err = ctx.GetStub().DelState(key)
+	if strategy.State == "private" {
+		s.DeleteTrades(ctx, id)
+		s.DeletePositions(ctx, id)
+	}
+	return err
+}
+
+// TODO 更新策略的操作信号和仓位
+// func (s *SmartContract) UpdateTradesAndPositions(ctx contractapi.TransactionContextInterface, id string) error {
+
+// }
+
+func MakeKey(keyParts ...string) string {
+	return strings.Join(keyParts, "_")
+}
+
+func SplitKey(key string) []string {
+	return strings.Split(key, "_")
+}
+
+func GetTradesKey(strategyKey string) string {
+	keyParts := SplitKey(strategyKey)
+	return MakeKey(STRATEGY, TRADES, keyParts[len(keyParts)-1])
+}
+
+func GetPositionsKey(strategyKey string) string {
+	keyParts := SplitKey(strategyKey)
+	return MakeKey(STRATEGY, POSITIONS, keyParts[len(keyParts)-1])
+}
+
+func GetStrategyKey(strategyKey string) string {
+	keyParts := SplitKey(strategyKey)
+	return MakeKey(STRATEGY, keyParts[len(keyParts)-1])
 }

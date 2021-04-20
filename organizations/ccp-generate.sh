@@ -56,8 +56,8 @@ function yaml_ccp_2 {
 
 ORG_U=Provider
 ORG_L=provider
-P0PORT=7051
-CAPORT=7054
+P0PORT=6001
+CAPORT=9201
 PEERPEM=organizations/peerOrganizations/provider.mynetwork.com/tlsca/tlsca.provider.mynetwork.com-cert.pem
 CAPEM=organizations/peerOrganizations/provider.mynetwork.com/ca/ca.provider.mynetwork.com-cert.pem
 
@@ -68,9 +68,9 @@ echo "$(yaml_ccp $ORG_U $ORG_L $P0PORT $CAPORT $PEERPEM $CAPEM)" > organizations
 
 ORG_U=Subscriber
 ORG_L=subscriber
-P0PORT=9051
-P1PORT=9151
-CAPORT=8054
+P0PORT=6003
+P1PORT=6005
+CAPORT=9202
 PEERPEM=organizations/peerOrganizations/subscriber.mynetwork.com/tlsca/tlsca.subscriber.mynetwork.com-cert.pem
 CAPEM=organizations/peerOrganizations/subscriber.mynetwork.com/ca/ca.subscriber.mynetwork.com-cert.pem
 
@@ -81,8 +81,8 @@ echo "$(yaml_ccp_2 $ORG_U $ORG_L $P0PORT $P1PORT $CAPORT $PEERPEM $CAPEM)" > org
 
 ORG_U=Regulator
 ORG_L=regulator
-P0PORT=10051
-CAPORT=9054
+P0PORT=6007
+CAPORT=9203
 PEERPEM=organizations/peerOrganizations/regulator.mynetwork.com/tlsca/tlsca.regulator.mynetwork.com-cert.pem
 CAPEM=organizations/peerOrganizations/regulator.mynetwork.com/ca/ca.regulator.mynetwork.com-cert.pem
 

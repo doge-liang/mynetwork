@@ -47,7 +47,7 @@ func (s *SmartContract) StrategyExists(ctx contractapi.TransactionContextInterfa
 
 // ReadStrategy returns the strategy stored in the world state with given id.
 func (s *SmartContract) ReadStrategy(ctx contractapi.TransactionContextInterface, id string) (*Strategy, error) {
-	strategyJSON, err := ctx.GetStub().GetState(id)
+	strategyJSON, err := ctx.GetStub().GetState(GetStrategyKey(id))
 	if err != nil {
 		return nil, fmt.Errorf("failed to read from world state: %v", err)
 	}
@@ -60,12 +60,23 @@ func (s *SmartContract) ReadStrategy(ctx contractapi.TransactionContextInterface
 	if err != nil {
 		return nil, err
 	}
+	// 对私有策略的特殊处理
+	if strategy.State == "private" {
+		key := MakeKey(STRATEGY, TRADES, id)
+		trades, _ := s.ReadTrades(ctx, key)
+		strategy.Trades = trades
+		key = MakeKey(STRATEGY, POSITIONS, id)
+		positions, _ := s.ReadPositions(ctx, key)
+		strategy.Positions = positions
+		return &strategy, nil
+	}
 
 	return &strategy, nil
 }
 
-func (s *SmartContract) ReadTrades(ctx contractapi.TransactionContextInterface, id string) (*Trades, error) {
-	tradesJSON, err := ctx.GetStub().GetPrivateData("ProviderMSPPrivateCollection", id+"_trades")
+// 通过策略的 id 得到交易数据
+func (s *SmartContract) ReadTrades(ctx contractapi.TransactionContextInterface, id string) ([]Trade, error) {
+	tradesJSON, err := ctx.GetStub().GetPrivateData(PRIVATE_COLLECTION, GetTradesKey(id))
 	if err != nil {
 		return nil, err
 	}
@@ -74,10 +85,12 @@ func (s *SmartContract) ReadTrades(ctx contractapi.TransactionContextInterface, 
 	if err != nil {
 		return nil, err
 	}
-	return &trades, nil
+	return trades.Trades, nil
 }
-func (s *SmartContract) ReadPositions(ctx contractapi.TransactionContextInterface, id string) (*Positions, error) {
-	positionsJSON, err := ctx.GetStub().GetPrivateData("ProviderMSPPrivateCollection", id+"_positions")
+
+// 通过策略的 id 获得仓位数据
+func (s *SmartContract) ReadPositions(ctx contractapi.TransactionContextInterface, id string) ([]Position, error) {
+	positionsJSON, err := ctx.GetStub().GetPrivateData(PRIVATE_COLLECTION, GetPositionsKey(id))
 	if err != nil {
 		return nil, err
 	}
@@ -86,5 +99,6 @@ func (s *SmartContract) ReadPositions(ctx contractapi.TransactionContextInterfac
 	if err != nil {
 		return nil, err
 	}
-	return &positions, nil
+
+	return positions.Positions, nil
 }
