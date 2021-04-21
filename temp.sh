@@ -1,3 +1,5 @@
+######################## 安装发布者的链码 #############################
+. ./scripts/utils.sh
 setupProviderPeerENV
 
 # 链码名
@@ -8,7 +10,7 @@ export CC_VERSION=v1.0
 export CC_SEQ=1
 # 链码策略
 # export CC_POLICY="OR('ProviderMSP.peer', 'SubscriberMSP.peer', 'RegulatorMSP.peer')"
-export CC_POLICY="OR('ProviderMSP.peer')"
+export CC_POLICY="OR('ProviderMSP.peer', 'SubscriberMSP.peer')"
 # 可以不设置,自己用来过滤脚本用的
 export CC_LIFECYCLE="DEPLOY"
 export CC_LABEL=${CC_NAME}_${CC_VERSION}
@@ -24,23 +26,22 @@ pushd $CC_PATH
 ./build.sh
 popd
 
-sleep 5
-
 set -x
 rm tmp/${CC_LABEL}.tar.gz
-
 peer lifecycle chaincode package tmp/${CC_LABEL}.tar.gz --path ${CC_PATH} --lang $CC_LANG --label ${CC_LABEL}
 
 set +x
 
 setupProviderPeerENV
 peer lifecycle chaincode install tmp/${CC_LABEL}.tar.gz
-
-sleep 5
+setupSubscriberPeerENV1
+peer lifecycle chaincode install tmp/${CC_LABEL}.tar.gz
 
 PACKAGE_ID=$(peer lifecycle chaincode queryinstalled --output json | jq -r '.installed_chaincodes[] | select(.label == env.CC_LABEL) | .package_id')
 echo "PACKAGE_ID('$ORGANIZATION_NAME'):" ${PACKAGE_ID}
 
+# 以发布者身份同意链码定义
+setupProviderPeerENV
 peer lifecycle chaincode approveformyorg \
 	-o ${ORDERER_ADDRESS} \
 	--ordererTLSHostnameOverride orderer.mynetwork.com \
@@ -56,8 +57,8 @@ peer lifecycle chaincode approveformyorg \
 	--signature-policy "$CC_POLICY" \
 	$PRIVATE_COLLECTION_DEF
 
+# 以订阅者身份同意链码定义，由于不安装该链码可以不加 packageID
 setupSubscriberPeerENV1
-
 peer lifecycle chaincode approveformyorg \
 	-o ${ORDERER_ADDRESS} \
 	--ordererTLSHostnameOverride orderer.mynetwork.com \
@@ -74,7 +75,6 @@ peer lifecycle chaincode approveformyorg \
 	$PRIVATE_COLLECTION_DEF
 
 setupProviderPeerENV
-
 peer lifecycle chaincode commit \
 	-o ${ORDERER_ADDRESS} \
 	--ordererTLSHostnameOverride orderer.mynetwork.com \
@@ -94,10 +94,6 @@ peer lifecycle chaincode commit \
 
 peer lifecycle chaincode querycommitted --channelID $CHANNEL_NAME --name ${CC_NAME}
 
-######################################################################
-
-sleep 5
-
 peer chaincode invoke \
 	-o ${ORDERER_ADDRESS} \
 	--ordererTLSHostnameOverride orderer.mynetwork.com \
@@ -106,20 +102,3 @@ peer chaincode invoke \
 	-C $CHANNEL_NAME \
 	-n ${CC_NAME} \
 	--isInit -c '{"Function":"","Args":[]}'
-
-sleep 3
-
-peer chaincode invoke \
-	-o ${ORDERER_ADDRESS} \
-	--ordererTLSHostnameOverride orderer.mynetwork.com \
-	--tls $CORE_PEER_TLS_ENABLED \
-	--cafile $ORDERER_CA \
-	-C $CHANNEL_NAME \
-	-n ${CC_NAME} \
-	-c '{"Function":"'Init'","Args":[""]}'
-
-# peer chaincode query -C $CHANNEL_NAME -n $CC_NAME -c '{"Function":"GetAllStrategies", "Args":[""]}' | jq
-
-# peer chaincode query -C $CHANNEL_NAME -n $CC_NAME -c '{"Function":"ReadStrategy", "Args":["strategy3"]}' | jq
-
-# peer chaincode query -C $CHANNEL_NAME -n $CC_NAME -c '{"Function":"ReadTrades", "Args":["strategy3"]}' | jq
