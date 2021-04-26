@@ -18,8 +18,8 @@ export CC_LABEL=${CC_NAME}_${CC_VERSION}
 setGoCC
 
 # 检查是否配置了私有数据集合配置文件
-if [[ -f ${CC_PATH}/../../collections_config.json ]]; then
-	export PRIVATE_COLLECTION_DEF="--collections-config ${CC_PATH}/../../collections_config.json"
+if [[ -f ${CC_PATH}/../collections_config.json ]]; then
+	export PRIVATE_COLLECTION_DEF="--collections-config ${CC_PATH}/../collections_config.json"
 fi
 
 pushd $CC_PATH
@@ -34,7 +34,7 @@ set +x
 
 setupProviderPeerENV
 peer lifecycle chaincode install tmp/${CC_LABEL}.tar.gz
-setupSubscriberPeerENV1
+setupSubscriberPeerENV
 peer lifecycle chaincode install tmp/${CC_LABEL}.tar.gz
 
 PACKAGE_ID=$(peer lifecycle chaincode queryinstalled --output json | jq -r '.installed_chaincodes[] | select(.label == env.CC_LABEL) | .package_id')
@@ -58,7 +58,7 @@ peer lifecycle chaincode approveformyorg \
 	$PRIVATE_COLLECTION_DEF
 
 # 以订阅者身份同意链码定义，由于不安装该链码可以不加 packageID
-setupSubscriberPeerENV1
+setupSubscriberPeerENV
 peer lifecycle chaincode approveformyorg \
 	-o ${ORDERER_ADDRESS} \
 	--ordererTLSHostnameOverride orderer.mynetwork.com \

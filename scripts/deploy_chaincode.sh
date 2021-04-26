@@ -49,16 +49,7 @@ for orgName in ${orgList[@]}; do
     echo '######## - ('$orgName') install chaincode - ########'
     case $orgName in
     Subscriber)
-        echo '######## - (Peer0.Subscriber) - #########'
-        setupSubscriberPeerENV0
-        set -x
-        if [[ ! -f tmp/${CC_LABEL}.tar.gz ]]; then
-            peer lifecycle chaincode package tmp/${CC_LABEL}.tar.gz --path ${CC_PATH} --lang $CC_LANG --label ${CC_LABEL}
-        fi
-        peer lifecycle chaincode install tmp/${CC_LABEL}.tar.gz
-        set +x
-        echo '######## - (Peer1.Subscriber) - #########'
-        setupSubscriberPeerENV1
+        setupSubscriberPeerENV
         ;;
     Provider)
         setupProviderPeerENV
@@ -80,7 +71,7 @@ for orgName in ${orgList[@]}; do
     echo '######## - ('$orgName') install chaincode - ########'
     case $orgName in
     Subscriber)
-        setupSubscriberPeerENV0
+        setupSubscriberPeerENV
         ;;
     Provider)
         setupProviderPeerENV

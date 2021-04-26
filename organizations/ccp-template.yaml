@@ -16,7 +16,7 @@ organizations:
     - ca.${ORG_L}.mynetwork.com
 peers:
   peer0.${ORG_L}.mynetwork.com:
-    url: grpcs://localhost:${P0PORT}
+    url: grpcs://52.82.52.96:${P0PORT}
     tlsCACerts:
       pem: |
           ${PEERPEM}
@@ -25,7 +25,7 @@ peers:
       hostnameOverride: peer0.${ORG_L}.mynetwork.com
 certificateAuthorities:
   ca.${ORG_L}.mynetwork.com:
-    url: https://localhost:${CAPORT}
+    url: https://52.82.52.96:${CAPORT}
     caName: ca-${ORG_U}
     tlsCACerts:
       pem: 

@@ -29,16 +29,11 @@ else
 fi
 
 echo '######## - (SubscriberOrg) join channel - ########'
-echo '######## - (Peer0.SubscriberOrg) join channel - ########'
-setupSubscriberPeerENV0
-peer channel join -b ./channel-artifacts/${CHANNEL_NAME}.block
-
-echo '######## - (Peer1.SubscriberOrg) join channel - ########'
-setupSubscriberPeerENV1
+setupSubscriberPeerENV
 peer channel join -b ./channel-artifacts/${CHANNEL_NAME}.block
 
 echo '######## - (SubscriberOrg) update anchor(Peer0) - ########'
-setupSubscriberPeerENV0
+setupSubscriberPeerENV
 if [[ "$CORE_PEER_TLS_ENABLED" == "true" ]]; then
     peer channel update -o ${ORDERER_ADDRESS} -c ${CHANNEL_NAME} \
     -f ./channel-artifacts/SubscriberMSPanchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA

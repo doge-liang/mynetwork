@@ -42,7 +42,7 @@ Organizations:
                 Rule: "OR('OrdererMSP.admin')"
 
         OrdererEndpoints:
-            - orderer.mynetwork.com:6009
+            - orderer.mynetwork.com:6007
 
     - &ProviderOrg
         # DefaultOrg defines the organization which is used in the sampleconfig
@@ -110,8 +110,8 @@ Organizations:
             # AnchorPeers defines the location of peers which can be used
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
-            - Host: peer1.subscriber.mynetwork.com
-              Port: 6005
+            - Host: peer0.subscriber.mynetwork.com
+              Port: 6003
 
     - &RegulatorOrg
         # DefaultOrg defines the organization which is used in the sampleconfig
@@ -145,7 +145,7 @@ Organizations:
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
             - Host: peer0.regulator.mynetwork.com
-              Port: 6007
+              Port: 6005
 
 ################################################################################
 #
@@ -258,12 +258,12 @@ Orderer: &OrdererDefaults
     # as TLS validation.  The preferred way to specify orderer addresses is now
     # to include the OrdererEndpoints item in your org definition
     Addresses:
-        - orderer.mynetwork.com:6009
+        - orderer.mynetwork.com:6007
 
     EtcdRaft:
         Consenters:
         - Host: orderer.mynetwork.com
-          Port: 6009
+          Port: 6007
           ClientTLSCert: ../organizations/ordererOrganizations/mynetwork.com/orderers/orderer.mynetwork.com/tls/server.crt
           ServerTLSCert: ../organizations/ordererOrganizations/mynetwork.com/orderers/orderer.mynetwork.com/tls/server.crt
 

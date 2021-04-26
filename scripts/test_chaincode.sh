@@ -28,11 +28,8 @@ echo "'INVOKE_FUNC' set to '$INVOKE_FUNC'"
 echo "'INVOKE_FUNC_ARGS' set to '$INVOKE_FUNC_ARGS'"
 
 set -x
-if [[ $INVOKE_PEER == "Peer0.Subscriber" ]]; then
-    setupSubscriberPeerENV0
-fi
-if [[ $INVOKE_PEER == "Peer1.Subscriber" ]]; then
-    setupSubscriberPeerENV1
+if [[ $INVOKE_PEER == "Peer.Subscriber" ]]; then
+    setupSubscriberPeerENV
 fi
 if [[ $INVOKE_PEER == "Peer.Provider" ]]; then
     setupProviderPeerENV

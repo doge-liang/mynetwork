@@ -18,11 +18,8 @@ echo "'CHAINCODE_NAME' set to '$CC_NAME'"
 echo "'CHAINCODE_LANG' set to '$CC_LANG'"
 echo "'CHAINCODE_PATH' set to '$CC_PATH'"
 
-if [[ $INVOKE_PEER == "Peer0.Subscriber" ]]; then
-    setupSubscriberPeerENV0
-fi
-if [[ $INVOKE_PEER == "Peer1.Subscriber" ]]; then
-    setupSubscriberPeerENV1
+if [[ $INVOKE_PEER == "Peer.Subscriber" ]]; then
+    setupSubscriberPeerENV
 fi
 if [[ $INVOKE_PEER == "Peer.Provider" ]]; then
     setupProviderPeerENV

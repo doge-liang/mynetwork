@@ -8,7 +8,6 @@ version: '2'
 volumes:
   orderer.mynetwork.com:
   peer0.subscriber.mynetwork.com:
-  peer1.subscriber.mynetwork.com:
   peer0.provider.mynetwork.com:
   peer0.regulator.mynetwork.com:
 
@@ -20,7 +19,6 @@ networks:
   REGULATOR:
   PROVIDER_PEER0:
   SUBSCRIBER_PEER0:
-  SUBSCRIBER_PEER1:
   REGULATOR_PEER0:
 
 services:
@@ -31,7 +29,7 @@ services:
     environment:
       - FABRIC_LOGGING_SPEC=INFO
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
-      - ORDERER_GENERAL_LISTENPORT=6009
+      - ORDERER_GENERAL_LISTENPORT=6007
       - ORDERER_GENERAL_GENESISMETHOD=file
       - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
       - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
@@ -54,7 +52,7 @@ services:
         - ../organizations/ordererOrganizations/mynetwork.com/orderers/orderer.mynetwork.com/tls/:/var/hyperledger/orderer/tls
         - orderer.mynetwork.com:/var/hyperledger/production/orderer
     ports:
-      - 6009:6009
+      - 6007:6007
     networks:
       - ABC
       - ORDERER
@@ -103,51 +101,6 @@ services:
       - ABC
       - SUBSCRIBER
       - SUBSCRIBER_PEER0
-
-  peer1.subscriber.mynetwork.com:
-    container_name: peer1.subscriber.mynetwork.com
-    image: hyperledger/fabric-peer:$IMAGE_TAG
-    environment:
-      #Generic peer variables
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      # the following setting starts chaincode containers on the same
-      # bridge network as the peers
-      # https://docs.docker.com/compose/networking/
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_SUBSCRIBER_PEER1
-      - FABRIC_LOGGING_SPEC=INFO
-      #- FABRIC_LOGGING_SPEC=DEBUG
-      - CORE_PEER_TLS_ENABLED=true
-      - CORE_PEER_GOSSIP_USELEADERELECTION=true
-      - CORE_PEER_GOSSIP_ORGLEADER=false
-      - CORE_PEER_PROFILE_ENABLED=true
-      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
-      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
-      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
-      # Peer specific variabes
-      - CORE_PEER_ID=peer1.subscriber.mynetwork.com
-      - CORE_PEER_ADDRESS=peer1.subscriber.mynetwork.com:6005
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:6005
-      - CORE_PEER_CHAINCODEADDRESS=peer1.subscriber.mynetwork.com:6006
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6006
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.subscriber.mynetwork.com:6005
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.subscriber.mynetwork.com:6005
-      - CORE_PEER_LOCALMSPID=SubscriberMSP
-      - CORE_CHAINCODE_GOLANG_RUNTIME=hyperledger/fabric-baseos:$BASE_TAG
-      - CORE_CHAINCODE_JAVA_RUNTIME=hyperledger/fabric-javaenv:$IMAGE_TAG
-      - CORE_CHAINCODE_NODE_RUNTIME=hyperledger/fabric-nodeenv:$IMAGE_TAG
-    volumes:
-        - /var/run/:/host/var/run/
-        - ../organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer1.subscriber.mynetwork.com/msp:/etc/hyperledger/fabric/msp
-        - ../organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer1.subscriber.mynetwork.com/tls:/etc/hyperledger/fabric/tls
-        - peer1.subscriber.mynetwork.com:/var/hyperledger/production
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
-    command: peer node start
-    ports:
-      - 6005:6005
-    networks:
-      - ABC
-      - SUBSCRIBER
-      - SUBSCRIBER_PEER1
 
   peer0.provider.mynetwork.com:
     container_name: peer0.provider.mynetwork.com
@@ -215,12 +168,12 @@ services:
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
       # Peer specific variabes
       - CORE_PEER_ID=peer0.regulator.mynetwork.com
-      - CORE_PEER_ADDRESS=peer0.regulator.mynetwork.com:6007
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:6007
-      - CORE_PEER_CHAINCODEADDRESS=peer0.regulator.mynetwork.com:6008
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6008
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.regulator.mynetwork.com:6007
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.regulator.mynetwork.com:6007
+      - CORE_PEER_ADDRESS=peer0.regulator.mynetwork.com:6005
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:6005
+      - CORE_PEER_CHAINCODEADDRESS=peer0.regulator.mynetwork.com:6006
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6006
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.regulator.mynetwork.com:6005
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.regulator.mynetwork.com:6005
       - CORE_PEER_LOCALMSPID=RegulatorMSP
       - CORE_CHAINCODE_GOLANG_RUNTIME=hyperledger/fabric-baseos:$BASE_TAG
       - CORE_CHAINCODE_JAVA_RUNTIME=hyperledger/fabric-javaenv:$IMAGE_TAG
@@ -233,7 +186,7 @@ services:
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
     ports:
-      - 6007:6007
+      - 6005:6005
     networks:
       - ABC
       - REGULATOR
