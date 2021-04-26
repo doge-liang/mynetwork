@@ -6,11 +6,11 @@ echo "0.Initialize"
 mkdir -p ${PWD}/tmp
 mkdir -p organizations/fabric-ca/providerOrg
 mkdir -p organizations/fabric-ca/subscriberOrg
-mkdir -p organizations/fabric-ca/regulatorOrg
+# mkdir -p organizations/fabric-ca/regulatorOrg
 mkdir -p organizations/fabric-ca/ordererOrg
 cp organizations/fabric-ca/ca.provider.mynetwork.com.yaml organizations/fabric-ca/providerOrg/fabric-ca-server-config.yaml
 cp organizations/fabric-ca/ca.subscriber.mynetwork.com.yaml organizations/fabric-ca/subscriberOrg/fabric-ca-server-config.yaml
-cp organizations/fabric-ca/ca.regulator.mynetwork.com.yaml organizations/fabric-ca/regulatorOrg/fabric-ca-server-config.yaml
+# cp organizations/fabric-ca/ca.regulator.mynetwork.com.yaml organizations/fabric-ca/regulatorOrg/fabric-ca-server-config.yaml
 cp organizations/fabric-ca/ca.orderer.mynetwork.com.yaml organizations/fabric-ca/ordererOrg/fabric-ca-server-config.yaml
 echo
 
@@ -26,7 +26,7 @@ echo "2.Register Peers and Orderer with users"
 . organizations/fabric-ca/registerEnroll.sh 
 createProviderOrg
 createSubscriberOrg
-createRegulatorOrg
+# createRegulatorOrg
 createOrderer
 echo
 
@@ -39,7 +39,7 @@ configtxgen -profile ThreeOrgsOrdererGenesis -channelID system-channel -outputBl
 configtxgen -profile ThreeOrgsChannel -outputCreateChannelTx ./channel-artifacts/$CHANNEL_NAME.tx -channelID $CHANNEL_NAME
 configtxgen -profile ThreeOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/ProviderMSPanchors.tx -channelID $CHANNEL_NAME -asOrg ProviderMSP
 configtxgen -profile ThreeOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/SubscriberMSPanchors.tx -channelID $CHANNEL_NAME -asOrg SubscriberMSP
-configtxgen -profile ThreeOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/RegulatorMSPanchors.tx -channelID $CHANNEL_NAME -asOrg RegulatorMSP
+# configtxgen -profile ThreeOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/RegulatorMSPanchors.tx -channelID $CHANNEL_NAME -asOrg RegulatorMSP
 echo
 
 echo "4.Startup Peers and Orderer"
@@ -68,10 +68,10 @@ fi
 
 cp ./organizations/peerOrganizations/provider.mynetwork.com/connection-provider.json app/profiles/Provider/connection.json
 cp ./organizations/peerOrganizations/subscriber.mynetwork.com/connection-subscriber.json app/profiles/Subscriber/connection.json
-cp ./organizations/peerOrganizations/regulator.mynetwork.com/connection-regulator.json app/profiles/Regulator/connection.json
+# cp ./organizations/peerOrganizations/regulator.mynetwork.com/connection-regulator.json app/profiles/Regulator/connection.json
 cp ./organizations/peerOrganizations/provider.mynetwork.com/ca/ca.provider.mynetwork.com-cert.pem app/profiles/Provider/tls/
 cp ./organizations/peerOrganizations/subscriber.mynetwork.com/ca/ca.subscriber.mynetwork.com-cert.pem app/profiles/Subscriber/tls/
-cp ./organizations/peerOrganizations/regulator.mynetwork.com/ca/ca.regulator.mynetwork.com-cert.pem app/profiles/Regulator/tls/
+# cp ./organizations/peerOrganizations/regulator.mynetwork.com/ca/ca.regulator.mynetwork.com-cert.pem app/profiles/Regulator/tls/
 
 echo
 

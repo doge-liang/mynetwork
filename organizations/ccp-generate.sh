@@ -49,12 +49,12 @@ CAPEM=organizations/peerOrganizations/subscriber.mynetwork.com/ca/ca.subscriber.
 echo "$(json_ccp $ORG_U $ORG_L $P0PORT $CAPORT $PEERPEM $CAPEM)" >organizations/peerOrganizations/subscriber.mynetwork.com/connection-subscriber.json
 echo "$(yaml_ccp $ORG_U $ORG_L $P0PORT $CAPORT $PEERPEM $CAPEM)" >organizations/peerOrganizations/subscriber.mynetwork.com/connection-subscriber.yaml
 
-ORG_U=Regulator
-ORG_L=regulator
-P0PORT=6005
-CAPORT=9203
-PEERPEM=organizations/peerOrganizations/regulator.mynetwork.com/tlsca/tlsca.regulator.mynetwork.com-cert.pem
-CAPEM=organizations/peerOrganizations/regulator.mynetwork.com/ca/ca.regulator.mynetwork.com-cert.pem
+# ORG_U=Regulator
+# ORG_L=regulator
+# P0PORT=6005
+# CAPORT=9203
+# PEERPEM=organizations/peerOrganizations/regulator.mynetwork.com/tlsca/tlsca.regulator.mynetwork.com-cert.pem
+# CAPEM=organizations/peerOrganizations/regulator.mynetwork.com/ca/ca.regulator.mynetwork.com-cert.pem
 
-echo "$(json_ccp $ORG_U $ORG_L $P0PORT $CAPORT $PEERPEM $CAPEM)" >organizations/peerOrganizations/regulator.mynetwork.com/connection-regulator.json
-echo "$(yaml_ccp $ORG_U $ORG_L $P0PORT $CAPORT $PEERPEM $CAPEM)" >organizations/peerOrganizations/regulator.mynetwork.com/connection-regulator.yaml
+# echo "$(json_ccp $ORG_U $ORG_L $P0PORT $CAPORT $PEERPEM $CAPEM)" >organizations/peerOrganizations/regulator.mynetwork.com/connection-regulator.json
+# echo "$(yaml_ccp $ORG_U $ORG_L $P0PORT $CAPORT $PEERPEM $CAPEM)" >organizations/peerOrganizations/regulator.mynetwork.com/connection-regulator.yaml

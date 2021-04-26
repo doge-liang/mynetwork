@@ -113,39 +113,39 @@ Organizations:
             - Host: peer0.subscriber.mynetwork.com
               Port: 6003
 
-    - &RegulatorOrg
-        # DefaultOrg defines the organization which is used in the sampleconfig
-        # of the fabric.git development environment
-        Name: RegulatorMSP
+    # - &RegulatorOrg
+    #     # DefaultOrg defines the organization which is used in the sampleconfig
+    #     # of the fabric.git development environment
+    #     Name: RegulatorMSP
 
-        # ID to load the MSP definition as
-        ID: RegulatorMSP
+    #     # ID to load the MSP definition as
+    #     ID: RegulatorMSP
 
-        MSPDir: ../organizations/peerOrganizations/regulator.mynetwork.com/msp
+    #     MSPDir: ../organizations/peerOrganizations/regulator.mynetwork.com/msp
 
-        # Policies defines the set of policies at this level of the config tree
-        # For organization policies, their canonical path is usually
-        #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
-        Policies:
-            Readers:
-                Type: Signature
-                Rule: "OR('RegulatorMSP.admin', 'RegulatorMSP.peer', 'RegulatorMSP.client')"
-            Writers:
-                Type: Signature
-                Rule: "OR('RegulatorMSP.admin', 'RegulatorMSP.client')"
-            Admins:
-                Type: Signature
-                Rule: "OR('RegulatorMSP.admin')"
-            Endorsement:
-                Type: Signature
-                Rule: "OR('RegulatorMSP.peer')"
+    #     # Policies defines the set of policies at this level of the config tree
+    #     # For organization policies, their canonical path is usually
+    #     #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+    #     Policies:
+    #         Readers:
+    #             Type: Signature
+    #             Rule: "OR('RegulatorMSP.admin', 'RegulatorMSP.peer', 'RegulatorMSP.client')"
+    #         Writers:
+    #             Type: Signature
+    #             Rule: "OR('RegulatorMSP.admin', 'RegulatorMSP.client')"
+    #         Admins:
+    #             Type: Signature
+    #             Rule: "OR('RegulatorMSP.admin')"
+    #         Endorsement:
+    #             Type: Signature
+    #             Rule: "OR('RegulatorMSP.peer')"
 
-        AnchorPeers:
-            # AnchorPeers defines the location of peers which can be used
-            # for cross org gossip communication.  Note, this value is only
-            # encoded in the genesis block in the Application section context
-            - Host: peer0.regulator.mynetwork.com
-              Port: 6005
+    #     AnchorPeers:
+    #         # AnchorPeers defines the location of peers which can be used
+    #         # for cross org gossip communication.  Note, this value is only
+    #         # encoded in the genesis block in the Application section context
+    #         - Host: peer0.regulator.mynetwork.com
+    #           Port: 6005
 
 ################################################################################
 #
@@ -363,7 +363,7 @@ Profiles:
                 Organizations:
                     - *ProviderOrg
                     - *SubscriberOrg
-                    - *RegulatorOrg
+                    # - *RegulatorOrg
     ThreeOrgsChannel:
         Consortium: SampleConsortium
         <<: *ChannelDefaults
@@ -372,6 +372,6 @@ Profiles:
             Organizations:
                 - *ProviderOrg
                 - *SubscriberOrg
-                - *RegulatorOrg
+                # - *RegulatorOrg
             Capabilities:
                 <<: *ApplicationCapabilities

@@ -11,7 +11,7 @@ networks:
   ABC:
   PROVIDER:
   SUBSCRIBER:
-  REGULATOR:
+  # REGULATOR:
   ORDERER:
 
 # 一个服务就是一个容器
@@ -63,36 +63,36 @@ services:
       - ABC
       - SUBSCRIBER
 
-  ca_regulator:
-    image: hyperledger/fabric-ca:$CA_IMAGE_TAG
-    environment:
-      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-      - FABRIC_CA_SERVER_CA_NAME=ca-Regulator
-      - FABRIC_CA_SERVER_TLS_ENABLED=true
-      - FABRIC_CA_SERVER_PORT=9203
-    ports:
-      - "9203:9203"
-    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
-    volumes:
-      - ../organizations/fabric-ca/regulatorOrg:/etc/hyperledger/fabric-ca-server
-    container_name: ca_regulator
-    networks:
-      - ABC
-      - REGULATOR
+  # ca_regulator:
+  #   image: hyperledger/fabric-ca:$CA_IMAGE_TAG
+  #   environment:
+  #     - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+  #     - FABRIC_CA_SERVER_CA_NAME=ca-Regulator
+  #     - FABRIC_CA_SERVER_TLS_ENABLED=true
+  #     - FABRIC_CA_SERVER_PORT=9203
+  #   ports:
+  #     - "9203:9203"
+  #   command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+  #   volumes:
+  #     - ../organizations/fabric-ca/regulatorOrg:/etc/hyperledger/fabric-ca-server
+  #   container_name: ca_regulator
+  #   networks:
+  #     - ABC
+  #     - REGULATOR
 
-  ca_orderer:
-    image: hyperledger/fabric-ca:$CA_IMAGE_TAG
-    environment:
-      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-      - FABRIC_CA_SERVER_CA_NAME=ca-Orderer
-      - FABRIC_CA_SERVER_TLS_ENABLED=true
-      - FABRIC_CA_SERVER_PORT=9204
-    ports:
-      - "9204:9204"
-    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
-    volumes:
-      - ../organizations/fabric-ca/ordererOrg:/etc/hyperledger/fabric-ca-server
-    container_name: ca_orderer
-    networks:
-      - ABC
-      - ORDERER
+  # ca_orderer:
+  #   image: hyperledger/fabric-ca:$CA_IMAGE_TAG
+  #   environment:
+  #     - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+  #     - FABRIC_CA_SERVER_CA_NAME=ca-Orderer
+  #     - FABRIC_CA_SERVER_TLS_ENABLED=true
+  #     - FABRIC_CA_SERVER_PORT=9204
+  #   ports:
+  #     - "9204:9204"
+  #   command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+  #   volumes:
+  #     - ../organizations/fabric-ca/ordererOrg:/etc/hyperledger/fabric-ca-server
+  #   container_name: ca_orderer
+  #   networks:
+  #     - ABC
+  #     - ORDERER

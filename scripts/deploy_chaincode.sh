@@ -7,7 +7,7 @@ setupCommonENV
 export CC_NAME=mycc
 export CC_VERSION=v1.0
 export CC_SEQ=1
-export CC_POLICY="OR('ProviderMSP.peer', 'SubscriberMSP.peer', 'RegulatorMSP.peer')"
+export CC_POLICY="OR('ProviderMSP.peer', 'SubscriberMSP.peer')"
 export CC_LIFECYCLE="DEPLOY"
 
 export CC_LIFECYCLE=$1

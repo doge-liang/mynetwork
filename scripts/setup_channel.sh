@@ -41,17 +41,17 @@ else
     peer channel update -o ${ORDERER_ADDRESS} -c ${CHANNEL_NAME} -f ./channel-artifacts/SubscriberMSPanchors.tx
 fi
 
-echo '######## - (RegulatorOrg) join channel - ########'
-setupRegulatorPeerENV
-peer channel join -b ./channel-artifacts/${CHANNEL_NAME}.block
+# echo '######## - (RegulatorOrg) join channel - ########'
+# setupRegulatorPeerENV
+# peer channel join -b ./channel-artifacts/${CHANNEL_NAME}.block
 
-echo '######## - (RegulatorOrg) update anchor - ########'
-setupRegulatorPeerENV
-if [[ "$CORE_PEER_TLS_ENABLED" == "true" ]]; then
-    peer channel update -o ${ORDERER_ADDRESS} -c ${CHANNEL_NAME} \
-    -f ./channel-artifacts/RegulatorMSPanchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
-else
-    peer channel update -o ${ORDERER_ADDRESS} -c ${CHANNEL_NAME} \
-    -f ./channel-artifacts/RegulatorMSPanchors.tx
-fi
+# echo '######## - (RegulatorOrg) update anchor - ########'
+# setupRegulatorPeerENV
+# if [[ "$CORE_PEER_TLS_ENABLED" == "true" ]]; then
+#     peer channel update -o ${ORDERER_ADDRESS} -c ${CHANNEL_NAME} \
+#     -f ./channel-artifacts/RegulatorMSPanchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
+# else
+#     peer channel update -o ${ORDERER_ADDRESS} -c ${CHANNEL_NAME} \
+#     -f ./channel-artifacts/RegulatorMSPanchors.tx
+# fi
 
