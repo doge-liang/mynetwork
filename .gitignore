@@ -4,6 +4,6 @@ target/
 .swp
 profiles/
 *.zip
-vue-elementui/
+node_modules/
 wallet/
 META-INF/
