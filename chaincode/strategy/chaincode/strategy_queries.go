@@ -28,7 +28,6 @@ type PlanningTrade struct {
 	Amount  float64 `json:"amount"`  // 交易份额（买卖用正负来表示）
 }
 
-// 现在持仓
 type Position struct {
 	// ID      string  `json:"ID"`      // 仓位 ID
 	StockID string  `json:"stockID"` // 股票代码
@@ -38,19 +37,19 @@ type Position struct {
 }
 
 // 策略公开的数据
-	type Strategy struct {
-		ID             string          `json:"ID"`             // 策略 ID
-		Name           string          `json:"name"`           // 策略名
-		Provider       string          `json:"provider"`       // 发布者
-		MaxDrawdown    float64         `json:"maxDrawdown"`    // 最大回撤
-		AnnualReturn   float64         `json:"annualReturn"`   // 年化收益率
-		SharpeRatio    float64         `json:"sharpeRatio"`    // 夏普率
-		Subscribers    []string        `json:"subscribers"`    // 订阅者证书列表
-		State          string          `json:"state"`          // 是否公开
-		Trades         []Trade         `json:"trades"`         // 交易记录
-		PlanningTrades []PlanningTrade `json:"planningTrades"` // 计划交易
-		Positions      []Position      `json:"positions"`      // 持仓记录
-	}
+type Strategy struct {
+	ID             string          `json:"ID"`             // 策略 ID
+	Name           string          `json:"name"`           // 策略名
+	Provider       string          `json:"provider"`       // 发布者
+	MaxDrawdown    float64         `json:"maxDrawdown"`    // 最大回撤
+	AnnualReturn   float64         `json:"annualReturn"`   // 年化收益率
+	SharpeRatio    float64         `json:"sharpeRatio"`    // 夏普率
+	Subscribers    []string        `json:"subscribers"`    // 订阅者证书列表
+	State          string          `json:"state"`          // 是否公开
+	Trades         []Trade         `json:"trades"`         // 交易记录
+	PlanningTrades []PlanningTrade `json:"planningTrades"` // 计划交易
+	Positions      []Position      `json:"positions"`      // 持仓记录
+}
 
 // 策略的交易记录保持 Provider 私有，用户发起 subscribe 后，再由 管理员操作资产转移
 type Trades struct {
@@ -100,7 +99,7 @@ const PUBLIC_COLLECTION = "strategyPublicCollection"
 
 // 公共合约
 
-// GetAllStrategies returns all strategies found in world state
+// 获取所有策略
 func (s *SmartContract) GetAllStrategies(ctx contractapi.TransactionContextInterface) ([]*Strategy, error) {
 	// range query with empty string for startKey and endKey does an
 	// open-ended query of all strategies in the chaincode namespace.
@@ -128,19 +127,7 @@ func (s *SmartContract) GetAllStrategies(ctx contractapi.TransactionContextInter
 	return strategies, nil
 }
 
-// 用 ID 检查策略是否存在
-func (s *SmartContract) StrategyExists(ctx contractapi.TransactionContextInterface, id string) (bool, error) {
-	strategyJSON, err := ctx.GetStub().GetState(id)
-	if err != nil {
-		return false, fmt.Errorf("failed to read from world state: %v", err)
-	}
-
-	return strategyJSON != nil, nil
-}
-
-// 发布者的合约
-
-// ReadStrategy returns the strategy stored in the world state with given id.
+// 读取策略
 func (s *SmartContract) ReadStrategy(ctx contractapi.TransactionContextInterface, id string) (*Strategy, error) {
 	orgID, err := ctx.GetClientIdentity().GetMSPID()
 	if err != nil {
@@ -154,6 +141,16 @@ func (s *SmartContract) ReadStrategy(ctx contractapi.TransactionContextInterface
 	}
 
 	return nil, fmt.Errorf("unknown MSPID: %s", orgID)
+}
+
+// 用 ID 检查策略是否存在
+func (s *SmartContract) StrategyExists(ctx contractapi.TransactionContextInterface, id string) (bool, error) {
+	strategyJSON, err := ctx.GetStub().GetState(id)
+	if err != nil {
+		return false, fmt.Errorf("failed to read from world state: %v", err)
+	}
+
+	return strategyJSON != nil, nil
 }
 
 func (s *SmartContract) ReadPrivateStrategy(ctx contractapi.TransactionContextInterface, id string) (*PrivateStrategy, error) {

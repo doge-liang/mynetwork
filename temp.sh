@@ -42,6 +42,7 @@ echo "PACKAGE_ID('$ORGANIZATION_NAME'):" ${PACKAGE_ID}
 
 # 以发布者身份同意链码定义
 setupProviderPeerENV
+set -x
 peer lifecycle chaincode approveformyorg \
 	-o ${ORDERER_ADDRESS} \
 	--ordererTLSHostnameOverride orderer.mynetwork.com \
@@ -56,9 +57,11 @@ peer lifecycle chaincode approveformyorg \
 	--waitForEvent \
 	--signature-policy "$CC_POLICY" \
 	$PRIVATE_COLLECTION_DEF
+set +x
 
-# 以订阅者身份同意链码定义，由于不安装该链码可以不加 packageID
 setupSubscriberPeerENV
+
+set -x
 peer lifecycle chaincode approveformyorg \
 	-o ${ORDERER_ADDRESS} \
 	--ordererTLSHostnameOverride orderer.mynetwork.com \
@@ -73,8 +76,11 @@ peer lifecycle chaincode approveformyorg \
 	--waitForEvent \
 	--signature-policy "$CC_POLICY" \
 	$PRIVATE_COLLECTION_DEF
+set +x
 
 setupProviderPeerENV
+
+set -x
 peer lifecycle chaincode commit \
 	-o ${ORDERER_ADDRESS} \
 	--ordererTLSHostnameOverride orderer.mynetwork.com \
@@ -91,9 +97,13 @@ peer lifecycle chaincode commit \
 	--init-required \
 	--signature-policy "$CC_POLICY" \
 	$PRIVATE_COLLECTION_DEF
+set +x
 
+set -x
 peer lifecycle chaincode querycommitted --channelID $CHANNEL_NAME --name ${CC_NAME}
+set +x
 
+set -x
 peer chaincode invoke \
 	-o ${ORDERER_ADDRESS} \
 	--ordererTLSHostnameOverride orderer.mynetwork.com \
@@ -102,3 +112,5 @@ peer chaincode invoke \
 	-C $CHANNEL_NAME \
 	-n ${CC_NAME} \
 	--isInit -c '{"Function":"","Args":[]}'
+
+set +x

@@ -3,14 +3,13 @@ package chaincode
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
 // 保存策略
 func (s *SmartContract) SaveStrategy(ctx contractapi.TransactionContextInterface, strategy *Strategy) error {
-	if strategy.State == "private"{
+	if strategy.State == "private" {
 		strategy.ID = GetStrategyKey(strategy.ID)
 		positions := Positions{
 			StrategyID: strategy.ID,
@@ -21,7 +20,7 @@ func (s *SmartContract) SaveStrategy(ctx contractapi.TransactionContextInterface
 			Trades:         strategy.Trades,
 			PlanningTrades: strategy.PlanningTrades,
 		}
-	
+
 		positionsJSON, err := json.Marshal(positions)
 		if err != nil {
 			return err
@@ -30,13 +29,13 @@ func (s *SmartContract) SaveStrategy(ctx contractapi.TransactionContextInterface
 		if err != nil {
 			return err
 		}
-		positionsKey := GetPositionKey(strateyg.ID)
+		positionsKey := GetPositionsKey(strategy.ID)
 		err = ctx.GetStub().PutPrivateData(PRIVATE_COLLECTION, positionsKey, positionsJSON)
 		if err != nil {
 			return err
 		}
 		err = ctx.GetStub().PutPrivateData(PUBLIC_COLLECTION, positionsKey, positionsJSON)
-		
+
 		tradesKey := GetTradesKey(strategy.ID)
 		err = ctx.GetStub().PutPrivateData(PRIVATE_COLLECTION, tradesKey, tradesJSON)
 		if err != nil {
@@ -46,15 +45,14 @@ func (s *SmartContract) SaveStrategy(ctx contractapi.TransactionContextInterface
 		if err != nil {
 			return err
 		}
-	
+
 		// 清空公共部分
 		strategy.Trades = []Trade{}
 		strategy.PlanningTrades = []PlanningTrade{}
 		strategy.Positions = []Position{}
-	
-		
+
 		// err = ctx.GetStub().PutState(STRATEGY_COUNT, []byte(strconv.Itoa(strategyCount+1)))
-	
+
 		if err != nil {
 			return fmt.Errorf("failed to put to world state. %v", err)
 		}
@@ -92,10 +90,6 @@ func (s *SmartContract) UpdateStrategy(ctx contractapi.TransactionContextInterfa
 		return fmt.Errorf("the strategy %s does not exist", strategy.ID)
 	}
 
-	if strategy.State == "private" {
-		return s.SaveStrategyPrivate(ctx, strategy)
-	}
-
 	return s.SaveStrategy(ctx, strategy)
 }
 
@@ -129,7 +123,7 @@ func (s *SmartContract) SetStrategyPrivate(ctx contractapi.TransactionContextInt
 		return err
 	}
 	strategy.State = "private"
-	return s.SaveStrategyPrivate(ctx, strategy)
+	return s.SaveStrategy(ctx, strategy)
 }
 
 func (s *SmartContract) DeleteTrades(ctx contractapi.TransactionContextInterface, id string) error {
