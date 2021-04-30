@@ -375,3 +375,14 @@ Profiles:
                 # - *RegulatorOrg
             Capabilities:
                 <<: *ApplicationCapabilities
+    TwoOrgsChannel:
+        Consortium: SampleConsortium
+        <<: *ChannelDefaults
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *ProviderOrg
+                - *SubscriberOrg
+                # - *RegulatorOrg
+            Capabilities:
+                <<: *ApplicationCapabilities

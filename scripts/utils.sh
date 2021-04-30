@@ -39,6 +39,26 @@ function setupSubscriberPeerENV() {
     export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/tls/ca.crt
     export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/users/Admin@subscriber.mynetwork.com/msp
 }
+function setupSubscriberUser1ENV() {
+    export CORE_PEER_LOCALMSPID=SubscriberMSP
+    export ORGANIZATION_NAME=subscriber
+    export CORE_PEER_ADDRESS=$PEER0_SUBSCRIBER_ADDRESS
+    export CORE_PEER_TLS_ENABLED=true
+    export CORE_PEER_TLS_CERT_FILE=${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/tls/server.crt
+    export CORE_PEER_TLS_KEY_FILE=${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/tls/server.key
+    export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/tls/ca.crt
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/users/User1@subscriber.mynetwork.com/msp
+}
+function setupSubscriberUser2ENV() {
+    export CORE_PEER_LOCALMSPID=SubscriberMSP
+    export ORGANIZATION_NAME=subscriber
+    export CORE_PEER_ADDRESS=$PEER0_SUBSCRIBER_ADDRESS
+    export CORE_PEER_TLS_ENABLED=true
+    export CORE_PEER_TLS_CERT_FILE=${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/tls/server.crt
+    export CORE_PEER_TLS_KEY_FILE=${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/tls/server.key
+    export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/peers/peer0.subscriber.mynetwork.com/tls/ca.crt
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/users/User2@subscriber.mynetwork.com/msp
+}
 
 function setupProviderPeerENV() {
     export CORE_PEER_LOCALMSPID=ProviderMSP

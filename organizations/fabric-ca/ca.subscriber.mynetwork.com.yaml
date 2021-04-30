@@ -92,7 +92,7 @@ csr:
         ST: "Hampshire"
         L: "Hursley"
         O: subscriber.mynetwork.com
-        OU:
+        OU: "Subscriber"
    hosts:
      - localhost
      - subscriber.mynetwork.com

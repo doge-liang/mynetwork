@@ -6,6 +6,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 /python-api/lib/
+go.mod
+go.sum
+vendor/
 
 ### IntelliJ IDEA ###
 .idea

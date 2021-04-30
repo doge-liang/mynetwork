@@ -92,7 +92,7 @@ csr:
         ST: "Hampshire"
         L: "Hursley"
         O: orderer.mynetwork.com
-        OU:
+        OU: "Orderer"
    hosts:
      - localhost
      - orderer.mynetwork.com

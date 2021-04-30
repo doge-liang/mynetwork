@@ -8,8 +8,8 @@ setupProviderPeerENV
 pushd ./channel-artifacts
 
 if [[ "$CORE_PEER_TLS_ENABLED" == "true" ]]; then
-    peer channel create -o ${ORDERER_ADDRESS} -c ${CHANNEL_NAME} -f ${CHANNEL_NAME}.tx \
-    --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
+        peer channel create -o ${ORDERER_ADDRESS} -c ${CHANNEL_NAME} -f ${CHANNEL_NAME}.tx \
+        --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
 else
     peer channel create -o ${ORDERER_ADDRESS} -c ${CHANNEL_NAME} -f ${CHANNEL_NAME}.tx
 fi

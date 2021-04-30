@@ -142,10 +142,17 @@ function createSubscriberOrg {
   set +x
 
   echo
-  echo "Register user"
+  echo "Register user1"
   echo
   set -x
   fabric-ca-client register --caname ca-Subscriber --id.name user1 --id.secret user1pw --id.type client --tls.certfiles ${PWD}/organizations/fabric-ca/subscriberOrg/tls-cert.pem
+  set +x
+
+  echo
+  echo "Register user2"
+  echo
+  set -x
+  fabric-ca-client register --caname ca-Subscriber --id.name user2 --id.secret user2pw --id.type client --tls.certfiles ${PWD}/organizations/fabric-ca/subscriberOrg/tls-cert.pem
   set +x
 
   echo
@@ -191,11 +198,22 @@ function createSubscriberOrg {
   mkdir -p organizations/peerOrganizations/subscriber.mynetwork.com/users/User1@subscriber.mynetwork.com
 
   echo
-  echo "## Generate the user msp"
+  echo "## Generate the user1 msp"
   echo
   set -x
   fabric-ca-client enroll -u https://user1:user1pw@localhost:9202 --caname ca-Subscriber -M ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/users/User1@subscriber.mynetwork.com/msp --tls.certfiles ${PWD}/organizations/fabric-ca/subscriberOrg/tls-cert.pem
   set +x
+  cp ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/msp/config.yaml ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/users/User1@subscriber.mynetwork.com/msp/config.yaml
+
+  mkdir -p organizations/peerOrganizations/subscriber.mynetwork.com/users/User2@subscriber.mynetwork.com
+
+  echo
+  echo "## Generate the user2 msp"
+  echo
+  set -x
+  fabric-ca-client enroll -u https://user2:user2pw@localhost:9202 --caname ca-Subscriber -M ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/users/User2@subscriber.mynetwork.com/msp --tls.certfiles ${PWD}/organizations/fabric-ca/subscriberOrg/tls-cert.pem
+  set +x
+  cp ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/msp/config.yaml ${PWD}/organizations/peerOrganizations/subscriber.mynetwork.com/users/User2@subscriber.mynetwork.com/msp/config.yaml
 
   mkdir -p organizations/peerOrganizations/subscriber.mynetwork.com/users/Admin@subscriber.mynetwork.com
 

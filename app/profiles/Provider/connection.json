@@ -1,0 +1,49 @@
+{
+    "name": "test-network-provider",
+    "version": "1.0.0",
+    "client": {
+        "organization": "Provider",
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300"
+                }
+            }
+        }
+    },
+    "organizations": {
+        "Provider": {
+            "mspid": "ProviderMSP",
+            "peers": [
+                "peer0.provider.mynetwork.com"
+            ],
+            "certificateAuthorities": [
+                "ca.provider.mynetwork.com"
+            ]
+        }
+    },
+    "peers": {
+        "peer0.provider.mynetwork.com": {
+            "url": "grpcs://52.82.52.96:6001",
+            "tlsCACerts": {
+                "pem": "-----BEGIN CERTIFICATE-----\nMIICZzCCAg2gAwIBAgIUWDkl4qB42Whh03iVBB8mSDAP1NswCgYIKoZIzj0EAwIw\ngY8xCzAJBgNVBAYTAlVTMRcwFQYDVQQIEw5Ob3J0aCBDYXJvbGluYTEPMA0GA1UE\nBxMGRHVyaGFtMR8wHQYDVQQKExZwcm92aWRlci5teW5ldHdvcmsuY29tMREwDwYD\nVQQLEwhQcm92aWRlcjEiMCAGA1UEAxMZY2EucHJvdmlkZXIubXluZXR3b3JrLmNv\nbTAeFw0yMTA0MzAxNDAzMDBaFw0zNjA0MjYxNDAzMDBaMIGPMQswCQYDVQQGEwJV\nUzEXMBUGA1UECBMOTm9ydGggQ2Fyb2xpbmExDzANBgNVBAcTBkR1cmhhbTEfMB0G\nA1UEChMWcHJvdmlkZXIubXluZXR3b3JrLmNvbTERMA8GA1UECxMIUHJvdmlkZXIx\nIjAgBgNVBAMTGWNhLnByb3ZpZGVyLm15bmV0d29yay5jb20wWTATBgcqhkjOPQIB\nBggqhkjOPQMBBwNCAATpuKGZmMkwNK55vbHUv6hG6Db4/mf+RE1lNtx5QkO4KG9R\nKXgosu0V9LoGlNNf1QIVPgqwrz8jPUX/RsWOL3Eqo0UwQzAOBgNVHQ8BAf8EBAMC\nAQYwEgYDVR0TAQH/BAgwBgEB/wIBATAdBgNVHQ4EFgQU88fSUEwDfV2s/aju5JdG\noaMHhw4wCgYIKoZIzj0EAwIDSAAwRQIhAL7rLlscpjnf8sZOqj8Q1FBbLoIiS78Y\n10nWcyQg0SLXAiAwKkqTjf9UJFUKr8zEWf/kAFDUNkbEoUzQh3KCK+ZnEg==\n-----END CERTIFICATE-----\n"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "peer0.provider.mynetwork.com",
+                "hostnameOverride": "peer0.provider.mynetwork.com"
+            }
+        }
+    },
+    "certificateAuthorities": {
+        "ca.provider.mynetwork.com": {
+            "url": "https://52.82.52.96:9201",
+            "caName": "ca-Provider",
+            "tlsCACerts": {
+                "pem": ["-----BEGIN CERTIFICATE-----\nMIICZzCCAg2gAwIBAgIUWDkl4qB42Whh03iVBB8mSDAP1NswCgYIKoZIzj0EAwIw\ngY8xCzAJBgNVBAYTAlVTMRcwFQYDVQQIEw5Ob3J0aCBDYXJvbGluYTEPMA0GA1UE\nBxMGRHVyaGFtMR8wHQYDVQQKExZwcm92aWRlci5teW5ldHdvcmsuY29tMREwDwYD\nVQQLEwhQcm92aWRlcjEiMCAGA1UEAxMZY2EucHJvdmlkZXIubXluZXR3b3JrLmNv\nbTAeFw0yMTA0MzAxNDAzMDBaFw0zNjA0MjYxNDAzMDBaMIGPMQswCQYDVQQGEwJV\nUzEXMBUGA1UECBMOTm9ydGggQ2Fyb2xpbmExDzANBgNVBAcTBkR1cmhhbTEfMB0G\nA1UEChMWcHJvdmlkZXIubXluZXR3b3JrLmNvbTERMA8GA1UECxMIUHJvdmlkZXIx\nIjAgBgNVBAMTGWNhLnByb3ZpZGVyLm15bmV0d29yay5jb20wWTATBgcqhkjOPQIB\nBggqhkjOPQMBBwNCAATpuKGZmMkwNK55vbHUv6hG6Db4/mf+RE1lNtx5QkO4KG9R\nKXgosu0V9LoGlNNf1QIVPgqwrz8jPUX/RsWOL3Eqo0UwQzAOBgNVHQ8BAf8EBAMC\nAQYwEgYDVR0TAQH/BAgwBgEB/wIBATAdBgNVHQ4EFgQU88fSUEwDfV2s/aju5JdG\noaMHhw4wCgYIKoZIzj0EAwIDSAAwRQIhAL7rLlscpjnf8sZOqj8Q1FBbLoIiS78Y\n10nWcyQg0SLXAiAwKkqTjf9UJFUKr8zEWf/kAFDUNkbEoUzQh3KCK+ZnEg==\n-----END CERTIFICATE-----\n"]
+            },
+            "httpOptions": {
+                "verify": false
+            }
+        }
+    }
+}

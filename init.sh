@@ -36,9 +36,9 @@ setupCommonENV
 # # 因为现在要配置系统通道了所以 FABRIC_CFG_PATH 要指向 configtx.yaml 所在的路径
 export FABRIC_CFG_PATH=${PWD}/configtx
 configtxgen -profile ThreeOrgsOrdererGenesis -channelID system-channel -outputBlock ./system-genesis-block/genesis.block
-configtxgen -profile ThreeOrgsChannel -outputCreateChannelTx ./channel-artifacts/$CHANNEL_NAME.tx -channelID $CHANNEL_NAME
-configtxgen -profile ThreeOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/ProviderMSPanchors.tx -channelID $CHANNEL_NAME -asOrg ProviderMSP
-configtxgen -profile ThreeOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/SubscriberMSPanchors.tx -channelID $CHANNEL_NAME -asOrg SubscriberMSP
+configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/$CHANNEL_NAME.tx -channelID $CHANNEL_NAME
+configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/ProviderMSPanchors.tx -channelID $CHANNEL_NAME -asOrg ProviderMSP
+configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/SubscriberMSPanchors.tx -channelID $CHANNEL_NAME -asOrg SubscriberMSP
 # configtxgen -profile ThreeOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/RegulatorMSPanchors.tx -channelID $CHANNEL_NAME -asOrg RegulatorMSP
 echo
 

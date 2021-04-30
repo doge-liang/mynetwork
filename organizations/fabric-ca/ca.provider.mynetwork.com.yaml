@@ -92,7 +92,7 @@ csr:
         ST: "North Carolina"
         L: "Durham"
         O: provider.mynetwork.com
-        OU:
+        OU: "Provider"
    hosts:
      - localhost
      - provider.mynetwork.com
