@@ -16,12 +16,12 @@ import java.util.Properties;
  * @作者 : Niaowuuu
  * @版本 : 1.0
  */
-public class CAUtils  {
+public class CAUtils {
 
-//    获取 CA 客户端对象
+    // 获取 CA 客户端对象
     public static HFCAClient getCAClient(String orgName, String CA_CERT_PATH) throws Exception {
         // 加载连接文件
-        String filePath = Paths.get( "profiles", orgName, "connection.json").toString();
+        String filePath = Paths.get("profiles", orgName, "connection.json").toString();
         NetworkConfig config = NetworkConfig.fromJsonFile(new File(filePath));
         NetworkConfig.CAInfo caInfo = config.getOrganizationInfo(orgName).getCertificateAuthorities().get(0);
         String caURL = caInfo.getUrl();

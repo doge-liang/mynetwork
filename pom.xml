@@ -114,12 +114,12 @@
         </dependency>
 
 <!--        fabric-chaincode-sdk-->
-        <dependency>
-            <groupId>org.hyperledger.fabric-chaincode-java</groupId>
-            <artifactId>fabric-chaincode-shim</artifactId>
-            <version>${fabric-chaincode-sdk.version}</version>
-            <scope>compile</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.hyperledger.fabric-chaincode-java</groupId>-->
+<!--            <artifactId>fabric-chaincode-shim</artifactId>-->
+<!--            <version>${fabric-chaincode-sdk.version}</version>-->
+<!--            <scope>compile</scope>-->
+<!--        </dependency>-->
 
     </dependencies>
 

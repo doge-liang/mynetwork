@@ -1,5 +1,5 @@
 server:
-  port: 10086
+  port: 10050
 
 http_pool:
   max_total: 200

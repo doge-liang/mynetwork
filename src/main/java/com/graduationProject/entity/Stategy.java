@@ -1,7 +1,6 @@
 package com.graduationProject.entity;
 
 import lombok.Data;
-import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.sdk.Enrollment;
 
 import java.util.List;
@@ -14,7 +13,6 @@ import java.util.List;
  * @版本 : 1.0
  */
 @Data
-@DataType
 public class Stategy {
 
 //    策略ID

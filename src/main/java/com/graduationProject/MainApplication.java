@@ -21,11 +21,11 @@ import java.util.concurrent.TimeoutException;
 @SpringBootApplication
 public class MainApplication {
 
-//    public static void main(String[] args) {
-//        SpringApplication.run(MainApplication.class, args);
-//    }
+    public static void main(String[] args) {
+        SpringApplication.run(MainApplication.class, args);
+    }
 
-    public static final String ENVKEY = "CONTRACT_NAME";
+//    public static final String ENVKEY = "CONTRACT_NAME";
 
 //    public static void main(String[] args) {
 //        String contractName = "mycc";

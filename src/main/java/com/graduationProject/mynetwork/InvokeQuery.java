@@ -18,7 +18,7 @@ public class InvokeQuery {
         System.setProperty("org.hyperledger.fabric.sdk.service_discovery.as_localhost", "true");
     }
 
-//
+    //
     private String orgname_org1;
     private String username_org1;
     private String channel_name;
@@ -33,12 +33,12 @@ public class InvokeQuery {
 
         //check identity existence in wallet
         if (identity == null) {
-            System.out.println("The identity \"" + userName + "@"+ orgName + "\" doesn't exists in the wallet");
+            System.out.println("The identity \"" + userName + "@" + orgName + "\" doesn't exists in the wallet");
             return;
         }
 
         //load connection profile
-        Path networkConfigPath = Paths.get( "profiles", orgName, "connection.json");
+        Path networkConfigPath = Paths.get("profiles", orgName, "connection.json");
         Gateway.Builder builder = Gateway.createBuilder();
         builder.identity(wallet, userName).networkConfig(networkConfigPath).discovery(true);
 

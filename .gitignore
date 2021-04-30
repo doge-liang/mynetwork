@@ -2,3 +2,8 @@ target/
 .idea/
 *.iml
 .swp
+profiles/
+*.zip
+vue-elementui/
+wallet/
+META-INF/

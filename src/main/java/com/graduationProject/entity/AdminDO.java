@@ -4,17 +4,16 @@ import com.graduationProject.utils.CAUtils;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
-import org.hyperledger.fabric.gateway.Identities;
-import org.hyperledger.fabric.gateway.Identity;
-import org.hyperledger.fabric.gateway.Wallet;
-import org.hyperledger.fabric.gateway.Wallets;
+import org.hyperledger.fabric.gateway.*;
 import org.hyperledger.fabric.sdk.Enrollment;
 import org.hyperledger.fabric.sdk.security.CryptoSuite;
 import org.hyperledger.fabric.sdk.security.CryptoSuiteFactory;
 import org.hyperledger.fabric_ca.sdk.EnrollmentRequest;
 import org.hyperledger.fabric_ca.sdk.HFCAClient;
 
+import java.io.IOException;
 import java.nio.file.Paths;
+import java.security.PrivateKey;
 
 /**
  * @类名 : EnrollAdmin
@@ -24,7 +23,7 @@ import java.nio.file.Paths;
  * @版本 : 1.0
  */
 @Data
-public class Admin {
+public class AdminDO {
 
     static {
         System.setProperty("org.hyperledger.fabric.sdk.service_discovery.as_localhost", "true");
@@ -42,7 +41,8 @@ public class Admin {
     private String name;
     //    Admin 密码
     private String pwd;
-
+    //    钱包
+    private Wallet wallet;
     //    Admin 用户凭证
     @Setter(AccessLevel.NONE)
     private Enrollment adminKeys;
@@ -53,35 +53,55 @@ public class Admin {
     @Setter(AccessLevel.NONE)
     private String CA_CERT_PATH;
 
-    public void setOrgName(String orgName) {
+    public AdminDO(String name, String pwd, String orgName) throws IOException {
+        this.name = name;
+        this.pwd = pwd;
         this.orgName = orgName;
         CA_CERT_PATH = "profiles/" + orgName + "/tls/" + "ca." + orgName.toLowerCase() + ".mynetwork.com-cert.pem";
         orgMSP = orgName + "MSP";
+        wallet = Wallets.newFileSystemWallet(Paths.get("wallet", orgName));
+    }
+
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
     }
 
     public void setAdminKeys(Enrollment adminKeys) {
 
     }
 
-    private Boolean doEnroll() throws Exception {
+    public Boolean doEnroll() throws Exception {
         // 连接到 CA
         HFCAClient caClient = CAUtils.getCAClient(orgName, CA_CERT_PATH);
         CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
         caClient.setCryptoSuite(cryptoSuite);
-        Wallet wallet = Wallets.newFileSystemWallet(Paths.get("wallet", orgName));
         // 检查 Wallet 内是否有 admin
-        Identity adminExists = wallet.get(name);
-        if (adminExists != null) {
+        X509Identity adminIdentity = (X509Identity) wallet.get(name);
+        if (adminIdentity != null) {
             System.out.println("An identity for the admin user \"admin@" + orgName + "\" already exists in the " +
                     "wallet");
+            adminKeys = new Enrollment() {
+                @Override
+                public PrivateKey getKey() {
+                    return adminIdentity.getPrivateKey();
+                }
+
+                @Override
+                public String getCert() {
+                    return Identities.toPemString(adminIdentity.getCertificate());
+                }
+            };
             return true;
         }
-        //enroll admin
+        // 登录账号
         final EnrollmentRequest enrollmentRequestTLS = new EnrollmentRequest();
-        enrollmentRequestTLS.addHost("localhost");
+        enrollmentRequestTLS.addHost("52.82.52.96");
         enrollmentRequestTLS.setProfile("tls");
-        Enrollment enrollment = caClient.enroll(name, pwd, enrollmentRequestTLS);
-        Identity user = Identities.newX509Identity(orgMSP, enrollment);
+        adminKeys = caClient.enroll(name, pwd, enrollmentRequestTLS);
+        Identity user = Identities.newX509Identity(orgMSP, adminKeys);
+
+        System.out.println(user.getMspId());
+        System.out.println(this.adminKeys.getCert());
         wallet.put(name, user);
         System.out.println("Successfully enrolled user \"admin@" + orgName + "\" and imported into the wallet");
         return true;
@@ -89,11 +109,8 @@ public class Admin {
 
 
     public static void main(String[] args) throws Exception {
-        Admin admin = new Admin();
-        admin.setName("admin");
-        admin.setPwd("adminpw");
-        admin.setOrgName("Provider");
-        System.out.print(admin.doEnroll());
+        AdminDO adminDO = new AdminDO("admin", "adminpw", "Subscriber");
+        System.out.print(adminDO.doEnroll());
     }
 
 }

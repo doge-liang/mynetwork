@@ -29,7 +29,7 @@ public class RestMock {
      * 请求示例:
      * {
      * "id":1,
-     * "name":"张耀烽"
+     * "name":"梁倚朝"
      * }
      *
      * @return
@@ -80,7 +80,7 @@ public class RestMock {
      * <p>
      * 最终请求的URI如下：
      * <p>
-     * http://127.0.0.1:80/?name=张耀烽&sex=男
+     * http://127.0.0.1:80/?name=梁倚朝&sex=男
      *
      * @return
      */

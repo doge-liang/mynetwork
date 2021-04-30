@@ -14,11 +14,15 @@ import java.util.Date;
 @Data
 public class Trade {
 
-    private String ID;
+    //    股票代码
     private String StockID;
+    //    交易份额
     private Double Amount;
+    //    手续费
     private Double Commission;
+    //    交易时间
     private Date DateTime;
+    //    交易价格
     private Double Price;
 
 }

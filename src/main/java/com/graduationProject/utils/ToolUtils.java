@@ -16,6 +16,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
+
 /**
  * @类名 : ToolUtils
  * @说明 : 工具类
@@ -25,10 +26,11 @@ import java.util.Map.Entry;
  */
 public class ToolUtils {
 
+
     /**
      * 获取随机位数的字符串
      *
-     * @author 张耀烽
+     * @author 梁倚朝
      * @date 2019/7/24 14:09
      */
     public static String getRandomString(int length) {
@@ -69,7 +71,7 @@ public class ToolUtils {
     /**
      * 获取异常的具体信息
      *
-     * @author 张耀烽
+     * @author 梁倚朝
      * @date 2019/3/30 9:21
      * @version 2.0
      */
@@ -415,7 +417,7 @@ public class ToolUtils {
     /**
      * 判断是否是windows操作系统
      *
-     * @author 张耀烽
+     * @author 梁倚朝
      * @date 2019/5/24 22:34
      */
     public static Boolean isWinOs() {
@@ -430,7 +432,7 @@ public class ToolUtils {
     /**
      * 获取临时目录
      *
-     * @author 张耀烽
+     * @author 梁倚朝
      * @date 2019/5/24 22:35
      */
     public static String getTempPath() {
