@@ -53,8 +53,11 @@ type Strategy struct {
 
 // 策略的交易记录保持 Provider 私有，用户发起 subscribe 后，再由 管理员操作资产转移
 type Trades struct {
+	StrategyID string  `json:"strategyID"`
+	Trades     []Trade `json:"trades"` // 交易记录
+}
+type PlanningTrades struct {
 	StrategyID     string          `json:"strategyID"`
-	Trades         []Trade         `json:"trades"`         // 交易记录
 	PlanningTrades []PlanningTrade `json:"planningTrades"` // 计划交易
 }
 
@@ -73,32 +76,33 @@ type PrivateStrategy struct {
 	ID   string `json:"ID"`   // 策略 ID
 	Name string `json:"name"` // 策略名
 	// Provider     string  `json:"provider"`     // 发布者
-	MaxDrawdown  float64 `json:"maxDrawdown"`  // 最大回撤
-	AnnualReturn float64 `json:"annualReturn"` // 年化收益率
-	State        string  `json:"state"`        // 是否公开
-	Trades       string  `json:"trades"`       // 交易记录Hash
-	Positions    string  `json:"positions"`    // 持仓记录Hash
+	MaxDrawdown    float64 `json:"maxDrawdown"`    // 最大回撤
+	AnnualReturn   float64 `json:"annualReturn"`   // 年化收益率
+	State          string  `json:"state"`          // 是否公开
+	Trades         string  `json:"trades"`         // 交易记录Hash
+	Positions      string  `json:"positions"`      // 持仓记录Hash
+	PlanningTrades string  `json:"planningTrades"` // 计划交易Hash
 }
 
-type PublicStrategy struct {
-	ID   string `json:"ID"`   // 策略 ID
-	Name string `json:"name"` // 策略名
-	// Provider     string     `json:"provider"`     // 发布者
-	MaxDrawdown  float64    `json:"maxDrawdown"`  // 最大回撤
-	AnnualReturn float64    `json:"annualReturn"` // 年化收益率
-	State        string     `json:"state"`        // 是否公开
-	Trades       []Trade    `json:"trades"`       // 交易记录
-	Positions    []Position `json:"positions"`    // 持仓记录
-}
+// type PublicStrategy struct {
+// 	ID   string `json:"ID"`   // 策略 ID
+// 	Name string `json:"name"` // 策略名
+// 	// Provider     string     `json:"provider"`     // 发布者
+// 	MaxDrawdown  float64    `json:"maxDrawdown"`  // 最大回撤
+// 	AnnualReturn float64    `json:"annualReturn"` // 年化收益率
+// 	State        string     `json:"state"`        // 是否公开
+// 	Trades       []Trade    `json:"trades"`       // 交易记录
+// 	Positions    []Position `json:"positions"`    // 持仓记录
+// }
 
 const TRADES = "trades"
+const PLANNINGTRADES = "planningTrades"
 const POSITIONS = "positions"
 const STRATEGY = "strategy"
 const PRIVATE_COLLECTION = "ProviderMSPPrivateCollection"
 const PUBLIC_COLLECTION = "strategyPublicCollection"
 
 // 公共合约
-
 // 获取所有策略
 func (s *SmartContract) GetAllStrategies(ctx contractapi.TransactionContextInterface) ([]*Strategy, error) {
 	// range query with empty string for startKey and endKey does an
@@ -133,13 +137,32 @@ func (s *SmartContract) ReadStrategy(ctx contractapi.TransactionContextInterface
 	if err != nil {
 		return nil, err
 	}
-	if orgID == "SubscriberMSP" {
-		return s.sub_ReadStrategy(ctx, id)
+
+	key := GetStrategyKey(id)
+	strategyJSON, err := ctx.GetStub().GetState(key)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read from world state: %v", err)
 	}
-	if orgID == "ProviderMSP" {
-		return s.pro_ReadStrategy(ctx, id)
+	if strategyJSON == nil {
+		return nil, fmt.Errorf("the strategy %s does not exist", id)
 	}
 
+	var strategy Strategy
+	err = json.Unmarshal(strategyJSON, &strategy)
+	if err != nil {
+		return nil, err
+	}
+
+	if strategy.State == "private" {
+		if orgID == "SubscriberMSP" {
+			return s.sub_ReadStrategy(ctx, &strategy)
+		}
+		if orgID == "ProviderMSP" {
+			return s.pro_ReadStrategy(ctx, &strategy)
+		}
+	} else {
+		return &strategy, nil
+	}
 	return nil, fmt.Errorf("unknown MSPID: %s", orgID)
 }
 
@@ -153,6 +176,7 @@ func (s *SmartContract) StrategyExists(ctx contractapi.TransactionContextInterfa
 	return strategyJSON != nil, nil
 }
 
+// 读哈希
 func (s *SmartContract) ReadPrivateStrategy(ctx contractapi.TransactionContextInterface, id string) (*PrivateStrategy, error) {
 	key := GetStrategyKey(id)
 	strategyJSON, err := ctx.GetStub().GetState(key)
@@ -172,14 +196,19 @@ func (s *SmartContract) ReadPrivateStrategy(ctx contractapi.TransactionContextIn
 	if err != nil {
 		return nil, err
 	}
+	PlanningTradesHash, err := s.GetPlanningTradesHash(ctx, PRIVATE_COLLECTION, id)
+	if err != nil {
+		return nil, err
+	}
 	privateStrategy := PrivateStrategy{
-		ID:           strategy.ID,
-		Name:         strategy.Name,
-		MaxDrawdown:  strategy.MaxDrawdown,
-		AnnualReturn: strategy.AnnualReturn,
-		State:        strategy.State,
-		Trades:       TradesHash,
-		Positions:    PositionsHash,
+		ID:             strategy.ID,
+		Name:           strategy.Name,
+		MaxDrawdown:    strategy.MaxDrawdown,
+		AnnualReturn:   strategy.AnnualReturn,
+		State:          strategy.State,
+		Trades:         TradesHash,
+		Positions:      PositionsHash,
+		PlanningTrades: PlanningTradesHash,
 	}
 	return &privateStrategy, nil
 }
@@ -218,21 +247,7 @@ func (s *SmartContract) ReadPositions(ctx contractapi.TransactionContextInterfac
 // 根据 Strategy 的 ID 读取某条策略
 // 如果是公有的直接 GetState(key) 即可
 // 如果是私有的则需要使用 PrivateStrategy 结构来返回数据，把哈希值填私有的数据部分里面
-func (s *SmartContract) sub_ReadStrategy(ctx contractapi.TransactionContextInterface, id string) (*Strategy, error) {
-	key := GetStrategyKey(id)
-	strategyJSON, err := ctx.GetStub().GetState(key)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read from world state: %v", err)
-	}
-	if strategyJSON == nil {
-		return nil, fmt.Errorf("the strategy %s does not exist", id)
-	}
-
-	var strategy Strategy
-	err = json.Unmarshal(strategyJSON, &strategy)
-	if err != nil {
-		return nil, err
-	}
+func (s *SmartContract) sub_ReadStrategy(ctx contractapi.TransactionContextInterface, strategy *Strategy) (*Strategy, error) {
 
 	clientID, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
@@ -240,70 +255,80 @@ func (s *SmartContract) sub_ReadStrategy(ctx contractapi.TransactionContextInter
 	}
 
 	// 私有策略
-	if strategy.State == "private" {
-		// 未订阅，无法访问该链码，应通过 ReadPrivateStrategy() 查询
-		if !in(clientID, strategy.Subscribers) {
-			return nil, fmt.Errorf("Your have not subscribe this strategy yet.")
+	// 未订阅，无法访问该链码，应通过 ReadPrivateStrategy() 查询
+	if !in(clientID, strategy.Subscribers) {
+		return nil, fmt.Errorf("Your have not subscribe this strategy yet.")
+	}
+	// 已订阅，检查发布者公布的数据和私有数据的 hash 是否一致，一致的才公布
+	pubilcTradesHash, _ := s.GetTradesHash(ctx, PUBLIC_COLLECTION, strategy.ID)
+	pubilcPlanningTradesHash, _ := s.GetPlanningTradesHash(ctx, PUBLIC_COLLECTION, strategy.ID)
+	publicPositionsHash, _ := s.GetPositionsHash(ctx, PUBLIC_COLLECTION, strategy.ID)
+	privateTradesHash, _ := s.GetTradesHash(ctx, PRIVATE_COLLECTION, strategy.ID)
+	privatePlanningTradesHash, _ := s.GetPlanningTradesHash(ctx, PRIVATE_COLLECTION, strategy.ID)
+	privatePositionsHash, _ := s.GetPositionsHash(ctx, PRIVATE_COLLECTION, strategy.ID)
+	if pubilcTradesHash == privateTradesHash &&
+		publicPositionsHash == privatePositionsHash &&
+		pubilcPlanningTradesHash == privatePlanningTradesHash {
+		tradesJSON, err := ctx.GetStub().GetPrivateData(PUBLIC_COLLECTION, GetTradesKey(strategy.ID))
+		if err != nil {
+			return nil, err
 		}
-		// TODO 已订阅，检查发布者公布的数据和私有数据的 hash 是否一致，一致的才公布
-		pubilcTradesHash, _ := s.GetTradesHash(ctx, PUBLIC_COLLECTION, id)
-		publicPositionsHash, _ := s.GetTradesHash(ctx, PUBLIC_COLLECTION, id)
-		privateTradesHash, _ := s.GetPositionsHash(ctx, PRIVATE_COLLECTION, id)
-		privatePositionsHash, _ := s.GetPositionsHash(ctx, PUBLIC_COLLECTION, id)
-		if pubilcTradesHash == privateTradesHash && publicPositionsHash == privatePositionsHash {
-			tradesJSON, err := ctx.GetStub().GetPrivateData(PUBLIC_COLLECTION, GetTradesKey(id))
+		planningTradesJSON, err := ctx.GetStub().GetPrivateData(PUBLIC_COLLECTION, GetTradesKey(strategy.ID))
+		if err != nil {
+			return nil, err
+		}
+		positionsJSON, err := ctx.GetStub().GetPrivateData(PUBLIC_COLLECTION, GetPositionsKey(strategy.ID))
+		if err != nil {
+			return nil, err
+		}
+		if tradesJSON != nil {
+			var trades Trades
+			err = json.Unmarshal(tradesJSON, &trades)
+			strategy.Trades = trades.Trades
 			if err != nil {
 				return nil, err
 			}
-			positionsJSON, err := ctx.GetStub().GetPrivateData(PUBLIC_COLLECTION, GetPositionsKey(id))
+		}
+		if planningTradesJSON != nil {
+			var trades Trades
+			err = json.Unmarshal(tradesJSON, &trades)
+			strategy.Trades = trades.Trades
 			if err != nil {
 				return nil, err
 			}
-			if tradesJSON != nil {
-				var trades Trades
-				err = json.Unmarshal(tradesJSON, &trades)
-				strategy.Trades = trades.Trades
-			}
-			if positionsJSON != nil {
-				var positions Positions
-				err = json.Unmarshal(positionsJSON, &positions)
-				strategy.Positions = positions.Positions
-
-			}
-
-			return &strategy, err
 		}
+		if positionsJSON != nil {
+			var positions Positions
+			err = json.Unmarshal(positionsJSON, &positions)
+			strategy.Positions = positions.Positions
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		return strategy, nil
 	}
 
-	return &strategy, nil
+	return nil, fmt.Errorf("Strategy verify fail")
 }
 
-func (s *SmartContract) pro_ReadStrategy(ctx contractapi.TransactionContextInterface, id string) (*Strategy, error) {
-	strategyJSON, err := ctx.GetStub().GetState(GetStrategyKey(id))
-	if err != nil {
-		return nil, fmt.Errorf("failed to read from world state: %v", err)
-	}
-	if strategyJSON == nil {
-		return nil, fmt.Errorf("the strategy %s does not exist", id)
-	}
-
-	var strategy Strategy
-	err = json.Unmarshal(strategyJSON, &strategy)
+func (s *SmartContract) pro_ReadStrategy(ctx contractapi.TransactionContextInterface, strategy *Strategy) (*Strategy, error) {
+	clientID, err := ctx.GetClientIdentity().GetID()
 	if err != nil {
 		return nil, err
 	}
-	// 对私有策略的特殊处理
-	if strategy.State == "private" {
-		key := MakeKey(STRATEGY, TRADES, id)
-		trades, _ := s.ReadTrades(ctx, key)
+	// 是否是该策略的发布者
+	if strategy.Provider == clientID {
+		tradesKey := GetTradesKey(strategy.ID)
+		trades, _ := s.ReadTrades(ctx, tradesKey)
 		strategy.Trades = trades
-		key = MakeKey(STRATEGY, POSITIONS, id)
-		positions, _ := s.ReadPositions(ctx, key)
+		positionsKey := GetPositionsKey(strategy.ID)
+		positions, _ := s.ReadPositions(ctx, positionsKey)
 		strategy.Positions = positions
-		return &strategy, nil
+		return strategy, nil
 	}
 
-	return &strategy, nil
+	return nil, fmt.Errorf("You are not permitted to access.")
 }
 
 func (s *SmartContract) GetTradesHash(ctx contractapi.TransactionContextInterface, collection string, id string) (string, error) {
@@ -316,12 +341,21 @@ func (s *SmartContract) GetTradesHash(ctx contractapi.TransactionContextInterfac
 }
 
 func (s *SmartContract) GetPositionsHash(ctx contractapi.TransactionContextInterface, collection string, id string) (string, error) {
-	positionsKey := GetTradesKey(id)
+	positionsKey := GetPositionsKey(id)
 	positionsHash, err := ctx.GetStub().GetPrivateDataHash(collection, positionsKey)
 	if err != nil {
 		return "", err
 	}
 	return fmt.Sprintf("%x", positionsHash), nil
+}
+
+func (s *SmartContract) GetPlanningTradesHash(ctx contractapi.TransactionContextInterface, collection string, id string) (string, error) {
+	planningTradesKey := GetPlanningTradesKey(id)
+	planningTradesHash, err := ctx.GetStub().GetPrivateDataHash(collection, planningTradesKey)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%x", planningTradesHash), nil
 }
 
 func (s *SmartContract) IsSubscirbed(ctx contractapi.TransactionContextInterface, id string) (bool, error) {

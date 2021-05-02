@@ -16,8 +16,11 @@ func (s *SmartContract) SaveStrategy(ctx contractapi.TransactionContextInterface
 			Positions:  strategy.Positions,
 		}
 		trades := Trades{
-			StrategyID:     strategy.ID,
-			Trades:         strategy.Trades,
+			StrategyID: strategy.ID,
+			Trades:     strategy.Trades,
+		}
+		planningTrades := PlanningTrades{
+			StrategyID:     positions.StrategyID,
 			PlanningTrades: strategy.PlanningTrades,
 		}
 
@@ -29,19 +32,26 @@ func (s *SmartContract) SaveStrategy(ctx contractapi.TransactionContextInterface
 		if err != nil {
 			return err
 		}
+		planningTradesJSON, err := json.Marshal(planningTrades)
+		if err != nil {
+			return err
+		}
+
 		positionsKey := GetPositionsKey(strategy.ID)
 		err = ctx.GetStub().PutPrivateData(PRIVATE_COLLECTION, positionsKey, positionsJSON)
+		err = ctx.GetStub().PutPrivateData(PUBLIC_COLLECTION, positionsKey, positionsJSON)
 		if err != nil {
 			return err
 		}
-		err = ctx.GetStub().PutPrivateData(PUBLIC_COLLECTION, positionsKey, positionsJSON)
-
 		tradesKey := GetTradesKey(strategy.ID)
 		err = ctx.GetStub().PutPrivateData(PRIVATE_COLLECTION, tradesKey, tradesJSON)
+		err = ctx.GetStub().PutPrivateData(PUBLIC_COLLECTION, tradesKey, tradesJSON)
 		if err != nil {
 			return err
 		}
-		err = ctx.GetStub().PutPrivateData(PUBLIC_COLLECTION, tradesKey, tradesJSON)
+		planningTradesKey := GetPlanningTradesKey(strategy.ID)
+		err = ctx.GetStub().PutPrivateData(PRIVATE_COLLECTION, planningTradesKey, planningTradesJSON)
+		err = ctx.GetStub().PutPrivateData(PUBLIC_COLLECTION, planningTradesKey, planningTradesJSON)
 		if err != nil {
 			return err
 		}
@@ -63,12 +73,12 @@ func (s *SmartContract) SaveStrategy(ctx contractapi.TransactionContextInterface
 		return err
 	}
 	strategy.Provider = clientID
+	key := GetStrategyKey(strategy.ID)
+	strategy.ID = key
 	strategyJSON, err := json.Marshal(strategy)
 	if err != nil {
 		return err
 	}
-	key := GetStrategyKey(strategy.ID)
-	strategy.ID = key
 	err = ctx.GetStub().PutState(key, strategyJSON)
 	// err = ctx.GetStub().PutState(STRATEGY_COUNT, []byte(strconv.Itoa(strategyCount+1)))
 

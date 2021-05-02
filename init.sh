@@ -35,15 +35,19 @@ echo "3.Create orderer.genesis.block"
 setupCommonENV
 # # 因为现在要配置系统通道了所以 FABRIC_CFG_PATH 要指向 configtx.yaml 所在的路径
 export FABRIC_CFG_PATH=${PWD}/configtx
+set -x
 configtxgen -profile ThreeOrgsOrdererGenesis -channelID system-channel -outputBlock ./system-genesis-block/genesis.block
 configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/$CHANNEL_NAME.tx -channelID $CHANNEL_NAME
 configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/ProviderMSPanchors.tx -channelID $CHANNEL_NAME -asOrg ProviderMSP
 configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/SubscriberMSPanchors.tx -channelID $CHANNEL_NAME -asOrg SubscriberMSP
+set +x
 # configtxgen -profile ThreeOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/RegulatorMSPanchors.tx -channelID $CHANNEL_NAME -asOrg RegulatorMSP
 echo
 
 echo "4.Startup Peers and Orderer"
+set -x
 COMPOSE_FILE_BASE=docker/docker-compose-ABC.yaml COMPOSE_FILE_COUCH=docker/docker-compose-couch.yaml IMAGE_TAG=${FABRIC_VERSION} DB_IMAGE_TAG=${DB_VERSION} docker-compose -f ${COMPOSE_FILE_BASE} -f ${COMPOSE_FILE_COUCH} up -d
+set +x
 echo
 
 sleep 5

@@ -32,6 +32,11 @@ func GetPositionsKey(strategyKey string) string {
 	return MakeKey(STRATEGY, POSITIONS, keyParts[len(keyParts)-1])
 }
 
+func GetPlanningTradesKey(strategyKey string) string {
+	keyParts := SplitKey(strategyKey)
+	return MakeKey(STRATEGY, PLANNINGTRADES, keyParts[len(keyParts)-1])
+}
+
 func GetStrategyKey(strategyKey string) string {
 	keyParts := SplitKey(strategyKey)
 	return MakeKey(STRATEGY, keyParts[len(keyParts)-1])

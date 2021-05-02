@@ -8,7 +8,7 @@ import (
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
-// 取消订阅
+// 订阅
 func (s *SmartContract) Subscribe(ctx contractapi.TransactionContextInterface, id string) error {
 	key := GetStrategyKey(id)
 	strategyJSON, err := ctx.GetStub().GetState(key)
