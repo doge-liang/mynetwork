@@ -53,7 +53,7 @@ def responseTest():
 
 @app.route('/springboot')
 def response_hello():
-    sharpe_ratio, max_drawdown, annual_return, transactions = RSI.run_strategy()
+    sharpe_ratio, max_drawdown, annual_return, transactions, positions, planning_trades = RSI.run_strategy()
     transactions.reset_index(inplace=True)
     transactions_j = json.loads(transactions.to_json(orient="index", force_ascii=False))
     response = jsonify({

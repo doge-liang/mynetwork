@@ -6,6 +6,6 @@
 Pipfile
 Pipfile.lock
 __pycache__
-/data_source/local/
+app/data_source/local/
 /.ipynb_checkpoints/
 *.ipynb

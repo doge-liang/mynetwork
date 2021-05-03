@@ -3,7 +3,7 @@ class APSchedulerJobConfig(object):
     JOBS = [
         {
             'id': 'No1',  # 任务唯一ID
-            'func': 'app.main.jobs.test:test_on_time',
+            'func': 'app.main.jobs.test:update_local_data',
             # 执行任务的function名称，app.test 就是 app下面的`test.py` 文件，`shishi` 是方法名称。文件模块和方法之间用冒号":"，而不是用英文的"."
             'args': '',  # 如果function需要参数，就在这里添加
             'trigger': {

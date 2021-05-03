@@ -1,8 +1,6 @@
 import tushare as ts
 from datetime import datetime
 from datetime import timedelta
-import time
-import talib as tb
 import pandas as pd
 from tqdm import tqdm
 from pathlib import Path
@@ -41,78 +39,108 @@ class Stock():
         return list(codes)
 
     def updateLocal(self):
+        self.before = timedelta(days=365)
         for code in tqdm(self.getHS300()):
-            stock_data = ts.pro_bar(ts_code=code,
-                                    api=self.pro,
-                                    adj='qfq',
-                                    start_date=(self.now - self.before).strftime(self.TIME_STR),
-                                    end_date=self.now.strftime(self.TIME_STR))
-            self.stock_datas_cache[code] = stock_data
-            time.sleep(1)
+            stock_data = self.getDailyKVOnline(code)
             self.save_csv(stock_data, code)
+        # 保存指数日线数据
+        bench_mark_data = self.pro.index_daily(ts_code='399300.SZ',
+                                               start_date=self.date2str(self.now - self.before),
+                                               end_date=self.date2str(self.now))
+        bench_mark_data.index = pd.to_datetime(bench_mark_data['trade_date'], format="%Y%m%d")
+        bench_mark_data = bench_mark_data[::-1]
+        bench_mark_data['pct_chg_open'] = bench_mark_data['open'].pct_change(-1).map(lambda x: x * 100)
+        bench_mark_data['pct_chg_close'] = bench_mark_data['close'].pct_change(-1).map(lambda x: x * 100)
+        bench_mark_data = bench_mark_data[
+            ['open', 'high', 'low', 'close', 'pre_close', 'pct_chg', 'vol', 'pct_chg_open', 'pct_chg_close']]
+        self.save_csv(bench_mark_data, '399300.SZ')
 
-    def getDailyKV(self, code, from_date, to_date):
+    def getDailyKVLocal(self, code):
         # 如果缓存了就不用下载
         # print(self.local_data_list)
         # print(self.stock_datas_cache.keys())
-        if code in self.stock_datas_cache.keys():
-            # print("找到缓存")
-            return self.stock_datas_cache[code]
-        elif code in self.local_data_list:
+        if code in self.local_data_list:
             # print("找到本地文件")
             stock_data = pd.read_csv(self.data_local_path / (code + '.csv'),
                                      # parse_dates=[0],
                                      parse_dates=True,
-                                     index_col=0,
-                                     )
+                                     index_col=0, )
+
             # stock_data.index.name = 'datetime'
             # stock_data.fillna(0)
             # self.save_csv(stock_data, code)
         else:
-            raise Exception("文件未找到")
+            print("文件未找到")
+            raise Exception
+        # print(stock_data)
+        # stock_data.index = pd.to_datetime(stock_data['trade_date'], format="%Y%m%d")
+        # stock_data.index.name = 'datetime'
+        # stock_data = stock_data[['open', 'high', 'low', 'close', 'vol']]
+        # stock_data['openinterest'] = 0
+        # stock_data.fillna(0)
 
-        stock_data.index = pd.to_datetime(stock_data['trade_date'])
-        stock_data.index.name = 'datetime'
-        stock_data = stock_data[['open', 'high', 'low', 'close', 'vol']]
-        stock_data['openinterest'] = 0
-        stock_data.fillna(0)
-        stock_data = stock_data.iloc[from_date:to_date]
-        self.stock_datas_cache['code'] = stock_data
-        print(stock_data)
+        from_date = self.date2str(self.now - self.before)
+        to_date = self.date2str(self.now)
+        # print(from_date, ":", to_date)
+        stock_data = stock_data[from_date:to_date]
+        # print(stock_data)
 
         return stock_data
 
-    def getStockPoolDailyKV(self, codes, from_date, to_date):
-        stock_pool = {code: self.getDailyKV(code, from_date, to_date) for code in codes}
+    def getDailyKVOnline(self, code):
+        stock_data = ts.pro_bar(ts_code=code,
+                                api=self.pro,
+                                adj='qfq',
+                                start_date=(self.now - self.before).strftime(self.TIME_STR),
+                                end_date=self.now.strftime(self.TIME_STR))
+        stock_data.index = pd.to_datetime(stock_data['trade_date'], format="%Y%m%d")
+        stock_data.index.name = 'datetime'
+        stock_data = stock_data[['open', 'high', 'low', 'close', 'vol']]
+        stock_data['openinterest'] = 0
+        stock_data.fillna(1)
+        stock_data = stock_data.iloc[::-1]
+        self.save_csv(stock_data, code)
+        return stock_data
+
+    def getStockPoolDailyKV(self, codes):
+        stock_pool = {code: self.getDailyKVLocal(code) for code in codes}
 
         return stock_pool
 
-    def selectStockPoolByRSI(self, stock_codes=None, pool_size=None):
-        # 获取备选股票集的数据，若没有就用沪深300
-        stock_codes = stock_codes or self.getHS300()
-        # 如果传值为空则股票池大小为10
-        pool_size = pool_size or 10
-        # 如果股票池大小比备选股票集大小大，那么用备选股票集的大小
-        pool_size = len(stock_codes) if pool_size > len(stock_codes) else pool_size
+    # def selectStockPoolByRSI(self, stock_codes=None, pool_size=None):
+    #     # 获取备选股票集的数据，若没有就用沪深300
+    #     stock_codes = stock_codes or self.getHS300()
+    #     # 如果传值为空则股票池大小为10
+    #     pool_size = pool_size or 10
+    #     # 如果股票池大小比备选股票集大小大，那么用备选股票集的大小
+    #     pool_size = len(stock_codes) if pool_size > len(stock_codes) else pool_size
+    #
+    #     # 计算每支备选股的RSI
+    #     stocks_RSI = {}
+    #     for code in tqdm(stock_codes):
+    #         try:
+    #             stock_data = self.getDailyKVLocal(code)['close']
+    #         except Exception:
+    #             stock_data = self.getDailyKVOnline(code)['close']
+    #         stocks_RSI[code] = list(tb.RSI(stock_data, timeperiod=6) - tb.RSI(stock_data, timeperiod=12))[-1]
+    #
+    #     stock_pool = [selected[0] for selected in
+    #                   sorted(stocks_RSI.items(), key=lambda x: x[1], reverse=True)[:pool_size]]
+    #     print(stock_pool)
+    #     return stock_pool
 
-        # 计算每支备选股的RSI
-        stocks_RSI = {}
-        for code in tqdm(stock_codes):
-            stocks_RSI[code] = list(
-                tb.RSI(self.getDailyKV(code,
-                                       self.date2str(self.now - self.before),
-                                       self.now.strftime(self.TIME_STR)
-                                       )['close'], timeperiod=6)
-                -
-                tb.RSI(self.getDailyKV(code,
-                                       self.date2str(self.now - self.before),
-                                       self.now.strftime(self.TIME_STR)
-                                       )['close'], timeperiod=12)
-            )[-1]
+    def getBenchMark(self):
+        if "bench_mark_hs300" in self.local_data_list:
+            benchmark_data = pd.read_csv(self.data_local_path / 'bench_mark_hs300.csv',
+                                         # parse_dates=[0],
+                                         parse_dates=True,
+                                         index_col=0, )
+        else:
+            print("文件未找到")
+            raise Exception
+        return benchmark_data[['open', 'high', 'low', 'close', 'vol']]
 
-        stock_pool = [selected[0] for selected in
-                      sorted(stocks_RSI.items(), key=lambda x: x[1], reverse=True)[:pool_size]]
-        return stock_pool
+        # return bench_mark_data
 
     def getStockName(self, code):
         return self.pro.stock_basic(code)['name']
@@ -126,3 +154,17 @@ class Stock():
 
     def str2date(self, date_str: str):
         return datetime.strptime(date_str, self.TIME_STR)
+
+# if __name__ == '__main__':
+#     # 显示所有列
+#     pd.set_option('display.max_columns', None)
+#     # 显示所有行
+#     # pd.set_option('display.max_rows', None)
+#     # 设置value的显示长度为100，默认为50
+#     # pd.set_option('max_colwidth', 100)
+#     pd.set_option('display.width', 5000)
+
+#     data_api = Stock(datetime.now(), 365)
+#     bench_mark_data = data_api.getBenchMark()
+
+#     print(bench_mark_data)
