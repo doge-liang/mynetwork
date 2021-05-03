@@ -5,10 +5,11 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-/python-api/lib/
+app/python-api/lib/
 go.mod
 go.sum
 vendor/
+tmp/
 
 ### IntelliJ IDEA ###
 .idea
@@ -16,3 +17,6 @@ vendor/
 *.iml
 *.ipr
 
+### python-api ###
+app/profiles.zip
+app/python-api/

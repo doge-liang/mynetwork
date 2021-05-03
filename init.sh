@@ -66,9 +66,9 @@ if [ ! -d "${PWD}/app/profiles/Subscriber/tls" ]; then
     mkdir -p app/profiles/Subscriber/tls
 fi
 
-if [ ! -d "${PWD}/app/profiles/Regulator/tls" ]; then 
-    mkdir -p app/profiles/Regulator/tls
-fi
+# if [ ! -d "${PWD}/app/profiles/Regulator/tls" ]; then 
+#     mkdir -p app/profiles/Regulator/tls
+# fi
 
 cp ./organizations/peerOrganizations/provider.mynetwork.com/connection-provider.json app/profiles/Provider/connection.json
 cp ./organizations/peerOrganizations/subscriber.mynetwork.com/connection-subscriber.json app/profiles/Subscriber/connection.json

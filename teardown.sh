@@ -15,3 +15,6 @@ sudo rm -rf organizations/fabric-ca/providerOrg
 sudo rm -rf organizations/fabric-ca/subscriberOrg
 sudo rm -rf organizations/fabric-ca/regulatorOrg
 sudo rm -rf organizations/fabric-ca/ordererOrg
+
+rm -rf app/profiles
+rm app/profiles.zip
