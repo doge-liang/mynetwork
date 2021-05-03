@@ -4,6 +4,7 @@ import com.graduationProject.mynetwork.UserContext;
 import com.graduationProject.utils.CAUtils;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 import lombok.Setter;
 import org.hyperledger.fabric.gateway.*;
 import org.hyperledger.fabric.sdk.Enrollment;
@@ -14,7 +15,7 @@ import org.hyperledger.fabric_ca.sdk.RegistrationRequest;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.PrivateKey;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @类名 : User
@@ -33,6 +34,7 @@ public class UserDO {
     //    用户名
     private String userName;
     //    密码
+    @Getter(AccessLevel.NONE)
     private String userSecret;
     //    用户凭证
     @Setter(AccessLevel.NONE)
@@ -96,35 +98,67 @@ public class UserDO {
         return true;
     }
 
-    public String doQuery(String functionName, String key) throws IOException, ContractException {
-        Identity identity = wallet.get(userName);
-        // 如果未登录
-        if (identity == null) {
-            System.out.println("The identity \"" + userName + "@" + orgName + "\" doesn't exists in the wallet");
-            return "";
-        }
-        //加载连接文件
+    public String doQuery(String functionName, String key) {
         Path networkConfigPath = Paths.get("profiles", orgName, "connection.json");
         Gateway.Builder builder = Gateway.createBuilder();
-        builder.identity(wallet, userName).networkConfig(networkConfigPath).discovery(true);
+        try {
 
-        // 建立连接
-        try (Gateway gateway = builder.connect()) {
+            Identity identity = wallet.get(userName);
+            // 如果未登录
+            if (identity == null) {
+                System.out.println("The identity \"" + userName + "@" + orgName + "\" doesn't exists in the wallet");
+                return "";
+            }
+            //加载连接文件
+            builder.identity(wallet, userName).networkConfig(networkConfigPath).discovery(true);
 
-            // 获取合约和网络
-            Network network = gateway.getNetwork("mychannel");
-            Contract contract = network.getContract("strategy");
 
-            byte[] result = contract.evaluateTransaction(functionName, key);
-            System.out.println(new String(result));
-            return new String(result);
+            // 建立连接
+            try (Gateway gateway = builder.connect()) {
+
+                // 获取合约和网络
+                Network network = gateway.getNetwork("mychannel");
+                Contract contract = network.getContract("strategy");
+
+
+                byte[] result = contract.evaluateTransaction(functionName, key);
+                System.out.println(new String(result));
+                return new String(result);
+            }
+        } catch (IOException | ContractException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public String doInvoke(String functionName, String key) {
+
+        Path networkConfigPath = Paths.get("profiles", orgName, "connection.json");
+        Gateway.Builder builder = Gateway.createBuilder();
+        try {
+            if (wallet.get(userName) == null) {
+                System.out.println("The identity \"" + userName + "@" + orgName + "\" doesn't exists in the wallet");
+                return "";
+            }
+            builder.identity(wallet, userName).networkConfig(networkConfigPath).discovery(true);
+
+            try (Gateway gateway = builder.connect()) {
+                Network network = gateway.getNetwork("mychannel");
+                Contract contract = network.getContract("strategy");
+
+                byte[] result = contract.submitTransaction(functionName, key);
+                return new String(result);
+            }
+        } catch (IOException | ContractException | TimeoutException | InterruptedException e) {
+            e.printStackTrace();
+            return "";
         }
     }
 
     public static void main(String[] args) throws Exception {
         UserDO user = new UserDO("user1", "user1pw", "Subscriber");
         user.doEnroll();
-        user.doQuery("GetAllStrategies", "");
+        System.out.println(user.doQuery("GetAllStrategies", ""));
     }
 
 }

@@ -112,8 +112,18 @@
             <artifactId>fabric-gateway-java</artifactId>
             <version>${fabric-gateway-sdk.version}</version>
         </dependency>
-
-<!--        fabric-chaincode-sdk-->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20210307</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hyperledger.fabric-chaincode-java</groupId>
+            <artifactId>fabric-chaincode-shim</artifactId>
+            <version>${fabric-chaincode-sdk.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <!--        fabric-chaincode-sdk-->
 <!--        <dependency>-->
 <!--            <groupId>org.hyperledger.fabric-chaincode-java</groupId>-->
 <!--            <artifactId>fabric-chaincode-shim</artifactId>-->
