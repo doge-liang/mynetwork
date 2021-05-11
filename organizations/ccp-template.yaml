@@ -1,25 +1,25 @@
 ---
-name: test-network-${ORG_L}
+name: mynetwork-${ORG_L}
 version: 1.0.0
 client:
   organization: ${ORG_U}
   connection:
     timeout:
       peer:
-        endorser: '300'
+        endorser: "300"
 organizations:
   ${ORG_U}:
     mspid: ${ORG_U}MSP
     peers:
-    - peer0.${ORG_L}.mynetwork.com
+      - peer0.${ORG_L}.mynetwork.com
     certificateAuthorities:
-    - ca.${ORG_L}.mynetwork.com
+      - ca.${ORG_L}.mynetwork.com
 peers:
   peer0.${ORG_L}.mynetwork.com:
     url: grpcs://52.82.52.96:${P0PORT}
     tlsCACerts:
       pem: |
-          ${PEERPEM}
+        ${PEERPEM}
     grpcOptions:
       ssl-target-name-override: peer0.${ORG_L}.mynetwork.com
       hostnameOverride: peer0.${ORG_L}.mynetwork.com
@@ -28,7 +28,7 @@ certificateAuthorities:
     url: https://52.82.52.96:${CAPORT}
     caName: ca-${ORG_U}
     tlsCACerts:
-      pem: 
+      pem:
         - |
           ${CAPEM}
     httpOptions:

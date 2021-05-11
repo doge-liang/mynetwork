@@ -2,13 +2,13 @@ package main
 
 import (
 	"log"
-	"mynetwork/chaincode/strategy/chaincode"
+	"mynetwork/chaincode/strategy/contract"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
 func main() {
-	strategyChaincode, err := contractapi.NewChaincode(&chaincode.SmartContract{})
+	strategyChaincode, err := contractapi.NewChaincode(&contract.SmartContract{})
 	if err != nil {
 		log.Panicf("Error creating strategy-subscribe chaincode: %v", err)
 	}
