@@ -1,5 +1,5 @@
 [{
-        "name": "strategyPublicCollection",
+        "name": "PublicCollection",
         "policy": "OR('ProviderMSP.member', 'SubscriberMSP.member')",
         "requiredPeerCount": 1,
         "maxPeerCount": 1,

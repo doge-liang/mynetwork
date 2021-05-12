@@ -5,9 +5,9 @@ setupProviderPeerENV
 # 链码名
 export CC_NAME=strategy
 # 链码版本
-export CC_VERSION=v1.0
+export CC_VERSION=v$1.0
 # 链码序列号
-export CC_SEQ=1
+export CC_SEQ=$1
 # 链码策略
 # export CC_POLICY="OR('ProviderMSP.peer', 'SubscriberMSP.peer', 'RegulatorMSP.peer')"
 export CC_POLICY="OR('ProviderMSP.peer', 'SubscriberMSP.peer')"
