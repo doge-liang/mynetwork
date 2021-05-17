@@ -1,5 +1,6 @@
 package com.graduationProject.utils;
 
+import com.graduationProject.dto.AnalyseReturn;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -12,11 +13,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @类名 : RestMock
+ * @ClassName : RestMock
  * @说明 :
  * @创建日期 : 2021/4/9
- * @作者 : Niaowuuu
- * @版本 : 1.0
+ * @author : Niaowuuu
+ * @since : 1.0
  */
 @Component
 public class RestMock {
@@ -118,11 +119,11 @@ public class RestMock {
         return apiResponse.getBody();
     }
 
-    public Object helloFlask() {
+    public AnalyseReturn helloFlask(String name) {
         Map<String, String> uriMap = new HashMap<>(6);
-        ResponseEntity<Object> responseEntity = restTemplate.getForEntity(
-                generateRequestParameters("http", "127.0.0.1:5000/springboot", uriMap),
-                Object.class
+        ResponseEntity<AnalyseReturn> responseEntity = restTemplate.getForEntity(
+                generateRequestParameters("http", "localhost:10086/analysis/" + name, uriMap),
+                AnalyseReturn.class
         );
         return responseEntity.getBody();
     }

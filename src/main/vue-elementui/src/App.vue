@@ -1,19 +1,18 @@
 <template>
   <div id="app">
     <el-container ref="homePage">
-      <el-header>
+      <el-header id="banner">
         <el-space>
-          <div class="button">
-            <i class="el-icon-s-home"></i>
+          <div id="home-btn" @click="toHome">
+            <i class="el-icon-s-home"> </i>
           </div>
         </el-space>
-        <el-button type="primary" @click="check">登录/注册</el-button>
+        <el-button v-if="isLogin" type="primary" @click="mySubscriptions">
+          订阅列表
+        </el-button>
+        <el-button v-else type="primary" @click="toLogin">登录/注册</el-button>
       </el-header>
       <el-main>
-        <login-diaglog
-          :dialogFormVisible="showLogin"
-          @closeDialog="this.showLogin = false"
-        ></login-diaglog>
         <router-view></router-view>
       </el-main>
     </el-container>
@@ -21,17 +20,17 @@
 </template>
 
 <script>
-import LoginDialog from "./components/Login.vue";
+// import LoginDialog from "./components/deprecated-Login.vue";
 export default {
   name: "App",
   components: {
-    "login-diaglog": LoginDialog,
+    // "login-diaglog": LoginDialog,
   },
   data() {
     return {
       clientHeight: "",
-      loginState: false,
-      showLogin: false,
+      isLogin: sessionStorage.getItem("isLogin"),
+      // showLogin: false,
       form: {
         name: "",
         password: "",
@@ -46,7 +45,8 @@ export default {
     window.onresize = function temp() {
       this.clientHeight = `${document.documentElement.clientHeight}`;
     };
-    document.title = "区块链量化投顾平台";
+    document.title = "区块链智能投顾平台";
+    // this.isLogin = sessionStorage.getItem("isLogin");
   },
   watch: {
     // 如果 `clientHeight` 发生改变，这个函数就会运行
@@ -61,8 +61,22 @@ export default {
       // console.log(this.$refs.homePage.$el.style.height);
       this.$refs.homePage.$el.style.height = clientHeight - 20 + "px";
     },
-    check() {
-        this.showLogin = true;
+    // check() {
+    //   this.showLogin = true;
+    // },
+
+    mySubscriptions() {},
+
+    toLogin() {
+      this.$router.push({
+        path: "/login",
+      });
+    },
+    toHome() {
+      console.log("我点了！！！！！！！！！！！！！！！！");
+      this.$router.push({
+        path: "/home",
+      });
     },
   },
 };
@@ -77,6 +91,13 @@ export default {
 }
 .el-header,
 .el-footer {
+  /* background-color: #409eff; */
+  line-height: 60px;
+  display: flex;
+  font-size: x-large;
+  justify-content: space-between;
+}
+#banner.el-header {
   background-color: #409eff;
   line-height: 60px;
   display: flex;
@@ -93,7 +114,18 @@ export default {
   color: #333;
   text-align: center;
 }
-.button {
-  font-size: 50px;
+#home-btn {
+  font-size: 30px;
+}
+body {
+  margin: 0;
+  padding: 0;
+}
+i {
+  transition: all 0.5s;
+}
+.el-icon-s-home:hover {
+  transition: all 0.5s;
+  color: rgb(231, 231, 231);
 }
 </style>

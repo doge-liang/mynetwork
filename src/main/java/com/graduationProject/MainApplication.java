@@ -11,11 +11,11 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /**
- * @类名 : com.graduationProject.MainApplication
+ * @ClassName : com.graduationProject.MainApplication
  * @说明 : 主程序
  * @创建日期 : 2021/3/23
- * @作者 : Niaowuuu
- * @版本 : 1.0
+ * @author : Niaowuuu
+ * @since : 1.0
  */
 
 @SpringBootApplication

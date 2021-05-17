@@ -4,11 +4,11 @@ import com.graduationProject.consts.StatusCode;
 import lombok.Data;
 
 /**
- * @类名 : ResultDTO
+ * @ClassName : ResultDTO
  * @说明 : 返回结果类
  * @创建日期 : 2021/4/22
- * @作者 : Niaowuuu
- * @版本 : 1.0
+ * @author : Niaowuuu
+ * @since : 1.0
  */
 @Data
 public class ResultDTO<T> {
@@ -22,7 +22,7 @@ public class ResultDTO<T> {
     /* 数据对象 */
     private T data;
 
-    public  ResultDTO(Integer code, String msg){
+    public ResultDTO(Integer code, String msg){
         this.code = code;
         this.msg = msg;
     }
@@ -30,5 +30,10 @@ public class ResultDTO<T> {
     public ResultDTO(StatusCode statusCode) {
         this.code = statusCode.getCode();
         this.msg = statusCode.getMsg();
+    }
+
+    public ResultDTO(T data) {
+        this(StatusCode.SUCCESS);
+        this.data = data;
     }
 }

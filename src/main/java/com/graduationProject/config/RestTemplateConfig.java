@@ -17,11 +17,11 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * @类名 : RestTemplateConifg
+ * @ClassName : RestTemplateConifg
  * @说明 : http 工厂配置
  * @创建日期 : 2021/4/9
- * @作者 : Niaowuuu
- * @版本 : 1.0
+ * @author : Niaowuuu
+ * @since : 1.0
  */
 @Configuration
 public class RestTemplateConfig {

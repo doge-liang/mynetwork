@@ -98,8 +98,8 @@ export default {
               console.log(resp);
               if (resp.data.code === 200) {
                 this.loading = false;
-                this.loginState = true;
-                sessionStorage.setItem("state", this.loginState);
+                this.isLogin = true;
+                sessionStorage.setItem("isLogin", this.isLogin);
                 this.$message.success("登录成功");
                 this.closeDialog();
               }
@@ -132,8 +132,8 @@ export default {
             console.log(resp);
             if (resp.data.code === 200) {
               this.loading = false;
-              this.loginState = true;
-              sessionStorage.setItem("state", this.loginState);
+              this.isLogin = true;
+              sessionStorage.setItem("isLogin", this.isLogin);
               this.$message.success("登录成功");
               this.closeDialog();
             } else {

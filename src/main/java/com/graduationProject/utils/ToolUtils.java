@@ -18,11 +18,11 @@ import java.util.*;
 import java.util.Map.Entry;
 
 /**
- * @类名 : ToolUtils
+ * @ClassName : ToolUtils
  * @说明 : 工具类
  * @创建日期 : 2021/4/9
- * @作者 : Niaowuuu
- * @版本 : 1.0
+ * @author : Niaowuuu
+ * @since : 1.0
  */
 public class ToolUtils {
 

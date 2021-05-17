@@ -5,7 +5,7 @@
       highlight-current-row
       v-if="type == 'market'"
     >
-      <el-table-column property="id" label="ID" width="150"></el-table-column>
+      <el-table-column property="id" label="id" width="150"></el-table-column>
       <el-table-column
         property="date"
         label="日期"
@@ -24,7 +24,7 @@
       highlight-current-row
       v-if="type == 'trade'"
     >
-      <el-table-column property="id" label="ID" width="100"></el-table-column>
+      <el-table-column property="id" label="id" width="100"></el-table-column>
       <el-table-column
         property="date"
         label="日期"

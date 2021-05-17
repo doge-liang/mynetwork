@@ -5,11 +5,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * @类名 : ApplicationValue
+ * @ClassName : ApplicationValue
  * @说明 : http 配置数据读取类
  * @创建日期 : 2021/4/9
- * @作者 : Niaowuuu
- * @版本 : 1.0
+ * @author : Niaowuuu
+ * @since : 1.0
  */
 @Getter
 @Component

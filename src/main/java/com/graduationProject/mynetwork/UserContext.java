@@ -6,11 +6,13 @@ import org.hyperledger.fabric.sdk.User;
 import java.util.Set;
 
 /**
- * @类名 : UserContext
- * @说明 : 用户上下文
- * @创建日期 : 2021/4/17
- * @作者 : Niaowuuu
- * @版本 : 1.0
+ * UserContext
+ * <p>
+ * 用户上下文
+ * </p>
+ * Updated : 2021/5/14 1:30
+ * @author : Niaowuuu
+ * @version : 1.0
  */
 public class UserContext implements User {
     private String name;

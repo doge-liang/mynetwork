@@ -1,11 +1,11 @@
 package com.graduationProject.consts;
 
 /**
- * @类名 : StatusCode
+ * @ClassName : StatusCode
  * @说明 : 状态码枚举类
  * @创建日期 : 2021/4/22
- * @作者 : Niaowuuu
- * @版本 : 1.0
+ * @author : Niaowuuu
+ * @since : 1.0
  */
 public enum StatusCode {
 

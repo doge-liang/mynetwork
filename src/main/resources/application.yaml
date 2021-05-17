@@ -8,3 +8,10 @@ http_pool:
   connection_request_timeout: 1000
   socket_timeout: 65000
   validate_after_inactivity: 2000
+
+# 开启 REST 风格接口
+spring:
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true

@@ -7,11 +7,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * @类名 : InvokeQuery
+ * @ClassName : InvokeQuery
  * @说明 : Query请求
  * @创建日期 : 2021/4/17
- * @作者 : Niaowuuu
- * @版本 : 1.0
+ * @author : Niaowuuu
+ * @since : 1.0
  */
 public class InvokeQuery {
     static {
