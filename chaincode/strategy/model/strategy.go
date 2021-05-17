@@ -25,7 +25,7 @@ func (state State) String() string {
 
 // 策略公开的数据
 type Strategy struct {
-	ID           string   `json:"ID"`           // 策略 ID
+	ID           string   `json:"id"`           // 策略 ID
 	Name         string   `json:"name"`         // 策略名
 	Provider     string   `json:"provider"`     // 发布者
 	MaxDrawdown  float64  `json:"maxDrawdown"`  // 最大回撤
@@ -33,9 +33,6 @@ type Strategy struct {
 	SharpeRatio  float64  `json:"sharpeRatio"`  // 夏普率
 	Subscribers  []string `json:"subscribers"`  // 订阅者证书列表
 	State        State    `json:"state"`        // 是否公开
-	// Trades         []Trade         `json:"trades"`         // 交易记录
-	// PlanningTrades []PlanningTrade `json:"planningTrades"` // 计划交易
-	// Positions      []Position      `json:"positions"`      // 持仓记录
 }
 
 func (strat *Strategy) IsPrivate() bool {

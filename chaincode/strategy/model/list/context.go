@@ -52,8 +52,10 @@ func (tc *TransactionContext) GetPlanningTradeList() *PlanningTradeList {
 }
 
 func (tc *TransactionContext) GetPrivatePlanningTradeList(collection string) *PlanningTradeList {
-	if tc.positionList == nil {
-		tc.positionList = newPrivatePositionList(tc, collection)
+	if tc.PlanningTradeList == nil {
+		tc.PlanningTradeList = newPrivatePlanningTradeList(tc, collection)
+	} else {
+		tc.PlanningTradeList.privateStateList.SetCollection(collection)
 	}
 
 	return tc.PlanningTradeList
@@ -70,6 +72,8 @@ func (tc *TransactionContext) GetPositionList() *PositionList {
 func (tc *TransactionContext) GetPrivatePositionList(collection string) *PositionList {
 	if tc.positionList == nil {
 		tc.positionList = newPrivatePositionList(tc, collection)
+	} else {
+		tc.PlanningTradeList.privateStateList.SetCollection(collection)
 	}
 
 	return tc.positionList

@@ -8,13 +8,15 @@ import (
 )
 
 type PrivateStateListInterface interface {
+	SetCollection(string)
+
 	AddStateIn(StateInterface) error
 	GetStateIn(string, StateInterface) error
-	GetStateHash(string, string) error
+	GetStateHash(string, *string) error
 	UpdateStateIn(StateInterface) error
-	DeleteStateIn(string) error
+	DelStateIn(string) error
 
-	GetPrivateDataByPartialCompositeKeyIn([]string) (shim.StateQueryIteratorInterface, error)
+	GetPrivateDataByPartialCompositeKey([]string) (shim.StateQueryIteratorInterface, error)
 }
 
 type PrivateStateList struct {
@@ -22,6 +24,10 @@ type PrivateStateList struct {
 	Name        string
 	Deserialize func([]byte, StateInterface) error
 	Collection  string
+}
+
+func (psl *PrivateStateList) SetCollection(collection string) {
+	psl.Collection = collection
 }
 
 func (psl *PrivateStateList) AddStateIn(state StateInterface) error {
@@ -48,7 +54,7 @@ func (psl *PrivateStateList) GetStateIn(key string, state StateInterface) error 
 	return psl.Deserialize(data, state)
 }
 
-func (psl *PrivateStateList) GetPrivateDataByPartialCompositeKeyIn(keys []string) (shim.StateQueryIteratorInterface, error) {
+func (psl *PrivateStateList) GetPrivateDataByPartialCompositeKey(keys []string) (shim.StateQueryIteratorInterface, error) {
 	resultsIterator, err := psl.Ctx.GetStub().GetPrivateDataByPartialCompositeKey(psl.Collection, MakeKey(psl.Name, psl.Collection), keys)
 	if err != nil {
 		return nil, err
@@ -62,7 +68,7 @@ func (psl *PrivateStateList) UpdateStateIn(state StateInterface) error {
 	return psl.AddStateIn(state)
 }
 
-func (psl *PrivateStateList) DeleteStateIn(key string) error {
+func (psl *PrivateStateList) DelStateIn(key string) error {
 	ledgerKey, _ := psl.Ctx.GetStub().CreateCompositeKey(MakeKey(psl.Name, psl.Collection), SplitKey(key))
 	err := psl.Ctx.GetStub().DelPrivateData(psl.Collection, ledgerKey)
 	if err != nil {
@@ -71,7 +77,7 @@ func (psl *PrivateStateList) DeleteStateIn(key string) error {
 	return nil
 }
 
-func (psl *PrivateStateList) GetStateHash(key string, hashcode string) error {
+func (psl *PrivateStateList) GetStateHash(key string, hashcode *string) error {
 	ledgerKey, _ := psl.Ctx.GetStub().CreateCompositeKey(MakeKey(psl.Name, psl.Collection), SplitKey(key))
 	data, err := psl.Ctx.GetStub().GetPrivateDataHash(psl.Collection, ledgerKey)
 
@@ -81,7 +87,7 @@ func (psl *PrivateStateList) GetStateHash(key string, hashcode string) error {
 		return fmt.Errorf("No state found for %s", key)
 	}
 
-	hashcode = fmt.Sprintf("%x", data)
+	*hashcode = fmt.Sprintf("%x", data)
 
 	return nil
 }

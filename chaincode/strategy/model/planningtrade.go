@@ -7,7 +7,7 @@ import (
 )
 
 type PlanningTrade struct {
-	ID         string  `json:"ID"`         // 计划交易ID
+	ID         string  `json:"id"`         // 计划交易ID
 	StrategyID string  `json:"strategyID"` // 关联策略ID
 	StockID    string  `json:"stockID"`    // 交易股票
 	Amount     float64 `json:"amount"`     // 交易份额（买卖用正负来表示）
@@ -38,7 +38,7 @@ func DeserializePlanningTrade(bytes []byte, planningTrade *PlanningTrade) error 
 }
 
 type PlanningTradePublic struct {
-	ID         string `json:"ID"` // 计划交易ID
+	ID         string `json:"id"` // 计划交易ID
 	StrategyID string `json:"strategyID"`
 }
 
@@ -63,7 +63,7 @@ func DeserializePlanningTradePublic(bytes []byte, ptp *PlanningTradePublic) erro
 }
 
 type PlanningTradeHash struct {
-	ID       string `json:"ID"`
+	ID       string `json:"id"`
 	Hashcode string `json:"hashcode"`
 }
 

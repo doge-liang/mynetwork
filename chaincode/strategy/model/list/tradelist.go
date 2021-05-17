@@ -1,6 +1,7 @@
 package list
 
 import (
+	"log"
 	"mynetwork/chaincode/strategy/constants"
 	"mynetwork/chaincode/strategy/ledgerapi"
 	. "mynetwork/chaincode/strategy/model"
@@ -33,14 +34,52 @@ func (tl *TradeList) AddTrade(trade *Trade) error {
 // 	return t, nil
 // }
 
+// 根据策略ID 获取交易页
+func (tl *TradeList) GetTradesByStrategyIDPage(strategyID string, bookmark string) ([]*Trade, string, error) {
+	iter, bookmark, err := tl.stateList.GetStateByPartialCompositeKeyWithPagination([]string{strategyID}, 40, bookmark)
+	if err != nil {
+		return nil, "", err
+	}
+
+	var ts []*Trade
+	i := 0
+	for iter.HasNext() {
+		i++
+		log.Print(i)
+		if i > 40 {
+			break
+		}
+		response, err := iter.Next()
+		if err != nil {
+			return nil, "", err
+		}
+
+		var t Trade
+		err = DeserializeTrade(response.Value, &t)
+		if err != nil {
+			return nil, "", err
+		}
+		ts = append(ts, &t)
+	}
+
+	return ts, bookmark, err
+}
+
 // 根据策略ID 获取交易列表
 func (tl *TradeList) GetTradesByStrategyID(strategyID string) ([]*Trade, error) {
 	iter, err := tl.stateList.GetStateByPartialCompositeKey([]string{strategyID})
 	if err != nil {
 		return nil, err
 	}
+
 	var ts []*Trade
+	i := 0
 	for iter.HasNext() {
+		i++
+		log.Print(i)
+		if i > 40 {
+			break
+		}
 		response, err := iter.Next()
 		if err != nil {
 			return nil, err
@@ -73,9 +112,9 @@ func (tl *TradeList) DeleteTrades(strategyID string) error {
 	return nil
 }
 
-// func (tl *TradeList) UpdateTrade(t *Trade) error {
-// 	return tl.stateList.UpdateState(t)
-// }
+func (tl *TradeList) DelTrade(t *Trade) error {
+	return tl.stateList.DelState(GetTradesKey(t.StrategyID, t.ID))
+}
 
 func newTradeList(ctx TransactionContextInterface) *TradeList {
 	stateList := new(ledgerapi.StateList)

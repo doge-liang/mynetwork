@@ -8,7 +8,7 @@ import (
 )
 
 type Trade struct {
-	ID         string    `json:"ID"`         // 交易 ID
+	ID         string    `json:"id"`         // 交易 ID
 	StrategyID string    `json:"strategyID"` // 关联策略 ID
 	StockID    string    `json:"stockID"`    // 交易股票
 	Amount     float64   `json:"amount"`     // 交易份额（买卖用正负来表示）
@@ -28,10 +28,10 @@ func (t *Trade) Serialize() ([]byte, error) {
 }
 
 // 策略的交易记录保持 Provider 私有，用户发起 subscribe 后，再由 管理员操作资产转移
-type Trades struct {
-	StrategyID string  `json:"strategyID"`
-	Trades     []Trade `json:"trades"` // 交易记录
-}
+// type Trades struct {
+// 	StrategyID string  `json:"strategyID"`
+// 	Trades     []Trade `json:"trades"` // 交易记录
+// }
 
 func GetTradesKey(strategyKey string, id string) string {
 	return ledgerapi.MakeKey(strategyKey, id)
@@ -45,4 +45,9 @@ func DeserializeTrade(bytes []byte, trade *Trade) error {
 	}
 
 	return nil
+}
+
+type TradesOutput struct {
+	Trades   []*Trade `json:"trades"`
+	Bookmark string   `json:"bookmark"`
 }

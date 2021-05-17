@@ -2,6 +2,7 @@ package contract
 
 import (
 	"fmt"
+	"mynetwork/chaincode/strategy/constants"
 	. "mynetwork/chaincode/strategy/model"
 	. "mynetwork/chaincode/strategy/model/list"
 )
@@ -59,10 +60,17 @@ func (s *SmartContract) DeleteStrategy(ctx TransactionContextInterface, strategy
 	return nil
 }
 
-func (s *SmartContract) Update(ctx TransactionContextInterface, strategyID string, ts []*Trade, pts []*PlanningTrade, ps []*Position) error {
+func (s *SmartContract) Update(ctx TransactionContextInterface, strat *Strategy, ts []*Trade, pts []*PlanningTrade, ps []*Position) error {
 	MSPID, _ := ctx.GetClientIdentity().GetMSPID()
 	if MSPID != "ProviderMSP" {
 		return fmt.Errorf("You are not in Provider Org.")
+	}
+
+	strategyID := strat.ID
+
+	err := ctx.GetTradeList().DeleteTrades(strategyID)
+	if err != nil {
+		return err
 	}
 
 	for _, t := range ts {
@@ -72,27 +80,114 @@ func (s *SmartContract) Update(ctx TransactionContextInterface, strategyID strin
 		}
 	}
 
-	strat, err := ctx.GetStrategyList().GetStrategy(strategyID)
+	oldStrat, err := ctx.GetStrategyList().GetStrategy(strategyID)
+	if err != nil {
+		return err
+	}
+	strat.Subscribers = oldStrat.Subscribers
+	strat.Provider = oldStrat.Provider
+	err = ctx.GetStrategyList().UpdateStrategy(strat)
 	if err != nil {
 		return err
 	}
 
+	// 私有策略
 	if strat.IsPrivate() {
+		err = ctx.GetPrivatePlanningTradeList(constants.PRIVATE_COLLECTION).AddPrivatePlanningTrades(pts)
+		if err != nil {
+			return err
+		}
+
+		err = ctx.GetPrivatePositionList(constants.PRIVATE_COLLECTION).AddPrivatePositions(ps)
+		if err != nil {
+			return err
+		}
+
+		err = ctx.GetPrivatePlanningTradeList(constants.PUBLIC_COLLECTION).AddPrivatePlanningTrades(pts)
+		if err != nil {
+			return err
+		}
+
+		err = ctx.GetPrivatePositionList(constants.PUBLIC_COLLECTION).AddPrivatePositions(ps)
+		if err != nil {
+			return err
+		}
 		return nil
-	}
+	} else {
+		err = ctx.GetPlanningTradeList().UpdatePlanningTrades(pts, strategyID)
+		if err != nil {
+			return err
+		}
 
-	err = ctx.GetPlanningTradeList().UpdatePlanningTrades(pts, strategyID)
-	if err != nil {
-		return err
-	}
-
-	err = ctx.GetPositionList().UpdatePositions(ps, strategyID)
-	if err != nil {
-		return err
+		err = ctx.GetPositionList().UpdatedPositions(ps, strategyID)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
+
+func (s *SmartContract) DelPrivateData(ctx TransactionContextInterface, pts []*PlanningTrade, ps []*Position) error {
+	var err error
+	// 私有策略
+	err = ctx.GetPrivatePlanningTradeList(constants.PRIVATE_COLLECTION).DelPrivatePlanningTrades(pts)
+	if err != nil {
+		return err
+	}
+	err = ctx.GetPrivatePlanningTradeList(constants.PUBLIC_COLLECTION).DelPrivatePlanningTrades(pts)
+	if err != nil {
+		return err
+	}
+
+	err = ctx.GetPrivatePositionList(constants.PRIVATE_COLLECTION).DelPrivatePositions(ps)
+	if err != nil {
+		return err
+	}
+	err = ctx.GetPrivatePositionList(constants.PUBLIC_COLLECTION).DelPrivatePositions(ps)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *SmartContract) DelTradesByStrategyID(ctx TransactionContextInterface, ts []*Trade) error {
+	var err error
+	for _, t := range ts {
+		err = ctx.GetTradeList().DelTrade(t)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// func (s *SmartContract) UpdatePublicCollection(ctx TransactionContextInterface, strat *Strategy, pts []*PlanningTrade, ps []*Position) error {
+// 	MSPID, _ := ctx.GetClientIdentity().GetMSPID()
+// 	if MSPID != "ProviderMSP" {
+// 		return fmt.Errorf("You are not in Provider Org.")
+// 	}
+
+// 	var err error
+
+// 	// 私有策略
+// 	if strat.IsPrivate() {
+
+// 		err = ctx.GetPrivatePlanningTradeList(constants.PUBLIC_COLLECTION).AddPrivatePlanningTrades(pts)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		err = ctx.GetPrivatePositionList(constants.PUBLIC_COLLECTION).AddPrivatePositions(ps)
+// 		if err != nil {
+// 			return err
+// 		}
+
+// 		return nil
+// 	}
+
+// 	return nil
+// }
 
 // 更新策略
 // func (s *SmartContract) UpdateStrategy(ctx contractapi.TransactionContextInterfaceInterfaceInterface, strategy *Strategy) error {

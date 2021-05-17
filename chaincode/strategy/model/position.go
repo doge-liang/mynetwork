@@ -7,7 +7,7 @@ import (
 )
 
 type Position struct {
-	ID         string  `json:"ID"`         // 仓位 ID
+	ID         string  `json:"id"`         // 仓位 ID
 	StrategyID string  `json:"strategyID"` // 关联策略 ID
 	StockID    string  `json:"stockID"`    // 股票代码
 	Value      float64 `json:"value"`      // 仓位
@@ -40,7 +40,7 @@ func DeserializePosition(bytes []byte, position *Position) error {
 
 // 私有策略需要维护一个公共账本的 key 值列表供查询哈希值进行验证
 type PositionPublic struct {
-	ID         string `json:"positionIDs"`
+	ID         string `json:"id"`
 	StrategyID string `json:"strategyID"` // 关联策略 ID
 }
 
@@ -65,7 +65,7 @@ func DeserializePositionPublic(bytes []byte, pp *PositionPublic) error {
 }
 
 type PositionHash struct {
-	ID       string `json:"ID"`
+	ID       string `json:"id"`
 	Hashcode string `json:"hashcode"`
 }
 

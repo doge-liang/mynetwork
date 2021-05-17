@@ -2,6 +2,7 @@ package contract
 
 import (
 	"fmt"
+	"log"
 	. "mynetwork/chaincode/strategy/model/list"
 	. "mynetwork/chaincode/strategy/utils"
 	"sort"
@@ -19,6 +20,15 @@ func (s *SmartContract) Subscribe(ctx TransactionContextInterface, strategyID st
 		return err
 	}
 
+	v, f, err := ctx.GetClientIdentity().GetAttributeValue("strategy.role")
+	if err != nil {
+		return err
+	}
+	if f {
+		log.Printf("Receive the request with strategy.role : %v", v)
+	} else {
+		log.Print("Did not receieve the attr")
+	}
 	if In(clientID, strat.Subscribers) {
 		return fmt.Errorf("You have been subscribed.")
 	}
@@ -28,7 +38,7 @@ func (s *SmartContract) Subscribe(ctx TransactionContextInterface, strategyID st
 }
 
 // 取消订阅
-func (s *SmartContract) unSubscribe(ctx TransactionContextInterface, strategyID string) error {
+func (s *SmartContract) UnSubscribe(ctx TransactionContextInterface, strategyID string) error {
 	strat, err := ctx.GetStrategyList().GetStrategy(strategyID)
 	if err != nil {
 		return err

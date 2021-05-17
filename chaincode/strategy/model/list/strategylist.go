@@ -63,6 +63,11 @@ func (sl *StrategyList) UpdateStrategy(strat *Strategy) error {
 	return sl.stateList.UpdateState(strat)
 }
 
+// 从公开账本中删除策略
+func (sl *StrategyList) DeleteStrategy(StrategyID string) error {
+	return sl.stateList.DelState(GetStrategyKey(StrategyID))
+}
+
 func newStrategyList(ctx TransactionContextInterface) *StrategyList {
 	stateList := new(ledgerapi.StateList)
 	stateList.Ctx = ctx
@@ -75,9 +80,4 @@ func newStrategyList(ctx TransactionContextInterface) *StrategyList {
 	list.stateList = stateList
 
 	return list
-}
-
-// 从公开账本中删除策略
-func (sl *StrategyList) DeleteStrategy(StrategyID string) error {
-	return sl.stateList.DelState(GetStrategyKey(StrategyID))
 }

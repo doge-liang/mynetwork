@@ -14,6 +14,7 @@ type StateListInterface interface {
 	DelState(string) error
 
 	GetStateByPartialCompositeKey([]string) (shim.StateQueryIteratorInterface, error)
+	GetStateByPartialCompositeKeyWithPagination([]string, int32, string) (shim.StateQueryIteratorInterface, string, error)
 }
 
 // StateList useful for managing putting data in and out
@@ -75,4 +76,12 @@ func (sl *StateList) DelState(key string) error {
 		return err
 	}
 	return nil
+}
+
+func (sl *StateList) GetStateByPartialCompositeKeyWithPagination(keys []string, pageSize int32, bookmark string) (shim.StateQueryIteratorInterface, string, error) {
+	resultsIterator, metadata, err := sl.Ctx.GetStub().GetStateByPartialCompositeKeyWithPagination(sl.Name, keys, pageSize, bookmark)
+	if err != nil {
+		return nil, "", err
+	}
+	return resultsIterator, metadata.Bookmark, err
 }

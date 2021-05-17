@@ -47,9 +47,9 @@ func (pl *PositionList) GetPositionsByStrategyID(strategyID string) ([]*Position
 }
 
 // 通过策略 ID 从私有数据集中获取所有持仓信息
-func (pl *PositionList) GetPositionsByStrategyIDInPrivate(strategyID string) ([]*Position, error) {
+func (pl *PositionList) GetPrivatePositionsByStrategyID(strategyID string) ([]*Position, error) {
 
-	iter, err := pl.privateStateList.GetPrivateDataByPartialCompositeKeyIn([]string{strategyID})
+	iter, err := pl.privateStateList.GetPrivateDataByPartialCompositeKey([]string{strategyID})
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func (pl *PositionList) GetPositionsByStrategyIDInPrivate(strategyID string) ([]
 }
 
 // 按照策略ID删除仓位信息
-func (pl *PositionList) DeletePositionsByStrategyID(strategyID string) error {
+func (pl *PositionList) DelPositionsByStrategyID(strategyID string) error {
 	positionsList, err := pl.GetPositionsByStrategyID(strategyID)
 
 	if err != nil {
@@ -92,9 +92,23 @@ func (pl *PositionList) DeletePositionsByStrategyID(strategyID string) error {
 	return nil
 }
 
+// 按照策略ID删除信号信息
+func (pl *PositionList) DelPrivatePositions(ps []*Position) error {
+
+	for _, p := range ps {
+		err := pl.privateStateList.DelStateIn(GetPositionsKey(GetStrategyKey(p.StrategyID), p.ID))
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // 更新策略的仓位信息
-func (pl *PositionList) UpdatePositions(ps []*Position, strategyID string) error {
-	err := pl.DeletePositionsByStrategyID(strategyID)
+func (pl *PositionList) UpdatedPositions(ps []*Position, strategyID string) error {
+	err := pl.DelPositionsByStrategyID(strategyID)
 	if err != nil {
 		return err
 	}
@@ -110,9 +124,22 @@ func (pl *PositionList) UpdatePositions(ps []*Position, strategyID string) error
 	return nil
 }
 
+// 更新私有策略的仓位信息
+func (pl *PositionList) AddPrivatePositions(ps []*Position) error {
+	for _, p := range ps {
+		err := pl.privateStateList.UpdateStateIn(p)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (pl *PositionList) GetPositionsHashByStrategyID(strategyID string) ([]*PositionHash, error) {
 	// 从公共账本查询 ID 列表
-	iter, err := pl.stateList.GetStateByPartialCompositeKey([]string{strategyID})
+	iter, err := pl.privateStateList.GetPrivateDataByPartialCompositeKey([]string{strategyID})
 	if err != nil {
 		return nil, err
 	}
@@ -134,9 +161,10 @@ func (pl *PositionList) GetPositionsHashByStrategyID(strategyID string) ([]*Posi
 	}
 
 	var phs []*PositionHash
-	for _, p := range pps {
+	for _, pp := range pps {
 		var ph PositionHash
-		err := pl.privateStateList.GetStateHash(p.ID, ph.Hashcode)
+		ph.ID = pp.ID
+		err := pl.privateStateList.GetStateHash(GetPositionsKey(pp.StrategyID, pp.ID), &ph.Hashcode)
 		if err != nil {
 			return nil, err
 		}
@@ -166,7 +194,7 @@ func newPrivatePositionList(ctx TransactionContextInterface, collection string) 
 	privateStateList := new(ledgerapi.PrivateStateList)
 	privateStateList.Ctx = ctx
 	privateStateList.Name = "org.mynetwork." + constants.POSITIONS + "list"
-	privateStateList.Collection = constants.PRIVATE_COLLECTION
+	privateStateList.Collection = collection
 	privateStateList.Deserialize = func(bytes []byte, state ledgerapi.StateInterface) error {
 		return DeserializePosition(bytes, state.(*Position))
 	}

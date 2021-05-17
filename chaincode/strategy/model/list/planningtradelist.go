@@ -1,6 +1,7 @@
 package list
 
 import (
+	"log"
 	"mynetwork/chaincode/strategy/constants"
 	"mynetwork/chaincode/strategy/ledgerapi"
 
@@ -16,7 +17,7 @@ import (
 
 type PlanningTradeList struct {
 	stateList        ledgerapi.StateListInterface
-	privateStateList ledgerapi.PrivateStateList
+	privateStateList ledgerapi.PrivateStateListInterface
 }
 
 // func (ptl *PlanningTradeList) AddPlanningTrade(planningTrade *PlanningTrade) error {
@@ -49,9 +50,9 @@ func (ptl *PlanningTradeList) GetPlanningTradesByStrategyID(strategyID string) (
 }
 
 // 根据策略ID 从私有数据集中获取信号
-func (ptl *PlanningTradeList) GetPlanningTradesByStrategyIDInPrivate(strategyID string) ([]*PlanningTrade, error) {
-
-	iter, err := ptl.privateStateList.GetPrivateDataByPartialCompositeKeyIn([]string{strategyID})
+func (ptl *PlanningTradeList) GetPrivatePlanningTradesByStrategyID(strategyID string) ([]*PlanningTrade, error) {
+	iter, err := ptl.privateStateList.GetPrivateDataByPartialCompositeKey([]string{strategyID})
+	log.Print(strategyID)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +75,7 @@ func (ptl *PlanningTradeList) GetPlanningTradesByStrategyIDInPrivate(strategyID 
 }
 
 // 按照策略ID删除信号信息
-func (ptl *PlanningTradeList) DeletePlanningTradesByStrategyID(strategyID string) error {
+func (ptl *PlanningTradeList) DelPlanningTradesByStrategyID(strategyID string) error {
 	pts, err := ptl.GetPlanningTradesByStrategyID(strategyID)
 
 	if err != nil {
@@ -83,6 +84,20 @@ func (ptl *PlanningTradeList) DeletePlanningTradesByStrategyID(strategyID string
 
 	for _, p := range pts {
 		err := ptl.stateList.DelState(GetPlanningTradesKey(GetStrategyKey(strategyID), p.ID))
+		if err != nil {
+			return err
+		}
+
+	}
+
+	return nil
+}
+
+// 按照策略ID删除信号信息
+func (ptl *PlanningTradeList) DelPrivatePlanningTrades(pts []*PlanningTrade) error {
+
+	for _, p := range pts {
+		err := ptl.privateStateList.DelStateIn(GetPlanningTradesKey(GetStrategyKey(p.StrategyID), p.ID))
 
 		if err != nil {
 			return err
@@ -92,12 +107,12 @@ func (ptl *PlanningTradeList) DeletePlanningTradesByStrategyID(strategyID string
 	return nil
 }
 
-// 更新信号
+// 更新公开的信号
 func (ptl *PlanningTradeList) UpdatePlanningTrades(pts []*PlanningTrade, strategyID string) error {
 	// if len(pts) == 0 {
 	// 	return fmt.Errorf("Receive an empty planntingtrades slice")
 	// }
-	err := ptl.DeletePlanningTradesByStrategyID(strategyID)
+	err := ptl.DelPlanningTradesByStrategyID(strategyID)
 	if err != nil {
 		return err
 	}
@@ -110,9 +125,20 @@ func (ptl *PlanningTradeList) UpdatePlanningTrades(pts []*PlanningTrade, strateg
 	return nil
 }
 
-func (pl *PlanningTradeList) GetPlanningTradesHashByStrategyID(strategyID string) ([]*PlanningTradeHash, error) {
+// 更新私有数据集中的信号
+func (ptl *PlanningTradeList) AddPrivatePlanningTrades(pts []*PlanningTrade) error {
+	for _, pt := range pts {
+		err := ptl.privateStateList.UpdateStateIn(pt)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (ptl *PlanningTradeList) GetPlanningTradesHashByStrategyID(strategyID string) ([]*PlanningTradeHash, error) {
 	// 从公共账本查询 ID 列表
-	iter, err := pl.stateList.GetStateByPartialCompositeKey([]string{strategyID})
+	iter, err := ptl.privateStateList.GetPrivateDataByPartialCompositeKey([]string{strategyID})
 	if err != nil {
 		return nil, err
 	}
@@ -129,14 +155,15 @@ func (pl *PlanningTradeList) GetPlanningTradesHashByStrategyID(strategyID string
 		if err != nil {
 			return nil, err
 		}
-
+		// log.Print(ptp.ID + ":" + ptp.StrategyID)
 		ptps = append(ptps, &ptp)
 	}
 
 	var pths []*PlanningTradeHash
 	for _, ptp := range ptps {
 		var pth PlanningTradeHash
-		err := pl.privateStateList.GetStateHash(ptp.ID, pth.Hashcode)
+		pth.ID = ptp.ID
+		err := ptl.privateStateList.GetStateHash(GetPlanningTradesKey(ptp.StrategyID, ptp.ID), &pth.Hashcode)
 		if err != nil {
 			return nil, err
 		}
@@ -158,6 +185,22 @@ func newPlanningTradeList(ctx TransactionContextInterface) *PlanningTradeList {
 
 	list := new(PlanningTradeList)
 	list.stateList = stateList
+
+	return list
+}
+
+func newPrivatePlanningTradeList(ctx TransactionContextInterface, collection string) *PlanningTradeList {
+	privateStateList := new(ledgerapi.PrivateStateList)
+	privateStateList.Ctx = ctx
+
+	privateStateList.Name = "org.mynetwork." + constants.PLANNINGTRADES + "list"
+	privateStateList.Collection = collection
+	privateStateList.Deserialize = func(bytes []byte, state ledgerapi.StateInterface) error {
+		return DeserializePlanningTrade(bytes, state.(*PlanningTrade))
+	}
+
+	list := newPlanningTradeList(ctx)
+	list.privateStateList = privateStateList
 
 	return list
 }
