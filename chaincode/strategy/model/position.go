@@ -11,7 +11,7 @@ type Position struct {
 	StrategyID string  `json:"strategyID"` // 关联策略 ID
 	StockID    string  `json:"stockID"`    // 股票代码
 	Value      float64 `json:"value"`      // 仓位
-	Price      float64 `json:"price"`      // 现有股价
+	// Price      float64 `json:"price"`      // 现有股价
 }
 
 // 继承自 StateInterface

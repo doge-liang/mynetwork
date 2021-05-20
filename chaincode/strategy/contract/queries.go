@@ -42,16 +42,17 @@ func (s *SmartContract) GetAllStrategies(ctx TransactionContextInterface) ([]*St
 	return strats, nil
 }
 
-// 通过策略 ID 读取策略交易记录
-func (s *SmartContract) GetTradesByStrategyID(ctx TransactionContextInterface, strategyID string, bookmark string) (TradesOutput, error) {
-	// MSPID, err := ctx.GetClientIdentity().GetMSPID()
-	// if err != nil {
-	// 	return nil, err
-	// }
+// func (s *SmartContract) GetAllTradesByStrategyID(ctx TransactionContextInterface, strategyID string) error {
+// 	trades, err := ctx.GetTradeList().GetTradesByStrategyID(strategyID string)
+// }
 
+// 通过策略 ID 读取策略交易记录页面
+func (s *SmartContract) GetTradesPageByStrategyID(ctx TransactionContextInterface, strategyID string, bookmark string) (TradesOutput, error) {
 	trades, bookmark, err := ctx.GetTradeList().GetTradesByStrategyIDPage(strategyID, bookmark)
 	if err != nil {
 		return TradesOutput{}, err
+	} else if trades == nil {
+		return TradesOutput{}, nil
 	}
 
 	output := TradesOutput{
@@ -174,7 +175,7 @@ func (s *SmartContract) GetPlanningTradesByStrategyID(ctx TransactionContextInte
 
 		if isProvided {
 			log.Print("是发布者")
-			ptlist, err := ctx.GetPrivatePlanningTradeList(constants.PRIVATE_COLLECTION).GetPlanningTradesByStrategyID(strategyID)
+			ptlist, err := ctx.GetPrivatePlanningTradeList(constants.PRIVATE_COLLECTION).GetPrivatePlanningTradesByStrategyID(strategyID)
 			if err != nil {
 				return &output, err
 			} else if ptlist == nil {
@@ -236,23 +237,23 @@ func (s *SmartContract) GetPlanningTradesByStrategyID(ctx TransactionContextInte
 	return &output, nil
 }
 
-func (s *SmartContract) GetPlanningTradesHashByStrategyID(ctx TransactionContextInterface, strategyID string) ([]*PlanningTradeHash, error) {
-	// output := PlanningTradesOutput{
-	// 	PlanningTrades:     []*PlanningTrade{},
-	// 	PlanningTradesHash: []*PlanningTradeHash{},
-	// }
-	pthlist, err := ctx.GetPrivatePlanningTradeList(constants.PRIVATE_COLLECTION).GetPlanningTradesHashByStrategyID(strategyID)
-	if err != nil {
-		return nil, err
-	}
+// func (s *SmartContract) GetPlanningTradesHashByStrategyID(ctx TransactionContextInterface, strategyID string) ([]*PlanningTradeHash, error) {
+// 	// output := PlanningTradesOutput{
+// 	// 	PlanningTrades:     []*PlanningTrade{},
+// 	// 	PlanningTradesHash: []*PlanningTradeHash{},
+// 	// }
+// 	pthlist, err := ctx.GetPrivatePlanningTradeList(constants.PRIVATE_COLLECTION).GetPlanningTradesHashByStrategyID(strategyID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	// output = PlanningTradesOutput{
-	// 	PlanningTrades:     []*PlanningTrade{},
-	// 	PlanningTradesHash: pthlist,
-	// }
+// 	// output = PlanningTradesOutput{
+// 	// 	PlanningTrades:     []*PlanningTrade{},
+// 	// 	PlanningTradesHash: pthlist,
+// 	// }
 
-	return pthlist, err
-}
+// 	return pthlist, err
+// }
 
 // func (s *SmartContract) GetPlanningTradesHash(ctx TransactionContextInterface, strategyID string)()
 

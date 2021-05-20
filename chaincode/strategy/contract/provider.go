@@ -2,6 +2,7 @@ package contract
 
 import (
 	"fmt"
+	"log"
 	"mynetwork/chaincode/strategy/constants"
 	. "mynetwork/chaincode/strategy/model"
 	. "mynetwork/chaincode/strategy/model/list"
@@ -90,15 +91,20 @@ func (s *SmartContract) Update(ctx TransactionContextInterface, strat *Strategy,
 	if err != nil {
 		return err
 	}
+	return nil
+}
 
+func (s *SmartContract) AddPlanningTrades(ctx TransactionContextInterface, strat *Strategy, pts []*PlanningTrade) error {
+	MSPID, _ := ctx.GetClientIdentity().GetMSPID()
+	if MSPID != "ProviderMSP" {
+		return fmt.Errorf("You are not in Provider Org.")
+	}
+
+	var err error
+	strategyID := strat.ID
 	// 私有策略
 	if strat.IsPrivate() {
 		err = ctx.GetPrivatePlanningTradeList(constants.PRIVATE_COLLECTION).AddPrivatePlanningTrades(pts)
-		if err != nil {
-			return err
-		}
-
-		err = ctx.GetPrivatePositionList(constants.PRIVATE_COLLECTION).AddPrivatePositions(ps)
 		if err != nil {
 			return err
 		}
@@ -108,17 +114,39 @@ func (s *SmartContract) Update(ctx TransactionContextInterface, strat *Strategy,
 			return err
 		}
 
-		err = ctx.GetPrivatePositionList(constants.PUBLIC_COLLECTION).AddPrivatePositions(ps)
-		if err != nil {
-			return err
-		}
 		return nil
 	} else {
 		err = ctx.GetPlanningTradeList().UpdatePlanningTrades(pts, strategyID)
 		if err != nil {
 			return err
 		}
+	}
 
+	return nil
+}
+
+func (s *SmartContract) AddPositions(ctx TransactionContextInterface, strat *Strategy, ps []*Position) error {
+	MSPID, _ := ctx.GetClientIdentity().GetMSPID()
+	if MSPID != "ProviderMSP" {
+		return fmt.Errorf("You are not in Provider Org.")
+	}
+
+	var err error
+	strategyID := strat.ID
+	// 私有策略
+	if strat.IsPrivate() {
+		err = ctx.GetPrivatePositionList(constants.PRIVATE_COLLECTION).AddPrivatePositions(ps)
+		if err != nil {
+			return err
+		}
+
+		err = ctx.GetPrivatePositionList(constants.PUBLIC_COLLECTION).AddPrivatePositions(ps)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	} else {
 		err = ctx.GetPositionList().UpdatedPositions(ps, strategyID)
 		if err != nil {
 			return err
@@ -128,7 +156,35 @@ func (s *SmartContract) Update(ctx TransactionContextInterface, strat *Strategy,
 	return nil
 }
 
+func (s *SmartContract) AddTrades(ctx TransactionContextInterface, ts []*Trade) error {
+	log.Println("添加交易记录：")
+	MSPID, _ := ctx.GetClientIdentity().GetMSPID()
+	if MSPID != "ProviderMSP" {
+		return fmt.Errorf("You are not in Provider Org.")
+	}
+	// strategyID := strat.ID
+
+	// err := ctx.GetTradeList().DeleteTrades(strategyID)
+	// if err != nil {
+	// 	return err
+	// }
+
+	for _, t := range ts {
+		log.Println(t)
+		err := ctx.GetTradeList().AddTrade(t)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (s *SmartContract) DelPrivateData(ctx TransactionContextInterface, pts []*PlanningTrade, ps []*Position) error {
+	MSPID, _ := ctx.GetClientIdentity().GetMSPID()
+	if MSPID != "ProviderMSP" {
+		return fmt.Errorf("You are not in Provider Org.")
+	}
+
 	var err error
 	// 私有策略
 	err = ctx.GetPrivatePlanningTradeList(constants.PRIVATE_COLLECTION).DelPrivatePlanningTrades(pts)

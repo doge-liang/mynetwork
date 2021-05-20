@@ -73,7 +73,7 @@ func (tc *TransactionContext) GetPrivatePositionList(collection string) *Positio
 	if tc.positionList == nil {
 		tc.positionList = newPrivatePositionList(tc, collection)
 	} else {
-		tc.PlanningTradeList.privateStateList.SetCollection(collection)
+		tc.positionList.privateStateList.SetCollection(collection)
 	}
 
 	return tc.positionList
