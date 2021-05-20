@@ -6,6 +6,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * @author : Niaowuuu
@@ -20,12 +21,24 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        Object user = request.getSession().getAttribute("loginUser");
-        if (user == null) {
-            request.getRequestDispatcher("/");
-            return false;
-        } else {
+        String RequestURI = request.getRequestURI();
+        log.info("preHandler 拦截的链接为：{}", RequestURI);
+
+        // 登录检查
+        HttpSession session = request.getSession();
+
+        Object loginUserMap = session.getAttribute("loginUser");
+
+        if (loginUserMap != null) {
+            // request.getRequestDispatcher("/");
+            // 放行
+            log.info("loginUser: {}", loginUserMap);
             return true;
+        } else {
+            // 拦截
+            request.setAttribute("msg", "未登录！");
+            request.getRequestDispatcher("/").forward(request, response);
+            return false;
         }
     }
 

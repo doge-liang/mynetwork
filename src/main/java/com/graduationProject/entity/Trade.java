@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -44,6 +45,30 @@ public class Trade extends State {
 
     // 交易价格
     private Double price;
+
+    @Override
+    public boolean equals(Object obj) {
+        // 地址相等
+        if (this == obj) {
+            return true;
+        }
+
+        // 比较对象不能为空
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj instanceof Trade) {
+            Trade other = (Trade) obj;
+            return this.StrategyID.equals(other.StrategyID) && this.stockID.equals(other.stockID) && this.amount.equals(other.amount) && this.dateTime.equals(other.dateTime);
+        }
+
+        if (obj instanceof PlanningTrade) {
+            PlanningTrade other = (PlanningTrade) obj;
+            return this.StrategyID.equals(other.getStrategyID()) && this.stockID.equals(other.getStockID()) && this.amount.equals(other.getAmount());
+        }
+        return false;
+    }
 
     public static Trade deserialize(byte[] data) {
         JSONObject json = JSON.parseObject(new String(data, UTF_8));

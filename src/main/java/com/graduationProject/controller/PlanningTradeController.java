@@ -32,8 +32,8 @@ public class PlanningTradeController {
         try {
             // String userName = (String) map.get("userName");
             // String userSecret = (String) map.get("userSecret");
-            // User user = new User("user1", "user1pw", "Subscriber");
-            User user = new User("admin", "adminpw", "Provider");
+            User user = new User("user1", "user1pw", "Subscriber");
+            // User user = new User("admin", "adminpw", "Provider");
             user.doEnroll();
             byte[] result = user.doQuery("GetPlanningTradesByStrategyID", id);
             if (result.length != 0) {

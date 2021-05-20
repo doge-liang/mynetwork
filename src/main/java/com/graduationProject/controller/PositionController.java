@@ -29,16 +29,20 @@ public class PositionController {
 
     @GetMapping("/list")
     public ResultDTO<PositionOutput> getAllPositions(@PathVariable String id) {
-        String userName = "admin";
-        String userSecret = "adminpw";
+        String userName = "user1";
+        String userSecret = "user1pw";
         String orgName = "Subscriber";
         try {
             User user = new User(userName, userSecret, orgName);
-            byte[] result = user.doQuery("GetPositionsByStrategyID", id);
-            PositionOutput po = JSON.parseObject(new String(result, StandardCharsets.UTF_8), PositionOutput.class);
-            System.out.println(po);
-            return new ResultDTO<>(po);
-        } catch (IOException e) {
+            // User user = new User("admin", "adminpw", "Provider");
+            if (user.doEnroll()) {
+                byte[] result = user.doQuery("GetPositionsByStrategyID", id);
+                PositionOutput po = JSON.parseObject(new String(result, StandardCharsets.UTF_8), PositionOutput.class);
+                System.out.println(po);
+                return new ResultDTO<>(po);
+            }
+            return new ResultDTO<>(StatusCode.NOT_FOUND);
+        } catch (Exception e) {
             e.printStackTrace();
             return new ResultDTO<>(StatusCode.INTERNAL_ERROR);
         }

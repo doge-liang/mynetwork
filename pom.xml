@@ -16,10 +16,18 @@
         <aspectj.version>1.9.6</aspectj.version>
         <fabric-gateway-sdk.version>2.1.0</fabric-gateway-sdk.version>
         <fabric-chaincode-sdk.version>2.1.0</fabric-chaincode-sdk.version>
+        <devtools.version>2.4.5</devtools.version>
     </properties>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <fork>true</fork>
+                </configuration>
+            </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
@@ -59,7 +67,7 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-<!--        ta4j-->
+        <!--ta4j-->
         <dependency>
             <groupId>org.ta4j</groupId>
             <artifactId>ta4j-core</artifactId>
@@ -71,60 +79,80 @@
             <version>${ta4j.version}</version>
         </dependency>
 
-<!--        shiro-->
+        <!--shiro-->
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-spring</artifactId>
             <version>${shiro.version}</version>
         </dependency>
 
-<!--        maven-->
+        <!--maven-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-maven-plugin</artifactId>
             <version>2.4.3</version>
         </dependency>
 
-<!--        apache.httpclient-->
+        <!--apache.httpclient-->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>${httpclient.version}</version>
         </dependency>
 
-<!--        lombok-->
+        <!--lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
         </dependency>
 
-<!--        aspect-->
+        <!--aspect-->
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
             <version>${aspectj.version}</version>
         </dependency>
 
-<!--        fabric-gateway-sdk-->
+        <!--fabric-gateway-sdk-->
         <dependency>
             <groupId>org.hyperledger.fabric</groupId>
             <artifactId>fabric-gateway-java</artifactId>
             <version>${fabric-gateway-sdk.version}</version>
         </dependency>
-<!--        fastjson-->
+
+        <!--fastjson-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>1.2.12</version>
         </dependency>
-        <!--        fabric-chaincode-sdk-->
-<!--        <dependency>-->
-<!--            <groupId>org.hyperledger.fabric-chaincode-java</groupId>-->
-<!--            <artifactId>fabric-chaincode-shim</artifactId>-->
-<!--            <version>${fabric-chaincode-sdk.version}</version>-->
-<!--            <scope>compile</scope>-->
-<!--        </dependency>-->
+
+        <!--swagger-->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.9.1</version>
+        </dependency>
+
+        <!--热部署 devtools-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <version>${devtools.version}</version>
+        </dependency>
+        <!--fabric-chaincode-sdk-->
+        <!--<dependency>-->
+        <!--<groupId>org.hyperledger.fabric-chaincode-java</groupId>-->
+        <!--<artifactId>fabric-chaincode-shim</artifactId>-->
+        <!--<version>${fabric-chaincode-sdk.version}</version>-->
+        <!--<scope>compile</scope>-->
+        <!--</dependency>-->
 
     </dependencies>
 

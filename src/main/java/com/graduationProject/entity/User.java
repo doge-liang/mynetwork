@@ -103,6 +103,10 @@ public class User {
             };
             return true;
         }
+        return this.login();
+    }
+
+    public Boolean login() throws Exception {
         final EnrollmentRequest enrollmentRequestTLS = new EnrollmentRequest();
         enrollmentRequestTLS.addHost("52.82.52.96");
         enrollmentRequestTLS.setProfile("tls");
@@ -111,6 +115,7 @@ public class User {
         this.enrollment = caClient.enroll(userName, userSecret, enrollmentRequestTLS);
         Identity user = Identities.newX509Identity(orgMSP, enrollment);
         wallet.put(userName, user);
+        // System.out.println(Identities.newX509Identity(orgMSP, enrollment).getCertificate());
         System.out.println("Successfully enrolled user \"" + userName + "@" + orgName + "\" and imported into the wallet");
         return true;
     }
@@ -155,7 +160,7 @@ public class User {
                 return new byte[0];
             }
             //加载连接文件
-            builder.identity(wallet, userName).networkConfig(networkConfigPath).discovery(true);
+            builder.identity(wallet, userName).networkConfig(networkConfigPath).discovery(false);
 
 
             // 建立连接
@@ -182,7 +187,7 @@ public class User {
                 System.out.println("The identity \"" + userName + "@" + orgName + "\" doesn't exists in the wallet");
                 return new byte[0];
             }
-            builder.identity(wallet, userName).networkConfig(networkConfigPath).discovery(true);
+            builder.identity(wallet, userName).networkConfig(networkConfigPath).discovery(false);
             try (Gateway gateway = builder.connect()) {
                 Network network = gateway.getNetwork("mychannel");
                 Contract contract = network.getContract("strategy", "org.mynetwork.strategy");

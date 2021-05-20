@@ -78,51 +78,49 @@ export default {
   },
   methods: {
     requestLogin(event) {
-      this.isLogin = true;
-      this.$message.success("登录成功");
-      sessionStorage.setItem("isLogin", this.isLogin);
-      this.$router.push({
-        path: "/home",
-      });
+      // this.isLogin = true;
+      // this.$message.success("登录成功");
+      // sessionStorage.setItem("isLogin", this.isLogin);
+      // this.$router.push({
+      //   path: "/home",
+      // });
 
-      //   let username = this.form.username;
-      //   let password = this.form.password;
-      //   let orgName = this.form.orgName;
-      //   this.$refs.form.validate((valid) => {
-      //     if (valid) {
-      //       this.loading = true;
-      //       let params = {
-      //         userName: username,
-      //         userSecret: password,
-      //         orgName: orgName,
-      //       };
-      //       console.log(params);
-      //       login(params)
-      //         .then((resp) => {
-      //           console.log(resp);
-      //           if (resp.data.code === 200) {
-      //             this.loading = false;
-      //             this.isLogin = true;
-      //             sessionStorage.setItem("isLogin", this.isLogin);
-      //             this.$message.success("登录成功");
-      //                   this.$router.push({
-      //     path: "/home",
-      //   });
-      //           }
-      //         })
-      //         .catch((err) => {
-      //           console.log(err);
-      //           this.loading = false;
-      //           this.$alert("username or password wrong!", "info", {
-      //             confirmButtonText: "ok",
-      //           });
-      //         });
-      //     } else {
-      //       console.log("error submit!");
-      //       return false;
-      //     }
-      //   });
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          this.loading = true;
+          let params = {
+            userName: this.form.username,
+            userSecret: this.form.password,
+            orgName: this.form.orgName,
+          };
+          console.log(params);
+          login(params)
+            .then((resp) => {
+              console.log(resp);
+              if (resp.data.code === 200) {
+                this.loading = false;
+                this.isLogin = true;
+                sessionStorage.setItem("isLogin", this.isLogin);
+                this.$message.success("登录成功");
+                this.$router.push({
+                  path: "/home",
+                });
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+              this.loading = false;
+              this.$alert("username or password wrong!", "info", {
+                confirmButtonText: "ok",
+              });
+            });
+        } else {
+          console.log("error submit!");
+          return false;
+        }
+      });
     },
+    
     registe(event) {
       let username = this.form.username;
       let password = this.form.password;

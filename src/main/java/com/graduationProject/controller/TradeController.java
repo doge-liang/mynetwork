@@ -27,13 +27,15 @@ public class TradeController {
 
     @GetMapping("/list")
     // public ResultDTO<List<Strategy>> getAllStrategies(@RequestBody Map map) throws IOException, ContractException {
-    public ResultDTO<Page<List<Trade>>> getTradesPageByStrategyID(@PathVariable("id") String id) {
+    public ResultDTO<Page<List<Trade>>> getTradesPageByStrategyID(@PathVariable("id") String id,
+                                                                  @RequestParam(required = false, defaultValue = "") String bookmark) {
+        System.out.println(bookmark);
         try {
             // String userName = (String) map.get("userName");
             // String userSecret = (String) map.get("userSecret");
             User user = new User("user1", "user1pw", "Subscriber");
             user.doEnroll();
-            byte[] result = user.doQuery("GetTradesByStrategyID", id, "");
+            byte[] result = user.doQuery("GetTradesPageByStrategyID", id, bookmark.replaceAll("_", "\u0000"));
             if (result.length != 0) {
                 Page<List<Trade>> trades = Trade.deserializePage(result);
                 System.out.println(trades);
@@ -46,17 +48,17 @@ public class TradeController {
         }
     }
 
-    @GetMapping("")
+    @GetMapping("/deleteAll")
     public ResultDTO<?> delTrades(@PathVariable String id) {
         try {
             User user = new User("user1", "user1pw", "Subscriber");
             user.doEnroll();
-            byte[] result = user.doQuery("GetTradesByStrategyID", id, "");
+            byte[] result = user.doQuery("GetTradesPageByStrategyID", id, "");
             while (result.length != 0) {
                 Page<List<Trade>> trades = Trade.deserializePage(result);
                 System.out.println(trades);
                 user.doInvoke("DelTradesByStrategyID", JSON.toJSONString(trades.getData()));
-                result = user.doQuery("GetTradesByStrategyID", id, "");
+                result = user.doQuery("GetTradesPageByStrategyID", id, "");
             }
             return new ResultDTO<>(StatusCode.SUCCESS);
         } catch (Exception e) {

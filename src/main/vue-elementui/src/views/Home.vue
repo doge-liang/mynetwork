@@ -1,16 +1,21 @@
 <template>
   <div>
     <el-backtop :visibility-height="6"></el-backtop>
-    <div v-for="item in strategys" :key="item.id">
+    <div v-for="item in strategies" :key="item.id">
       <el-row>
         <el-col :span="6" :offset="7">
           <el-card class="productOwn-card" shadow="hover">
             <template #header>
               <div class="card-header">
                 <span>{{ item.name }}</span>
-                <el-button type="primary" round @click="subscribe(item.id)"
+                <el-button
+                  type="primary"
+                  round
+                  v-if="!item.isSub"
+                  @click="subscribe(item.id)"
                   >订阅策略</el-button
                 >
+                <el-button type="primary" round v-else>取消订阅</el-button>
               </div>
             </template>
             <div class="item">
@@ -23,7 +28,7 @@
                 >年化收益: {{ item.annualReturn + "%" }}</span
               >
               <span style="color: #f56c6c"
-                >最大回撤: {{ item.maxDrawDown + "%" }}</span
+                >最大回撤: {{ item.maxDrawdown + "%" }}</span
               >
             </div>
             <div>
@@ -43,36 +48,24 @@
 </template>
 
 <script>
-
 import { getAllStrategies } from "@/http/apis";
 
 export default {
   name: "Home",
   components: {},
-  mounted() {
-  },
+  mounted() {},
   data() {
     return {
-      strategys: [
-        {
-          id: "1",
-          name: "RSI",
-          annualReturn: 24.08,
-          sharpeRatio: 0.65,
-          maxDrawDown: 23.44,
-        },
-        {
-          id: "2",
-          name: "MA",
-          annualReturn: 12.01,
-          sharpeRatio: 3.67,
-          maxDrawDown: 17.4,
-        },
-      ],
+      strategies: [],
     };
   },
-  create() {
-    this.$data.strategys = getAllStrategies()
+  created() {
+    getAllStrategies().then((resp) => {
+      console.log(resp);
+      if (resp.data.code === 200) {
+        this.$data.strategies = resp.data.data;
+      }
+    });
   },
   methods: {
     toMarketDetails(strategy) {

@@ -1,9 +1,8 @@
-package com.graduationProject.entity;
+package com.graduationProject.dto;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.graduationProject.dto.State;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -27,7 +26,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Data
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
-public class Strategy extends State {
+public class StrategyDTO extends State {
 
 
     // 策略ID
@@ -52,14 +51,16 @@ public class Strategy extends State {
     private Integer state;
 
     // 策略订阅者的用户凭证
-    private List<String> subscribers;
+    // private List<String> subscribers;
 
-    public static Strategy deserialize(byte[] data) {
+    private Boolean isSub;
+
+    public static StrategyDTO deserialize(byte[] data) {
         JSONObject json = JSON.parseObject(new String(data, UTF_8));
         return deserialize(json);
     }
 
-    public static Strategy deserialize(JSONObject json) {
+    public static StrategyDTO deserialize(JSONObject json) {
 
         String id = json.getString("id");
         String name = json.getString("name");
@@ -67,19 +68,20 @@ public class Strategy extends State {
         Double maxDrawdown = json.getDouble("maxDrawdown");
         Double annualReturn = json.getDouble("annualReturn");
         Double sharpRatio = json.getDouble("sharpeRatio");
-        List<String> subscribers = new ArrayList<>();
+        // List<String> subscribers = new ArrayList<>();
         // JSONArray subscribersArray = json.getJSONArray("subscribers");
         // for (int i = 0; i < subscribersArray.size(); i++) {
         //     subscribers.add(subscribersArray.getString(i));
         // }
+        Boolean isSub = json.getBoolean("isSub");
 
         Integer state = json.getInteger("state");
-        return createInstance(id, name, provider, maxDrawdown, annualReturn, sharpRatio, state, subscribers);
+        return createInstance(id, name, provider, maxDrawdown, annualReturn, sharpRatio, state, isSub);
     }
 
-    public static List<Strategy> deserializeList(byte[] data) {
+    public static List<StrategyDTO> deserializeList(byte[] data) {
         JSONArray json = JSON.parseArray(new String(data, UTF_8));
-        List<Strategy> strategies = new ArrayList<>();
+        List<StrategyDTO> strategies = new ArrayList<>();
         for (int i = 0; i < json.size(); i++) {
             strategies.add(deserialize(json.getJSONObject(i)));
         }
@@ -88,16 +90,16 @@ public class Strategy extends State {
     }
 
 
-    public static Strategy createInstance(String id,
-                                          String name,
-                                          String provider,
-                                          Double maxDrawdown,
-                                          Double annualReturn,
-                                          Double sharpeRatio,
-                                          Integer state,
-                                          List<String> subscribers
+    public static StrategyDTO createInstance(String id,
+                                             String name,
+                                             String provider,
+                                             Double maxDrawdown,
+                                             Double annualReturn,
+                                             Double sharpeRatio,
+                                             Integer state,
+                                             Boolean isSub
     ) {
-        return new Strategy()
+        return new StrategyDTO()
                 .setId(id)
                 .setName(name)
                 .setProvider(provider)
@@ -105,6 +107,6 @@ public class Strategy extends State {
                 .setAnnualReturn(annualReturn)
                 .setSharpeRatio(sharpeRatio)
                 .setState(state)
-                .setSubscribers(subscribers);
+                .setIsSub(isSub);
     }
 }

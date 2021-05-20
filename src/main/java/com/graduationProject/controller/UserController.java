@@ -24,10 +24,13 @@ public class UserController {
 //        return new ResultDTO<Object>(StatusCode.SUCCESS);
         String userName = (String) map.get("userName");
         String userSecret = (String) map.get("userSecret");
-        System.out.printf("userName:%s, password:%s \n", userName, userSecret);
-        User user = new User(userName, userSecret, "Subscriber");
-        if (user.doEnroll()) {
-            session.setAttribute("loginUser", userName);
+        String orgName = (String) map.get("orgName");
+
+        System.out.printf("userName:%s, password:%s, orgName: %s\n", userName, userSecret, orgName);
+        User user = new User(userName, userSecret, orgName);
+        if (user.login()) {
+            System.out.println(user.getEnrollment().getKey().toString());
+            session.setAttribute("loginUser", map);
             return new ResultDTO<>(StatusCode.SUCCESS);
         }
         return new ResultDTO<>(StatusCode.LOGIN_FAIL);
@@ -35,7 +38,10 @@ public class UserController {
 
     @PostMapping("/login-admin")
     public ResultDTO<Object> loginAdmin(String adminName, String adminSecret) throws Exception {
-        User admin = new User(adminName, adminSecret, "Subscriber");
+        User admin = new User(adminName, adminSecret, "Provider");
+        // admin.doEnroll();
+        // System.out.println(admin.getEnrollment().getCert());
+        // System.out.println(admin.getEnrollment().getKey());
         if (admin.doEnroll()) {
             return new ResultDTO<>(StatusCode.SUCCESS);
         }
