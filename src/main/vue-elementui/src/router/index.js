@@ -5,7 +5,6 @@ import Trade from '@/views/Trade.vue'
 import Login from '@/views/Login.vue'
 import PrivateMarket from '@/views/PrivateMarket.vue'
 import PrivateTrade from '@/views/PrivateTrade.vue'
-// import RSI2Strategy from "@/views/RSI2Strategy";
 
 const routes = [
   {
@@ -13,35 +12,35 @@ const routes = [
     name: 'Home',
     component: Home,
     meta: {
-      requireAuth: true,
+      requiresAuth: true,
     }
   },
   {
     path: '/strategy/:strategyId/market',
     component: Market,
     meta: {
-      requireAuth: true,
+      requiresAuth: true,
     }
   },
   {
     path: '/strategy/:strategyId/trade',
     component: Trade,
     meta: {
-      requireAuth: true,
+      requiresAuth: true,
     }
   },
   {
     path: '/strategy/:strategyId/private-market',
     component: PrivateMarket,
     meta: {
-      requireAuth: true,
+      requiresAuth: true,
     }
   },
   {
     path: '/strategy/:strategyId/private-trade',
     component: PrivateTrade,
     meta: {
-      requireAuth: true,
+      requiresAuth: true,
     }
   },
   {
@@ -62,22 +61,11 @@ router.beforeEach((to, from, next) => {
     console.log(islogin);
     console.log(to.path);
 
-    // if (to.path == "/login") {
-    //   sessionStorage.setItem("isLogin", false);
-    //   next();
-    // } else {
-    //   // requireAuth:可以在路由元信息指定哪些页面需要登录权限
-    console.log(to.meta.requireAuth)
-    //   if (to.meta.requireAuth && islogin) {
-    //     next();
-    //   } else {
-    //     next("/login");
-    //   }
-    // }
-    if (!islogin) {
-      next("/login");
-    } else {
+    console.log(to.meta.requiresAuth)
+    if (islogin) {
       next();
+    } else {
+      next("/login");
     }
   } else {
     next();

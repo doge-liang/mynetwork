@@ -7,8 +7,8 @@
             <i class="el-icon-s-home"> </i>
           </div>
         </el-space>
-        <el-button v-if="isLogin" type="primary" @click="mySubscriptions">
-          订阅列表
+        <el-button v-if="isLogin" type="primary" @click="logout">
+          注销
         </el-button>
         <el-button v-else type="primary" @click="toLogin">登录/注册</el-button>
       </el-header>
@@ -20,64 +20,39 @@
 </template>
 
 <script>
-// import LoginDialog from "./components/deprecated-Login.vue";
+import { onMounted, ref, reactive } from "vue";
+import { useRouter } from "vue-router";
 export default {
-  name: "App",
-  components: {
-    // "login-diaglog": LoginDialog,
-  },
-  data() {
-    return {
-      clientHeight: "",
-      isLogin: sessionStorage.getItem("isLogin"),
-      // showLogin: false,
-      form: {
-        name: "",
-        password: "",
-      },
-    };
-  },
-  mounted() {
-    // 获取浏览器可视区域高度
-    this.clientHeight = `${document.documentElement.clientHeight}`;
-    //document.body.clientWidth;
-    //console.log(self.clientHeight);
-    window.onresize = function temp() {
-      this.clientHeight = `${document.documentElement.clientHeight}`;
-    };
-    document.title = "区块链智能投顾平台";
-    // this.isLogin = sessionStorage.getItem("isLogin");
-  },
-  watch: {
-    // 如果 `clientHeight` 发生改变，这个函数就会运行
-    clientHeight: function () {
-      this.changeFixed(this.clientHeight);
-    },
-  },
-  methods: {
-    changeFixed(clientHeight) {
-      //动态修改样式
-      // console.log(clientHeight);
-      // console.log(this.$refs.homePage.$el.style.height);
-      this.$refs.homePage.$el.style.height = clientHeight - 20 + "px";
-    },
-    // check() {
-    //   this.showLogin = true;
-    // },
+  setup() {
+    const router = useRouter();
+    const isLogin = sessionStorage.getItem("isLogin");
 
-    mySubscriptions() {},
+    onMounted(() => {
+      document.title = "区块链智能投顾平台";
+    });
 
-    toLogin() {
-      this.$router.push({
+    // TODO 发起注销请求
+    const logout = () => {
+      sessionStorage.setItem("isLogin", false);
+    };
+
+    const toLogin = () => {
+      router.push({
         path: "/login",
       });
-    },
-    toHome() {
-      console.log("我点了！！！！！！！！！！！！！！！！");
-      this.$router.push({
+    };
+
+    const toHome = () => {
+      router.push({
         path: "/home",
       });
-    },
+    };
+
+    return {
+      isLogin,
+      logout,
+      toHome,
+    };
   },
 };
 </script>

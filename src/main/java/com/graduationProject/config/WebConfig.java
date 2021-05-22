@@ -24,7 +24,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new LoginInterceptor())
                 .excludePathPatterns("/swagger-ui.html", "/webjars/springfox-swagger-ui/**", "/swagger-resources/**",
                         "/csrf", "/error")
-                .excludePathPatterns("/", "/user/login", "/user/login-admin")
+                .excludePathPatterns("/", "/user/login", "/user/login-admin", "/strategy/distribute/**", "/strategy" +
+                        "/update/**")
                 .addPathPatterns("/**");
 
 

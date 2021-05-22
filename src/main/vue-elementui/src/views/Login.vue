@@ -4,17 +4,17 @@
       <el-header> 区块链智能投顾平台 </el-header>
       <el-main>
         <el-form
-          ref="form"
+          ref="ruleForm"
           status-icon
-          :rules="rulesLogin"
+          :rules="rules"
           :label-position="labelPosition"
-          :model="form"
+          :model="formModel"
           label-width="80px"
         >
           <el-form-item prop="username" label="账 号">
             <el-input
               size="medium"
-              v-model="form.username"
+              v-model="formModel.username"
               clearable
               placeholder="请输入账号"
             ></el-input>
@@ -25,13 +25,13 @@
               clearable
               show-password
               size="medium"
-              v-model="form.password"
+              v-model="formModel.password"
               placeholder="请输入密码"
             ></el-input>
           </el-form-item>
 
           <el-form-item prop="orgName" label="登录身份">
-            <el-select v-model="form.orgName" placeholder="请选择登录身份">
+            <el-select v-model="formModel.orgName" placeholder="请选择登录身份">
               <el-option label="策略发布者" value="Provider"></el-option>
               <el-option label="策略订阅者" value="Subscriber"></el-option>
             </el-select>
@@ -51,100 +51,88 @@
 <script>
 import { login } from "@/http/apis";
 import { register } from "@/http/apis";
+import { reactive, ref, unref } from "vue";
+import { ElMessage } from "element-plus";
+import { useRouter } from "vue-router";
 
 export default {
-  data() {
-    return {
-      labelPosition: "left",
-      loading: false,
-      form: {
-        username: "",
-        password: "",
-        orgName: "Subscriber",
-      },
-      // 校验表单规则
-      rulesLogin: {
-        username: [
-          // FormItem标签中的 prop 属性预期值
-          { required: true, message: "用户名不能为空", trigger: "blur" },
-        ],
-        password: [
-          // FormItem标签中的 prop 属性预期值
-          { required: true, message: "密码不能为空", trigger: "blur" },
-        ],
-      },
-      //   formLabelWidth: "120px",
+  emits: ["isLogin"],
+  setup(props, context) {
+    let loading = false;
+    const labelPosition = "left";
+    const ruleForm = ref(null);
+    const formModel = reactive({
+      username: "",
+      password: "",
+      orgName: "Subscriber",
+    });
+    // 校验表单规则
+    const rules = {
+      username: [
+        // FormItem标签中的 prop 属性预期值
+        { required: true, message: "用户名不能为空", trigger: "blur" },
+      ],
+      password: [
+        // FormItem标签中的 prop 属性预期值
+        { required: true, message: "密码不能为空", trigger: "blur" },
+      ],
     };
-  },
-  methods: {
-    requestLogin(event) {
-      // this.isLogin = true;
-      // this.$message.success("登录成功");
-      // sessionStorage.setItem("isLogin", this.isLogin);
-      // this.$router.push({
-      //   path: "/home",
-      // });
+    const router = useRouter();
 
-      this.$refs.form.validate((valid) => {
+    const requestLogin = async () => {
+      ruleForm.value.validate((valid) => {
         if (valid) {
-          this.loading = true;
+          loading = true;
           let params = {
-            userName: this.form.username,
-            userSecret: this.form.password,
-            orgName: this.form.orgName,
+            userName: formModel.username,
+            userSecret: formModel.password,
+            orgName: formModel.orgName,
           };
           console.log(params);
           login(params)
             .then((resp) => {
               console.log(resp);
               if (resp.data.code === 200) {
-                this.loading = false;
-                this.isLogin = true;
-                sessionStorage.setItem("isLogin", this.isLogin);
-                this.$message.success("登录成功");
-                this.$router.push({
+                loading = false;
+                sessionStorage.setItem("isLogin", true);
+                ElMessage.success("登录成功");
+                context.emit("isLogin");
+                router.push({
                   path: "/home",
                 });
               }
             })
             .catch((err) => {
               console.log(err);
-              this.loading = false;
-              this.$alert("username or password wrong!", "info", {
-                confirmButtonText: "ok",
-              });
+              loading = false;
+              ElMessage.error("username or password wrong!");
             });
         } else {
           console.log("error submit!");
           return false;
         }
       });
-    },
-    
-    registe(event) {
-      let username = this.form.username;
-      let password = this.form.password;
-      this.$refs.form.validate((valid) => {
+    };
+
+    const registe = async () => {
+      ruleForm.validate((valid) => {
         if (valid) {
-          this.loading = true;
+          loading = true;
           let params = {
-            userName: username,
-            userSecret: password,
+            userName: formModel.username,
+            userSecret: formModel.password,
+            orgName: formModel.orgName,
           };
           console.log(params);
           register(params).then((resp) => {
             console.log(resp);
             if (resp.data.code === 200) {
-              this.loading = false;
-              this.isLogin = true;
-              sessionStorage.setItem("isLogin", this.isLogin);
-              this.$message.success("登录成功");
-              this.closeDialog();
+              loading = false;
+              sessionStorage.setItem("isLogin", true);
+              ElMessage.success("登录成功");
             } else {
-              this.loading = false;
-              this.$alert("registration failed!", "info", {
-                confirmButtonText: "ok",
-              });
+              loading = false;
+              ElMessage.error("registration failed!");
             }
           });
         } else {
@@ -152,7 +140,17 @@ export default {
           return false;
         }
       });
-    },
+    };
+
+    return {
+      requestLogin,
+      registe,
+      labelPosition,
+      loading,
+      formModel,
+      rules,
+      ruleForm,
+    };
   },
 };
 </script>

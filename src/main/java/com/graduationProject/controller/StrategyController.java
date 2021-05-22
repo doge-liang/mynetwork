@@ -91,7 +91,7 @@ public class StrategyController {
                 res.getAnnualReturn(),
                 res.getSharpeRatio(),
                 state,
-                null
+                new ArrayList<>()
         );
         admin.doInvoke("Distribute", Strategy.serialize(strat));
         return new ResultDTO<>(strat);
