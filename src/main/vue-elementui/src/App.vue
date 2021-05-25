@@ -72,6 +72,9 @@ export default {
   font-size: x-large;
   justify-content: space-between;
 }
+.el-footer {
+  justify-content: flex-end;
+}
 #banner.el-header {
   background-color: #409eff;
   line-height: 60px;

@@ -25,11 +25,9 @@
       >
     </div>
     <div>
-      <el-button type="text" @click="toMarket(strategy.id)"
-        >信号及持仓</el-button
-      >
+      <el-button type="text" @click="toMarket(strategy)">信号及持仓</el-button>
       <el-divider direction="vertical" />
-      <el-button type="text" @click="toTrade(strategy.id)">交易记录</el-button>
+      <el-button type="text" @click="toTrade(strategy)">交易记录</el-button>
     </div>
   </el-card>
 </template>
@@ -53,15 +51,27 @@ export default defineComponent({
     const toMarket = (strategy) => {
       console.log(strategy);
       ElMessage("操作成功!");
-      router.push({
-        path: "/strategy/" + strategy + "/private-market",
-      });
+      if (!strategy.isSub && strategy.state === 1) {
+        router.push({
+          path: "/strategy/" + strategy.id + "/market",
+          query: {
+            display: false,
+          },
+        });
+      } else {
+        router.push({
+          path: "/strategy/" + strategy.id + "/market",
+          query: {
+            display: true,
+          },
+        });
+      }
     };
     const toTrade = (strategy) => {
       console.log(strategy);
       ElMessage("操作成功!");
       router.push({
-        path: "/strategy/" + strategy + "/private-trade",
+        path: "/strategy/" + strategy.id + "/trade",
       });
     };
     const subscribe = (strategyId) => {

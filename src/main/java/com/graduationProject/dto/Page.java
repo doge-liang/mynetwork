@@ -22,10 +22,11 @@ public class Page<T extends Collection<?>> {
     private Integer totalPage;
     private String bookmark;
 
-    public Page(T data, String bookmark){
+    public Page(T data, String bookmark, Integer pageSize){
         this.data = data;
         this.totalPage = data.size();
         this.bookmark = bookmark;
         this.pageSize = 40;
+        this.pageSize = pageSize;
     }
 }

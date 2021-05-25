@@ -123,7 +123,7 @@ public class StrategyController {
                 res.getAnnualReturn(),
                 res.getSharpeRatio(),
                 state,
-                null
+                new ArrayList<>()
         );
         List<Trade> newTrades = new ArrayList<>();
         List<PlanningTrade> newPlanningTrades = new ArrayList<>();
@@ -147,7 +147,7 @@ public class StrategyController {
 
         // 获取所有交易
         System.out.println("获取所有交易");
-        result = admin.doQuery("GetTradesPageByStrategyID", id, "");
+        result = admin.doQuery("GetTradesPageByStrategyID", id, "", "40");
         TradeOutput to = JSON.parseObject(new String(result, StandardCharsets.UTF_8), TradeOutput.class);
         List<Trade> oldTrades = new ArrayList<>();
         if (Objects.nonNull(to) && to.getTrades().size() == 40) {
@@ -155,7 +155,7 @@ public class StrategyController {
 
             while (to.getTrades().size() == 40) {
                 System.out.println("有交易");
-                result = admin.doQuery("GetTradesPageByStrategyID", id, to.getBookmark());
+                result = admin.doQuery("GetTradesPageByStrategyID", id, to.getBookmark(), "40");
                 to = JSON.parseObject(new String(result, StandardCharsets.UTF_8), TradeOutput.class);
                 System.out.println(to);
                 System.out.println(to.getBookmark());

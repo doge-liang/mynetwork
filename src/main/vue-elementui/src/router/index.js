@@ -4,7 +4,6 @@ import Market from '@/views/Market.vue'
 import Trade from '@/views/Trade.vue'
 import Login from '@/views/Login.vue'
 import PrivateMarket from '@/views/PrivateMarket.vue'
-import PrivateTrade from '@/views/PrivateTrade.vue'
 
 const routes = [
   {
@@ -32,13 +31,6 @@ const routes = [
   {
     path: '/strategy/:strategyId/private-market',
     component: PrivateMarket,
-    meta: {
-      requiresAuth: true,
-    }
-  },
-  {
-    path: '/strategy/:strategyId/private-trade',
-    component: PrivateTrade,
     meta: {
       requiresAuth: true,
     }

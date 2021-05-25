@@ -3,47 +3,25 @@
     <el-container>
       <el-header>计划交易</el-header>
       <el-main>
-        <el-table :data="planningTrades" highlight-current-row>
-          <!-- <el-table-column property="id" label="id" width="150"></el-table-column> -->
-          <!-- <el-table-column
-        property="date"
-        label="日期"
-        width="150"
-      ></el-table-column> -->
-      <el-table-column
-            property="ID"
-            label="ID"
-            width="200"
-          ></el-table-column>
-          <el-table-column
-            property="stockID"
-            label="股票"
-            width="200"
-          ></el-table-column>
-          <el-table-column property="amount" label="交易份额"></el-table-column>
-        </el-table>
+        <private-table
+          :is="!display"
+          :loading="loadingPlanningTrades"
+        ></private-table>
+        <planningTrade-table
+          :is="display"
+          :loading="loadingPlanningTrades"
+        ></planningTrade-table>
       </el-main>
       <el-header>持仓信息</el-header>
       <el-main>
-        <el-table :data="positions" highlight-current-row>
-          <!-- <el-table-column property="id" label="id" width="150"></el-table-column> -->
-          <!-- <el-table-column
-        property="date"
-        label="日期"
-        width="150"
-      ></el-table-column> -->
-            <el-table-column
-            property="ID"
-            label="ID"
-            width="200"
-          ></el-table-column>
-          <el-table-column
-            property="stockID"
-            label="股票"
-            width="200"
-          ></el-table-column>
-          <el-table-column property="amount" label="价值"></el-table-column>
-        </el-table>
+        <private-table
+          :is="!display"
+          :loading="loadingPositions"
+        ></private-table>
+        <position-table
+          :is="display"
+          :loading="loadingPositions"
+        ></position-table>
       </el-main>
     </el-container>
     <el-button
@@ -56,25 +34,72 @@
 </template>
 
 <script>
-// import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from "vue";
+import { onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import {
+  getPlanningTradesByStrategyID,
+  getPositionsByStrategyID,
+} from "@/http/apis";
+import { privateTable } from "@/components/PrivateTable.vue";
+import { planningTradeTable } from "@/components/PlanningTradeTable.vue";
+import { positionTable } from "@/components/PositionTable.vue";
 
-export default {
-  name: "Market",
-  mounted() {},
-  data() {
+export default defineComponent({
+  components: {
+    "private-table": privateTable,
+    "planningTrade-table": planningTradeTable,
+    "position-table": positionTable,
+  },
+  setup() {
+    const router = useRouter();
+    const route = useRoute();
+
+    let loadingPlanningTrades = ref(false);
+    let loadingPositions = ref(false);
+    let planningTrades = ref([]);
+    let positions = ref([]);
+
+    let display = ref(false);
+
+    const toHome = () => {
+      router.push("/home");
+    };
+
+    onMounted(async () => {
+      display.value = route.query.display;
+      loadingPlanningTrades = true;
+      getPlanningTradesByStrategyID(route.path).then((Response) => {
+        loadingPlanningTrades.value = false;
+        console.log(Response);
+        const PlanningTradeOutput = Response.data.data;
+        if (display.value) {
+          planningTrades.value = PlanningTradeOutput.planningTrades;
+        } else {
+          planningTrades.value = PlanningTradeOutput.planningTradesHash;
+        }
+      });
+
+      loadingPositions = true;
+      getPositionsByStrategyID(route.path).then((Response) => {
+        loadingPositions.value = false;
+        console.log(Response);
+        const PositionOutput = Response.data.data;
+        if (display.value) {
+          positions.value = PositionOutput.positions;
+        } else {
+          positions.value = PositionOutput.positionsHash;
+        }
+      });
+    });
+
     return {
-      //   strategyId: this.$router.params.strategyId,
-      planningTrades: [],
-      positions: [],
+      loadingPlanningTrades,
+      loadingPositions,
+      planningTrades,
+      positions,
+      toHome,
     };
   },
-  created() {
-
-  },
-  methods: {
-    toHome() {
-      this.$router.push("/home");
-    },
-  },
-};
+});
 </script>

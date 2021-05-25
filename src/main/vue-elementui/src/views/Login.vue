@@ -56,7 +56,7 @@ import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
 
 export default {
-  emits: ["isLogin"],
+  // emits: ["isLogin"],
   setup(props, context) {
     let loading = false;
     const labelPosition = "left";
@@ -96,7 +96,7 @@ export default {
                 loading = false;
                 sessionStorage.setItem("isLogin", true);
                 ElMessage.success("登录成功");
-                context.emit("isLogin");
+                // context.emit("isLogin");
                 router.push({
                   path: "/home",
                 });
@@ -165,6 +165,7 @@ export default {
 #login-footer {
   padding: 0% 20%;
   margin: 2% 0%;
+  justify-content: space-between;
 }
 .el-header {
   display: block;

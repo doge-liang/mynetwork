@@ -101,7 +101,7 @@ public class Trade extends State {
         return trades;
     }
 
-    public static Page<List<Trade>> deserializePage(byte[] data) {
+    public static Page<List<Trade>> deserializePage(byte[] data, Integer pageSize) {
         JSONObject json = JSON.parseObject(new String(data, UTF_8));
         JSONArray tradesArray = json.getJSONArray("trades");
         String bookmark = json.getString("bookmark");
@@ -110,7 +110,7 @@ public class Trade extends State {
             trades.add(deserialize(tradesArray.getJSONObject(i)));
         }
 
-        return new Page<>(trades, bookmark);
+        return new Page<>(trades, bookmark, pageSize);
     }
 
     public static Trade createInstance(

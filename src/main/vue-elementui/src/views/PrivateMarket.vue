@@ -3,7 +3,16 @@
     <el-container>
       <el-header>计划交易</el-header>
       <el-main>
-        <el-table :data="planningTrades" highlight-current-row>
+        <el-table
+          v-loading="loadingPlanningTrades"
+          :data="planningTrades"
+          highlight-current-row
+        >
+          <el-table-column
+            property="id"
+            label="id"
+            width="500"
+          ></el-table-column>
           <el-table-column
             property="hash"
             label="hashcode"
@@ -13,7 +22,16 @@
       </el-main>
       <el-header>持仓信息</el-header>
       <el-main>
-        <el-table :data="positions" highlight-current-row>
+        <el-table
+          v-loading="loadingPositions"
+          :data="positions"
+          highlight-current-row
+        >
+          <el-table-column
+            property="id"
+            label="id"
+            width="500"
+          ></el-table-column>
           <el-table-column
             property="hash"
             label="hashcode"
@@ -21,39 +39,66 @@
           ></el-table-column>
         </el-table>
       </el-main>
+      <el-footer>
+        <el-button
+          type="primary"
+          style="margin-top: 20px; margin-bottom: 45px"
+          @click="toHome"
+          >返回</el-button
+        >
+      </el-footer>
     </el-container>
-    <el-button
-      type="primary"
-      style="margin-top: 20px; margin-bottom: 45px"
-      @click="toHome"
-      >返回</el-button
-    >
   </div>
 </template>
 
 <script>
-// import { defineComponent } from "@vue/composition-api";
+import { onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import {
+  getPlanningTradesByStrategyID,
+  getPositionsByStrategyID,
+} from "@/http/apis";
+
+// import { defineComponent } from "vue";
 
 export default {
   name: "PrivateMarket",
-  mounted() {},
-  data() {
-    return {
-      //   strategyId: this.$router.params.strategyId,
-      planningTrades: [{
-        hash:
-          "13cb230ff2557005cc61fc1f4bb6f6cab6a9df58b19c202cb70bdf52e92dfc3a",
-      }],
-      positions: [{
-        hash:
-          "f036e87b74b9796acec88d8d8981ec2ab98238658c8bc55fcd5ff94c4d0b3582",
-      }],
+  setup() {
+    const router = useRouter();
+    const route = useRoute();
+
+    let loadingPlanningTrades = ref(false);
+    let loadingPositions = ref(false);
+    let planningTrades = ref([]);
+    let positions = ref([]);
+
+    const toHome = () => {
+      router.push("/home");
     };
-  },
-  methods: {
-    toHome() {
-      this.$router.push("/home");
-    },
+
+    onMounted(async () => {
+      loadingPlanningTrades = true;
+      getPlanningTradesByStrategyID(route.path).then((Response) => {
+        loadingPlanningTrades.value = false;
+        console.log(Response);
+        planningTrades.value = Response.data.data.planningTrades;
+      });
+
+      loadingPositions = true;
+      getPositionsByStrategyID(route.path).then((Response) => {
+        loadingPositions.value = false;
+        console.log(Response);
+        positions.value = Response.data.data.positions;
+      });
+    });
+
+    return {
+      loadingPlanningTrades,
+      loadingPositions,
+      planningTrades,
+      positions,
+      toHome,
+    };
   },
 };
 </script>
