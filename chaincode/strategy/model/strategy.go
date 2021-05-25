@@ -82,3 +82,8 @@ func DeserializeStrategy(bytes []byte, strategy *Strategy) error {
 
 	return nil
 }
+
+type StrategyOutput struct {
+	Strategy
+	IsSub bool `json:"isSub"`
+}

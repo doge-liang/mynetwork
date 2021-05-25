@@ -35,8 +35,8 @@ func (tl *TradeList) AddTrade(trade *Trade) error {
 // }
 
 // 根据策略ID 获取交易页
-func (tl *TradeList) GetTradesByStrategyIDPage(strategyID string, bookmark string) ([]*Trade, string, error) {
-	iter, bookmark, err := tl.stateList.GetStateByPartialCompositeKeyWithPagination([]string{strategyID}, 40, bookmark)
+func (tl *TradeList) GetTradesByStrategyIDPage(strategyID string, bookmark string, pagesize int32) ([]*Trade, string, error) {
+	iter, bookmark, err := tl.stateList.GetStateByPartialCompositeKeyWithPagination([]string{strategyID}, pagesize, bookmark)
 	if err != nil {
 		return nil, "", err
 	}
@@ -46,9 +46,6 @@ func (tl *TradeList) GetTradesByStrategyIDPage(strategyID string, bookmark strin
 	for iter.HasNext() {
 		i++
 		log.Print(i)
-		if i > 40 {
-			break
-		}
 		response, err := iter.Next()
 		if err != nil {
 			return nil, "", err
@@ -77,9 +74,6 @@ func (tl *TradeList) GetTradesByStrategyID(strategyID string) ([]*Trade, error) 
 	for iter.HasNext() {
 		i++
 		log.Print(i)
-		if i > 40 {
-			break
-		}
 		response, err := iter.Next()
 		if err != nil {
 			return nil, err
