@@ -1,12 +1,15 @@
 from flask import jsonify, Blueprint
-from app.main.strategy import RSI
+import importlib
 
-analysis = Blueprint('analysis', __name__)
+analysis = Blueprint("analysis", __name__)
 
 
-@analysis.route('/RSI')
-def RSI_analysis():
-    sharpe_ratio, max_drawdown, annual_return, transactions, positions, planning_trades = RSI.run_strategy()
+@analysis.route('/<strategy>')
+def handle_analysis(strategy):
+    strategy_path = "app.main.strategy." + strategy
+    strategy_package = importlib.import_module(strategy_path)
+    run_strategy = getattr(strategy_package, "run_strategy")
+    sharpe_ratio, max_drawdown, annual_return, transactions, positions, planning_trades = run_strategy()
     response = jsonify({
         "sharpeRatio": sharpe_ratio,
         "maxDrawdown": max_drawdown,

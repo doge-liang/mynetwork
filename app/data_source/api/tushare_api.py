@@ -16,6 +16,7 @@ class Stock():
         print(token)
         self.pro = ts.pro_api(token)
         self.data_local_path = Path.cwd() / '..' / 'data_source' / 'local'
+        # self.data_local_path = Path.cwd() / '../..' / 'data_source' / 'local'
         self.local_data_list = [path.stem for path in self.data_local_path.iterdir() if path.is_file()]
         if type(now) == str:
             try:
@@ -39,7 +40,7 @@ class Stock():
         return list(codes)
 
     def updateLocal(self):
-        self.before = timedelta(days=365)
+        # self.before = timedelta(days=365)
         for code in tqdm(self.getHS300()):
             stock_data = self.getDailyKVOnline(code)
             self.save_csv(stock_data, code)
@@ -99,7 +100,7 @@ class Stock():
         stock_data['openinterest'] = 0
         stock_data.fillna(1)
         stock_data = stock_data.iloc[::-1]
-        self.save_csv(stock_data, code)
+        # self.save_csv(stock_data, code)
         return stock_data
 
     def getStockPoolDailyKV(self, codes):
@@ -155,7 +156,10 @@ class Stock():
     def str2date(self, date_str: str):
         return datetime.strptime(date_str, self.TIME_STR)
 
-# if __name__ == '__main__':
+
+if __name__ == '__main__':
+    data_api = Stock(datetime.now(), 500, 0)
+    data_api.updateLocal()
 #     # 显示所有列
 #     pd.set_option('display.max_columns', None)
 #     # 显示所有行
