@@ -6,10 +6,13 @@
         type="primary"
         round
         v-if="!strategy.isSub"
-        @click="subscribe(strategy.id)"
+        :loading="loading"
+        @click="subscribe(strategy)"
         >订阅策略</el-button
       >
-      <el-button type="primary" round v-else>取消订阅</el-button>
+      <el-button :loading="loading" round v-else @click="unsubscribe(strategy)"
+        >取消订阅</el-button
+      >
     </div>
     <div class="card-item">
       <span style="color: #409eff">策略ID: {{ strategy.id }}</span>
@@ -33,9 +36,10 @@
 </template>
 
 <script>
-import { defineComponent } from "vue";
-import { useRouter } from "vue-router";
+import { defineComponent, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import { Subscribe, Unsubscribe } from "@/http/apis";
 
 export default defineComponent({
   props: {
@@ -44,6 +48,9 @@ export default defineComponent({
 
   setup(props, context) {
     const router = useRouter();
+    const route = useRoute();
+
+    const loading = ref(false);
 
     console.log("加载 strategy-card 组件");
     console.log(props.strategy);
@@ -74,15 +81,31 @@ export default defineComponent({
         path: "/strategy/" + strategy.id + "/trade",
       });
     };
-    const subscribe = (strategyId) => {
-      console.log(strategyId);
-      ElMessage.success("订阅成功!");
+
+    const subscribe = (strategy) => {
+      loading.value = true;
+      Subscribe("strategy/" + strategy.id).then((Response) => {
+        ElMessage.success("订阅成功!");
+        loading.value = false;
+        props.strategy.isSub = true;
+      });
+    };
+
+    const unsubscribe = (strategy) => {
+      loading.value = true;
+      Unsubscribe("strategy/" + strategy.id).then((Response) => {
+        ElMessage.success("取消成功!");
+        loading.value = false;
+        props.strategy.isSub = false;
+      });
     };
 
     return {
       toMarket,
       toTrade,
       subscribe,
+      unsubscribe,
+      loading,
     };
   },
 });

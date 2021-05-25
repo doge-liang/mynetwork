@@ -3,53 +3,49 @@
     <el-container>
       <el-header>计划交易</el-header>
       <el-main>
-        <private-table
-          :is="!display"
+        <component
+          :is="displayPlanningTradeTable"
           :loading="loadingPlanningTrades"
-        ></private-table>
-        <planningTrade-table
-          :is="display"
-          :loading="loadingPlanningTrades"
-        ></planningTrade-table>
+          :data="PlanningTrades"
+        ></component>
       </el-main>
       <el-header>持仓信息</el-header>
       <el-main>
-        <private-table
-          :is="!display"
+        <component
+          :is="displayPositionTable"
           :loading="loadingPositions"
-        ></private-table>
-        <position-table
-          :is="display"
-          :loading="loadingPositions"
-        ></position-table>
+          :data="Positions"
+        ></component>
       </el-main>
     </el-container>
-    <el-button
-      type="primary"
-      style="margin-top: 20px; margin-bottom: 45px"
-      @click="toHome"
-      >返回</el-button
-    >
+    <el-footer>
+      <el-button
+        type="primary"
+        style="margin-top: 20px; margin-bottom: 45px"
+        @click="toHome"
+        >返回</el-button
+      >
+    </el-footer>
   </div>
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, reactive } from "vue";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
   getPlanningTradesByStrategyID,
   getPositionsByStrategyID,
 } from "@/http/apis";
-import { privateTable } from "@/components/PrivateTable.vue";
-import { planningTradeTable } from "@/components/PlanningTradeTable.vue";
-import { positionTable } from "@/components/PositionTable.vue";
+import privateTable from "@/components/PrivateTable.vue";
+import planningTradeTable from "@/components/PlanningTradeTable.vue";
+import positionTable from "@/components/PositionTable.vue";
 
 export default defineComponent({
   components: {
-    "private-table": privateTable,
-    "planningTrade-table": planningTradeTable,
-    "position-table": positionTable,
+    privateTable,
+    planningTradeTable,
+    positionTable,
   },
   setup() {
     const router = useRouter();
@@ -57,38 +53,62 @@ export default defineComponent({
 
     let loadingPlanningTrades = ref(false);
     let loadingPositions = ref(false);
-    let planningTrades = ref([]);
-    let positions = ref([]);
 
-    let display = ref(false);
+    let PlanningTrades = ref([]);
+    let Positions = ref([]);
+
+    let displayPlanningTradeTable;
+    let displayPositionTable;
+
+    if (route.query.display === "true") {
+      displayPlanningTradeTable = planningTradeTable;
+    } else {
+      displayPlanningTradeTable = privateTable;
+    }
+
+    if (route.query.display === "true") {
+      displayPositionTable = positionTable;
+    } else {
+      displayPositionTable = privateTable;
+    }
 
     const toHome = () => {
       router.push("/home");
     };
 
     onMounted(async () => {
-      display.value = route.query.display;
-      loadingPlanningTrades = true;
-      getPlanningTradesByStrategyID(route.path).then((Response) => {
-        loadingPlanningTrades.value = false;
+      let url = route.path.split("/").slice(0, 3).join("/");
+
+      loadingPlanningTrades.value = true;
+      console.log(url + "/planningTrade");
+      getPlanningTradesByStrategyID(url + "/planningTrade").then((Response) => {
         console.log(Response);
-        const PlanningTradeOutput = Response.data.data;
-        if (display.value) {
-          planningTrades.value = PlanningTradeOutput.planningTrades;
+        loadingPlanningTrades.value = false;
+        if (route.query.display === "true") {
+          Response.data.data.planningTrades.forEach((element) => {
+            PlanningTrades.value.push(element);
+          });
         } else {
-          planningTrades.value = PlanningTradeOutput.planningTradesHash;
+          console.log(Response);
+          Response.data.data.planningTradesHash.forEach((element) => {
+            PlanningTrades.value.push(element);
+          });
         }
       });
 
-      loadingPositions = true;
-      getPositionsByStrategyID(route.path).then((Response) => {
-        loadingPositions.value = false;
+      loadingPositions.value = true;
+      console.log(url + "/position");
+      getPositionsByStrategyID(url + "/position").then((Response) => {
         console.log(Response);
-        const PositionOutput = Response.data.data;
-        if (display.value) {
-          positions.value = PositionOutput.positions;
+        loadingPositions.value = false;
+        if (route.query.display === "true") {
+          Response.data.data.positions.forEach((element) => {
+            Positions.value.push(element);
+          });
         } else {
-          positions.value = PositionOutput.positionsHash;
+          Response.data.data.positionsHash.forEach((element) => {
+            Positions.value.push(element);
+          });
         }
       });
     });
@@ -96,9 +116,12 @@ export default defineComponent({
     return {
       loadingPlanningTrades,
       loadingPositions,
-      planningTrades,
-      positions,
+      PlanningTrades,
+      Positions,
       toHome,
+      displayPlanningTradeTable,
+      displayPositionTable,
+      privateTable,
     };
   },
 });

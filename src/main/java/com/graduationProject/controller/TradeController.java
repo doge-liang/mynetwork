@@ -10,9 +10,11 @@ import com.graduationProject.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * TradeController
@@ -31,15 +33,20 @@ public class TradeController {
 
     @GetMapping("/list")
     // public ResultDTO<List<Strategy>> getAllStrategies(@RequestBody Map map) throws IOException, ContractException {
-    public ResultDTO<Page<List<Trade>>> getTradesPageByStrategyID(@PathVariable("id") String id,
-                                                                  @RequestParam(required = false, defaultValue = "") String bookmark,
-                                                                  @RequestParam(required = false, defaultValue = "40") Integer pageSize) {
+    public ResultDTO<Page<List<Trade>>> getTradesPageByStrategyID(
+            HttpSession session,
+            @PathVariable("id") String id,
+            @RequestParam(required = false, defaultValue = "") String bookmark,
+            @RequestParam(required = false, defaultValue = "40") Integer pageSize) {
         // System.out.println(bookmark);
         log.info(bookmark);
         try {
-            // String userName = (String) map.get("userName");
-            // String userSecret = (String) map.get("userSecret");
-            User user = new User("user1", "user1pw", "Subscriber");
+            Map map = (Map) session.getAttribute("loginUser");
+            String userName = (String) map.get("userName");
+            String userSecret = (String) map.get("userSecret");
+            String orgName = (String) map.get("orgName");
+
+            User user = new User(userName, userSecret, orgName);
             user.doEnroll();
             byte[] result = user.doQuery("GetTradesPageByStrategyID", id, bookmark.replaceAll(" ", "\u0000"),
                     pageSize.toString());

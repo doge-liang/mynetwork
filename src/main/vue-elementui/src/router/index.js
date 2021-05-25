@@ -38,6 +38,10 @@ const routes = [
   {
     path: '/login',
     component: Login,
+  },
+  {
+    path: '/',
+    redirect: '/home'
   }]
 
 const router = createRouter({

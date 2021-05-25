@@ -6,13 +6,14 @@ import com.graduationProject.entity.User;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * @author : Niaowuuu
  * @ClassName : UserController
  * @说明 : 用户接口控制器
  * @创建日期 : 2021/3/24
- * @author : Niaowuuu
  * @since : 1.0
  */
 @RestController
@@ -20,8 +21,12 @@ import java.util.Map;
 public class UserController {
 
     @PostMapping("/login")
+    // public ResultDTO<Object> login(HttpSession session,
+    //                                @RequestParam("userName") String userName,
+    //                                @RequestParam("userSecret") String userSecret,
+    //                                @RequestParam("orgName") String orgName) throws Exception {
     public ResultDTO<Object> login(HttpSession session, @RequestBody Map map) throws Exception {
-//        return new ResultDTO<Object>(StatusCode.SUCCESS);
+
         String userName = (String) map.get("userName");
         String userSecret = (String) map.get("userSecret");
         String orgName = (String) map.get("orgName");
@@ -30,6 +35,10 @@ public class UserController {
         User user = new User(userName, userSecret, orgName);
         if (user.login()) {
             System.out.println(user.getEnrollment().getKey().toString());
+            // HashMap<String, String> map = new HashMap<>();
+            // map.put("userName", userName);
+            // map.put("userSecret", userSecret);
+            // map.put("orgName", orgName);
             session.setAttribute("loginUser", map);
             return new ResultDTO<>(StatusCode.SUCCESS);
         }

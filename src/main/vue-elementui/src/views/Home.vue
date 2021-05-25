@@ -23,36 +23,36 @@ export default {
   },
   setup() {
     const strategies = ref([]);
-    strategies.value = [
-      {
-        id: "6799979985630134272",
-        name: "MA",
-        provider: "",
-        maxDrawdown: 16.82,
-        annualReturn: 12.96,
-        sharpeRatio: 0.63,
-        state: 1,
-        isSub: false,
-      },
-      {
-        id: "6799980250357825536",
-        name: "RSI",
-        provider: "",
-        maxDrawdown: 15.64,
-        annualReturn: 33.48,
-        sharpeRatio: 0.79,
-        state: 0,
-        isSub: false,
-      },
-    ];
-    // onMounted(async () => {
-    //   getAllStrategies().then((resp) => {
-    //     console.log(resp);
-    //     if (resp.data.code === 200) {
-    //       strategies.value = resp.data.data;
-    //     }
-    //   });
-    // });
+    // strategies.value = [
+    //   {
+    //     id: "6799979985630134272",
+    //     name: "MA",
+    //     provider: "",
+    //     maxDrawdown: 16.82,
+    //     annualReturn: 12.96,
+    //     sharpeRatio: 0.63,
+    //     state: 1,
+    //     isSub: false,
+    //   },
+    //   {
+    //     id: "6799980250357825536",
+    //     name: "RSI",
+    //     provider: "",
+    //     maxDrawdown: 15.64,
+    //     annualReturn: 33.48,
+    //     sharpeRatio: 0.79,
+    //     state: 0,
+    //     isSub: false,
+    //   },
+    // ];
+    onMounted(async () => {
+      getAllStrategies().then((resp) => {
+        console.log(resp);
+        if (resp.data.code === 200) {
+          strategies.value = resp.data.data;
+        }
+      });
+    });
 
     return {
       strategies,

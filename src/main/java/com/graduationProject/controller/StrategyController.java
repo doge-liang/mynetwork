@@ -1,11 +1,13 @@
 package com.graduationProject.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.google.api.Http;
 import com.graduationProject.consts.StatusCode;
 import com.graduationProject.dto.*;
 import com.graduationProject.entity.*;
 import com.graduationProject.utils.IDGenerator;
 import com.graduationProject.utils.RestMock;
+import org.apache.shiro.crypto.hash.Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -268,9 +270,14 @@ public class StrategyController {
 
     }
 
-    @GetMapping("/{id}/subscribe")
-    public ResultDTO<?> subscribe(@PathVariable("id") String id) throws Exception {
-        User user = new User("user1", "user1pw", "Subscriber");
+    @PostMapping("/{id}/subscribe")
+    public ResultDTO<?> subscribe(HttpSession session, @PathVariable("id") String id) throws Exception {
+        Map map = (Map) session.getAttribute("loginUser");
+        String userName = (String) map.get("userName");
+        String userSecret = (String) map.get("userSecret");
+        String orgName = (String) map.get("orgName");
+
+        User user = new User(userName, userSecret, orgName);
         if (user.doEnroll()) {
             user.doInvoke("Subscribe", id);
             return new ResultDTO<>(StatusCode.SUCCESS);
@@ -278,9 +285,14 @@ public class StrategyController {
         return new ResultDTO<>(StatusCode.NOT_FOUND);
     }
 
-    @GetMapping("/{id}/unsubscribe")
-    public ResultDTO<?> unsubscribe(@PathVariable("id") String id) throws Exception {
-        User user = new User("user1", "user1pw", "Subscriber");
+    @PostMapping("/{id}/unsubscribe")
+    public ResultDTO<?> unsubscribe(HttpSession session, @PathVariable("id") String id) throws Exception {
+        Map map = (Map) session.getAttribute("loginUser");
+        String userName = (String) map.get("userName");
+        String userSecret = (String) map.get("userSecret");
+        String orgName = (String) map.get("orgName");
+
+        User user = new User(userName, userSecret, orgName);
         if (user.doEnroll()) {
             user.doInvoke("UnSubscribe", id);
             return new ResultDTO<>(StatusCode.SUCCESS);

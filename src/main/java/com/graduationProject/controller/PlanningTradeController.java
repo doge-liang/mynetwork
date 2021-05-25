@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
+import javax.servlet.http.HttpSession;
+
+import java.util.Map;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -28,11 +32,15 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class PlanningTradeController {
 
     @GetMapping("/list")
-    public ResultDTO<PlanningTradeOutput> getAllPlanningTradesByStrategyID(@PathVariable("id") String id) {
+    public ResultDTO<PlanningTradeOutput> getAllPlanningTradesByStrategyID(HttpSession session,
+                                                                           @PathVariable("id") String id) {
         try {
-            // String userName = (String) map.get("userName");
-            // String userSecret = (String) map.get("userSecret");
-            User user = new User("user1", "user1pw", "Subscriber");
+            Map map = (Map) session.getAttribute("loginUser");
+            String userName = (String) map.get("userName");
+            String userSecret = (String) map.get("userSecret");
+            String orgName = (String) map.get("orgName");
+
+            User user = new User(userName, userSecret, orgName);
             // User user = new User("admin", "adminpw", "Provider");
             user.doEnroll();
             byte[] result = user.doQuery("GetPlanningTradesByStrategyID", id);
