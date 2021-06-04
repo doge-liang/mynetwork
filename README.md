@@ -10,7 +10,7 @@
 
 # 删除网络节点
 . ./teardown.sh
-```
 
 # 快速部署 strategy 链码
 . ./temp <sequence number>
+```
