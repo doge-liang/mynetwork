@@ -12,5 +12,8 @@
 . ./teardown.sh
 
 # 快速部署 strategy 链码
-. ./temp <sequence number>
+. ./temp.sh <sequence number>
+
+# 重建网络
+. ./rebuild.sh
 ```
