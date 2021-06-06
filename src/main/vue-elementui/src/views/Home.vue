@@ -2,7 +2,7 @@
   <div>
     <el-backtop :visibility-height="6"></el-backtop>
     <el-container id="strategy-card-list">
-      <el-main>
+      <el-main v-loading="loading">
         <div v-for="item in strategies" :key="item.id">
           <strategy-card :strategy="item"></strategy-card>
         </div>
@@ -23,6 +23,7 @@ export default {
   },
   setup() {
     const strategies = ref([]);
+    let loading = ref(true);
     // strategies.value = [
     //   {
     //     id: "6799979985630134272",
@@ -46,16 +47,19 @@ export default {
     //   },
     // ];
     onMounted(async () => {
+      loading = true;
       getAllStrategies().then((resp) => {
         console.log(resp);
         if (resp.data.code === 200) {
           strategies.value = resp.data.data;
+          loading = false;
         }
       });
     });
 
     return {
       strategies,
+      loading,
     };
   },
 };

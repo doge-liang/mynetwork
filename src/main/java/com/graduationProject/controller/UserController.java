@@ -45,6 +45,12 @@ public class UserController {
         return new ResultDTO<>(StatusCode.LOGIN_FAIL);
     }
 
+    @PostMapping("/logout")
+    public ResultDTO<?> logout(HttpSession session) {
+        session.removeAttribute("loginUser");
+        return new ResultDTO<>(StatusCode.SUCCESS);
+    }
+
     @PostMapping("/login-admin")
     public ResultDTO<Object> loginAdmin(String adminName, String adminSecret) throws Exception {
         User admin = new User(adminName, adminSecret, "Provider");

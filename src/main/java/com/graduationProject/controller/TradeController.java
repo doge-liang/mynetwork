@@ -70,11 +70,15 @@ public class TradeController {
             User user = new User("user1", "user1pw", "Subscriber");
             user.doEnroll();
             byte[] result = user.doQuery("GetTradesPageByStrategyID", id, "", "40");
-            while (result.length != 0) {
+            if (result.length != 0) {
                 Page<List<Trade>> trades = Trade.deserializePage(result, 40);
                 System.out.println(trades);
-                user.doInvoke("DelTradesByStrategyID", JSON.toJSONString(trades.getData()));
-                result = user.doQuery("GetTradesPageByStrategyID", id, "", "40");
+                while (trades.getTotalPage() != 0) {
+                    user.doInvoke("DelTradesByStrategyID", JSON.toJSONString(trades.getData()));
+                    result = user.doQuery("GetTradesPageByStrategyID", id, "", "40");
+                    trades = Trade.deserializePage(result, 40);
+                    System.out.println(trades);
+                }
             }
             return new ResultDTO<>(StatusCode.SUCCESS);
         } catch (Exception e) {

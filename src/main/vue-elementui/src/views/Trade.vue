@@ -47,7 +47,7 @@ export default defineComponent({
 
     let Trades = ref([]);
     let loading = ref(false);
-
+    let endOfList = false;
     let bookmark;
     let totalPage;
     let pageSize = 40;
@@ -75,23 +75,28 @@ export default defineComponent({
     };
 
     const load = () => {
-      loading.value = true;
-      console.log("触发滚动加载");
-      let params = {
-        bookmark: bookmark,
-        pageSize: 40,
-      };
-      console.log(params);
-      GetTradesPageByStrategyID(route.path, params).then((Response) => {
-        loading.value = false;
-        console.log(Response);
-        bookmark = Response.data.data.bookmark;
-        pageSize = Response.data.data.pageSize;
-        totalPage = Response.data.data.totalPage;
-        Response.data.data.data.forEach((element) => {
-          Trades.value.push(element);
+      if (!endOfList) {
+        loading.value = true;
+        console.log("触发滚动加载");
+        let params = {
+          bookmark: bookmark,
+          pageSize: 40,
+        };
+        console.log(params);
+        GetTradesPageByStrategyID(route.path, params).then((Response) => {
+          loading.value = false;
+          console.log(Response);
+          if (bookmark === Response.data.data.bookmark) {
+            endOfList = true;
+          }
+          bookmark = Response.data.data.bookmark;
+          pageSize = Response.data.data.pageSize;
+          totalPage = Response.data.data.totalPage;
+          Response.data.data.data.forEach((element) => {
+            Trades.value.push(element);
+          });
         });
-      });
+      }
     };
 
     return {

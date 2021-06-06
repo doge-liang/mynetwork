@@ -7,7 +7,7 @@
             <i class="el-icon-s-home"> </i>
           </div>
         </el-space>
-        <el-button v-if="isLogin" type="primary" @click="logout">
+        <el-button v-if="state.isLogin" type="primary" @click="logout">
           注销
         </el-button>
         <el-button v-else type="primary" @click="toLogin">登录/注册</el-button>
@@ -20,20 +20,31 @@
 </template>
 
 <script>
-import { onMounted, ref, reactive } from "vue";
+import { onMounted, ref, reactive, inject } from "vue";
 import { useRouter } from "vue-router";
+import { logoutReq } from "@/http/apis";
+import { StateSymbol } from "./store/state";
+
 export default {
   setup() {
     const router = useRouter();
-    const isLogin = sessionStorage.getItem("isLogin");
+    const state = inject(StateSymbol);
 
     onMounted(() => {
       document.title = "区块链智能投顾平台";
+      console.log(state);
     });
 
     // TODO 发起注销请求
     const logout = () => {
-      sessionStorage.setItem("isLogin", false);
+      // sessionStorage.setItem("state", false);
+      logoutReq().then((Response) => {
+        console.log(Response);
+        sessionStorage.removeItem("isLogin");
+        state.isLogin = false;
+        console.log(state);
+        router.push("/login");
+      });
     };
 
     const toLogin = () => {
@@ -49,7 +60,8 @@ export default {
     };
 
     return {
-      isLogin,
+      state,
+      toLogin,
       logout,
       toHome,
     };

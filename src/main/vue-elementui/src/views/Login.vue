@@ -51,14 +51,16 @@
 <script>
 import { login } from "@/http/apis";
 import { register } from "@/http/apis";
-import { reactive, ref, unref } from "vue";
+import { inject, reactive, ref, unref } from "vue";
 import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
+import { StateSymbol } from "../store/state";
 
 export default {
   // emits: ["isLogin"],
   setup(props, context) {
-    let loading = false;
+    let loading = ref(false).value;
+
     const labelPosition = "left";
     const ruleForm = ref(null);
     const formModel = reactive({
@@ -78,6 +80,7 @@ export default {
       ],
     };
     const router = useRouter();
+    let state = inject(StateSymbol);
 
     const requestLogin = async () => {
       ruleForm.value.validate((valid) => {
@@ -95,6 +98,7 @@ export default {
               if (resp.data.code === 200) {
                 loading = false;
                 sessionStorage.setItem("isLogin", true);
+                state.isLogin = true;
                 ElMessage.success("登录成功");
                 // context.emit("isLogin");
                 router.push({
@@ -129,6 +133,7 @@ export default {
             if (resp.data.code === 200) {
               loading = false;
               sessionStorage.setItem("isLogin", true);
+              state.isLogin = true;
               ElMessage.success("登录成功");
             } else {
               loading = false;
